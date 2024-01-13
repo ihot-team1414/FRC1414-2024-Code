@@ -16,4 +16,21 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class IntakeConstants {
+    // Point angles of pivot
+    // Need to find values
+    public static final double kPivotAngleGround;
+    public static final double kPivotAngleStow;
+
+    // Absolute encoder offset
+    // Need to find values
+    public static final double mPivotEncoder;
+
+    // Intake speeds
+    // Need to find values
+    public static final double kIntakeSpeed;
+    public static final double kEjectSpeed;
+    public static final double kFeedShooterSpeed;
+  }
 }
