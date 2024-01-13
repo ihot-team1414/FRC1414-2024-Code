@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -25,7 +26,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final PIDController mPivotPID = new PIDController(kPivotMotorP, kPivotMotorI, kPivotMotorD);
 
-    private final DutyCycleEncoder mPivotEncoder = new DutyCycleEncoder(Constants.Intake.kPivotEncoderId);
+    private final DutyCycleEncoder mPivotEncoder = new DutyCycleEncoder(IntakeConstants.kPivotEncoderId);
 
     // some number
     private static int noteMinCurrent;
@@ -64,9 +65,9 @@ public class IntakeSubsystem extends SubsystemBase {
         // return a double based on the target state
         switch (target) {
         case "ground":
-            return Constants.Intake.kPivotAngleGround;
+            return IntakeConstants.kPivotAngleGround;
         case "stow":
-            return Constants.Intake.kPivotAngleStow;
+            return IntakeConstants.kPivotAngleStow;
         default:
             // "Safe" default
             return 180;
@@ -77,11 +78,11 @@ public class IntakeSubsystem extends SubsystemBase {
         // return a variable based on what state of intake is needed
         switch (state) {
         case "intake":
-            return Constants.Intake.kIntakeSpeed;
+            return IntakeConstants.kIntakeSpeed;
         case "eject":
-            return Constants.Intake.kEjectSpeed;
+            return IntakeConstants.kEjectSpeed;
         case "feed shooter":
-            return Constants.Intake.kFeedShooterSpeed;
+            return IntakeConstants.kFeedShooterSpeed;
         default:
             // make the motors not rotate as a default
             return 0.0;
@@ -97,7 +98,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }*/
 
     public double getPivotAngleDegrees() {
-        double positionValue = mPivotEncoder.getAbsolutePosition() - Constants.Intake.kPivotEncoderOffset;
+        double positionValue = mPivotEncoder.getAbsolutePosition() - IntakeConstants.kPivotEncoderOffset;
         
         return Units.rotationsToDegrees(positionValue);
     }
