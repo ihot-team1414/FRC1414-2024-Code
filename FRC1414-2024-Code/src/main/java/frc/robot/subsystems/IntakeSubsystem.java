@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
@@ -51,17 +50,7 @@ public class IntakeSubsystem extends SubsystemBase {
         pivotMotor1.setSmartCurrentLimit(10, 10);
     }
 
-    /*// make spin
-    public void setMotorEffort(double effort) {
-        intakeMotor1.set(effort);
-    }
-
-    // make it stop
-    public void stop() {
-        intakeMotor1.stop();
-    }*/
-
-    public double pivotTargetAngle(String target) {
+    public double getPivotTargetAngle(String target) {
         // return a double based on the target state
         switch (target) {
         case "ground":
@@ -74,21 +63,26 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
-    public double intakeStateSpeed(String state) {
+    public double getIntakeStateEffort(String state) {
         // return a variable based on what state of intake is needed
         switch (state) {
         case "intake":
-            return IntakeConstants.kIntakeSpeed;
+            return IntakeConstants.kIntakeEffort;
         case "eject":
-            return IntakeConstants.kEjectSpeed;
+            return IntakeConstants.kEjectEffort;
         case "feed shooter":
-            return IntakeConstants.kFeedShooterSpeed;
+            return IntakeConstants.kFeedShooterEffort;
         default:
             // make the motors not rotate as a default
             return 0.0;
         }
     }
 
+    // make intake spin
+    public void setIntakeMotorEffort(double effort) {
+        intakeMotor1.set(effort);
+    }
+    
     /*private static class defaultPosition() {
         // make pivot target "stow"
         // make intake state "empty"
@@ -113,8 +107,5 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /*@Override
-    public void stop() {
-        intakeMotor1.stop();
-        pivotMotor1.stop();
-    }*/
+    */
 }

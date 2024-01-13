@@ -19,18 +19,19 @@ public final class Constants {
 
   public static class IntakeConstants {
     // Point angles of pivot
-    // Need to find values
-    public static final double kPivotAngleGround;
-    public static final double kPivotAngleStow;
+    // Need to find values - zero is used as a filler
+    public static final double kPivotAngleGround = 0;
+    public static final double kPivotAngleStow = 0;
 
     // Absolute encoder offset
     // Need to find values
-    public static final double mPivotEncoder;
+    public static final double kPivotEncoderOffset = 0.0;
+    public static final int kPivotEncoderId = 0;
 
     // Intake speeds
-    // Need to find values
-    public static final double kIntakeSpeed;
-    public static final double kEjectSpeed;
-    public static final double kFeedShooterSpeed;
+    // Need to find values - zero is used as a filler
+    public static final double kIntakeEffort = 0;
+    public static final double kEjectEffort = 0;
+    public static final double kFeedShooterEffort = 0;
   }
 }
