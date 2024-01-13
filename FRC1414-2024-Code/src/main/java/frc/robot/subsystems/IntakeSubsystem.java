@@ -3,7 +3,12 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants;
+import frc.robot.Constants.Intake;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -18,14 +23,14 @@ public class IntakeSubsystem extends SubsystemBase {
     private static int kPivotMotorCanId;
 
     // PID values of the motor pivoting the intake
-    private static final double kPivotMotorP;
-    private static final double kPivotMotorI;
-    private static final double kPivotMotorD;
+    // Need to find values - use zero as filler
+    private static final double kPivotMotorP = 0.0;
+    private static final double kPivotMotorI = 0.0;
+    private static final double kPivotMotorD = 0.0;
 
     private final PIDController mPivotPID = new PIDController(kPivotMotorP, kPivotMotorI, kPivotMotorD);
-    
-    // private final DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(Constants.Intake.kPivotEncoderId);
-    private final DigitalInput intakeLimitSwitch = new DigitalInput(Constants.Intake.kIntakeLimitSwitchId);
+
+    private final DutyCycleEncoder mPivotEncoder = new DutyCycleEncoder(Constants.Intake.kPivotEncoderId);
 
     // some number
     private static int noteMinCurrent;
@@ -88,13 +93,13 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
-    private static class defaultPosition() {
+    /*private static class defaultPosition() {
         // make pivot target "stow"
         // make intake state "empty"
 
         // create intakePower variable and set to 0.0
         // create pivotPower variable and set to 0.0
-    }
+    }*/
 
     public double getPivotAngleDegrees() {
         double positionValue = mPivotEncoder.getAbsolutePosition() - Constants.Intake.kPivotEncoderOffset;
