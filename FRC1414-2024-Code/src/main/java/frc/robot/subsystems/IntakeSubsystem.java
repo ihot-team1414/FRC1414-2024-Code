@@ -31,8 +31,8 @@ public class IntakeSubsystem extends SubsystemBase {
     //
     private final static DutyCycleEncoder mPivotEncoder = new DutyCycleEncoder(IntakeConstants.kPivotEncoderId);
 
-    // some number
-    private static int noteMinCurrent;
+    // some number - see line 107
+    // private static int noteMinCurrent;
 
     // make new motors (NEO 550) to control the intake rollers and the intake as a whole
     private static CANSparkMax intakeMotor1 = new CANSparkMax(kIntakeMotorCanId, MotorType.kBrushless);
