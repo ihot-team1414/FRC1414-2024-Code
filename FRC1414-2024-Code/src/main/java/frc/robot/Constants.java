@@ -32,6 +32,6 @@ public final class Constants {
     // Need to find values - zero is used as a filler
     public static final double kIntakeEffort = 0;
     public static final double kEjectEffort = 0;
-    public static final double kFeedShooterEffort = 0;
+    public static final double kFeedLauncherEffort = 0;
   }
 }
