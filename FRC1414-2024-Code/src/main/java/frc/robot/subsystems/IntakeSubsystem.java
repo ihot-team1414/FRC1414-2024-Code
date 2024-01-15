@@ -28,11 +28,8 @@ public class IntakeSubsystem extends SubsystemBase {
     // i thought a PID controller might be useful, but i don't know where to use it
     private final PIDController mPivotPID = new PIDController(kPivotMotorP, kPivotMotorI, kPivotMotorD); */
 
-    //
+    // make new pivot encoder, which is used to find angle of the pivot motor
     private final static DutyCycleEncoder mPivotEncoder = new DutyCycleEncoder(IntakeConstants.kPivotEncoderId);
-
-    // some number - see line 107
-    // private static int noteMinCurrent;
 
     // make new motors (NEO 550) to control the intake rollers and the intake as a whole
     private static CANSparkMax intakeMotor1 = new CANSparkMax(kIntakeMotorCanId, MotorType.kBrushless);
@@ -103,13 +100,6 @@ public class IntakeSubsystem extends SubsystemBase {
         // set intake target effort to feed
         defaultStart.intakeState = IntakeConstants.kFeedLauncherEffort;
     }
-
-/* I initially programmed this basing off of last year's code, but realized that this particular method wouldn't make sense
-   will still likely need getHasNote for something in the future
-    public boolean getHasNote() {
-        // the intake has the note if the output 
-        return intakeMotor1.getOutputCurrent() > noteMinCurrent;
-    } */
 
     // need to use for something, but seemed useful to have --- taken out because unnecessary at the moment
     /* 
