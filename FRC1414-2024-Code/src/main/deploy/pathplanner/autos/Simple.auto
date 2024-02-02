@@ -16,6 +16,18 @@
           "data": {
             "pathName": "SimplePath"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Forward"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lock"
+          }
         }
       ]
     }
