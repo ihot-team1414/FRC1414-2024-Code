@@ -26,15 +26,41 @@ package frc.robot.util;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import frc.robot.Constants.VisionConstants;
 
 public class PhotonCameraWrapper {
     public PhotonCamera photonCamera;
     public PhotonPoseEstimator robotPoseEstimator;
 
     public PhotonCameraWrapper(String cameraName, Transform3d robotToCam) {
-        AprilTagFieldLayout aprilTagFieldLayout = 
+        AprilTagFieldLayout aprilTagFieldLayout = VisionConstants.TAG_FIELD_LAYOUT;
+
+        photonCamera = new PhotonCamera(cameraName);
+
+        robotPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.LOWEST_AMBIGUITY, photonCamera, robotToCam);
+    }
+
+    /*
+     * @param estimatedRobotPose The current best guess at robot pose
+     * @return A pair of the fused camera observations to a single Pose2d on the field, and the time
+     *     of the observation. Assumes a planar field and the robot is always firmly on the ground
+     */
+
+    public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+        robotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+
+        Optional<EstimatedRobotPose> result = robotPoseEstimator.update();
+        if (result.isPresent() && result.get().estimatedPose != null) {
+            return new Pair<Pose2d, Double>(
+                    result.get().estimatedPose.toPose2d(), result.get().timestampSeconds);
+        } else {
+            return new Pair<Pose2d, Double>(null, 0.0);
+        }
     }
 }
