@@ -50,7 +50,7 @@ public class PhotonCameraWrapper {
      * @param estimatedRobotPose The current best guess at robot pose
      * @return A pair of the fused camera observations to a single Pose2d on the field, and the time
      *     of the observation. Assumes a planar field and the robot is always firmly on the ground
-     */
+     
 
     public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         robotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
@@ -62,5 +62,5 @@ public class PhotonCameraWrapper {
         } else {
             return new Pair<Pose2d, Double>(null, 0.0);
         }
-    }
+    }*/
 }
