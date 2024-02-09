@@ -228,7 +228,9 @@ public class PhotonPoseEstimator {
             var cameraMatrix = cameraMatrixOpt.get();
             var distCoeffs = distCoeffsOpt.get();
             // var pnpResults = VisionEstimation.estimateCamPosePNP(cameraMatrix, distCoeffs, visCorners, fieldTags, null);
-            var pnpResults = new MultiTargetPNPResult(null, fiducialIDsUsed);
+            // var pnpResults = new MultiTargetPNPResult(null, fiducialIDsUsed);
+            var pnpResults =
+                    VisionEstimation.estimateCamPosePNP(cameraMatrix, distCoeffs, visCorners, knownVisTags);
             var best = new Pose3d().plus(pnpResults.best).plus(robotToCamera.inverse());
         }
     }
