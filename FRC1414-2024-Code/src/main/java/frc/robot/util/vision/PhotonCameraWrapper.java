@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package frc.robot.util;
+package frc.robot.util.vision;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -57,7 +57,7 @@ public class PhotonCameraWrapper {
     public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         robotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
 
-        Optional<EstimatedRobotPose> result = robotPoseEstimator.update();
+        Optional<org.photonvision.EstimatedRobotPose> result = robotPoseEstimator.update();
         if (result.isPresent() && result.get().estimatedPose != null) {
             return new Pair<Pose2d, Double>(
                     result.get().estimatedPose.toPose2d(), result.get().timestampSeconds);
