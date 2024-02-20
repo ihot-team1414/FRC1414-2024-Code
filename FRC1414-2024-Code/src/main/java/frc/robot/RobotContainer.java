@@ -15,7 +15,8 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.PS5Controller.Button;
+import edu.wpi.first.wpilibj.PS5Controller;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -80,13 +81,13 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driverController, Button.kRightBumper.value)
+    new JoystickButton(m_driverController, Button.kR1.value)
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
 
-    new JoystickButton(m_driverController, Button.kLeftBumper.value).onTrue(new InstantCommand( () -> m_robotDrive.zeroHeading() ));
-    new JoystickButton(m_driverController, Button.kA.value).whileTrue(new PrintCommand("Color " + DriverStation.getAlliance()));
+    new JoystickButton(m_driverController, Button.kL1.value).onTrue(new InstantCommand( () -> m_robotDrive.zeroHeading() ));
+    new JoystickButton(m_driverController, Button.kCircle.value).whileTrue(new PrintCommand("Color " + DriverStation.getAlliance()));
   }
 
   /**
