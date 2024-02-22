@@ -23,6 +23,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Drive;
 import frc.robot.commands.Lock;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.utils.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -43,7 +44,8 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DrivetrainSubsystem m_robotDrive = new DrivetrainSubsystem();
+  private final DrivetrainSubsystem m_robotDrive = DrivetrainSubsystem.getInstance();
+  private final Limelight ll = Limelight.getInstance();
 
   // The driver's controller
   PS5Controller m_driverController = new PS5Controller(OIConstants.kDriverControllerPort);
@@ -88,6 +90,7 @@ public class RobotContainer {
 
     new JoystickButton(m_driverController, Button.kL1.value).onTrue(new InstantCommand( () -> m_robotDrive.zeroHeading() ));
     new JoystickButton(m_driverController, Button.kCircle.value).whileTrue(new PrintCommand("Color " + DriverStation.getAlliance()));
+    new JoystickButton(m_driverController, Button.kSquare.value).onTrue(new PrintCommand("" + Limelight.getInstance().detectsTarget()));
   }
 
   /**
