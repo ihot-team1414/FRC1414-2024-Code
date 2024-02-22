@@ -1,17 +1,15 @@
 package frc.util;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.ArrayList;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import java.util.ArrayList;
 
 public class Vision{
 
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
-    //Array list
+    ArrayList<Object[]> notes = new ArrayList<Object[]>();
     
     
 
@@ -47,15 +45,18 @@ public class Vision{
             taEntries[i+1] = taEntries[i];
         }
         taEntries[0] = area;
+        
+        Object[] observation = new Object[4];
 
+        observation[0] = tx;
+        observation[1] = ty;
+        observation[2] = timestamp;
+        observation[3] = confidence;
 
+        //check if there is already a note in notes that has similar position to observation. If there is one, new x,y for that note is weighted average of the old and new x,y based off of confidence(distance).
+        //if not...{
+            
 
-        //post to smart dashboard periodically
-        /*
-        SmartDashboard.putNumber("LimelightX", x);
-        SmartDashboard.putNumber("LimelightY", y);
-        SmartDashboard.putNumber("LimelightArea", area);
-        */
     }
 }
 
