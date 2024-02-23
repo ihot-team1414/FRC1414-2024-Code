@@ -6,7 +6,7 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import frc.utils.Limelight;
-
+import frc.utils.VisionPoseEstimation;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -29,6 +29,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private static DrivetrainSubsystem instance;
   private Limelight ll = Limelight.getInstance();
+  private VisionPoseEstimation vsp = VisionPoseEstimation.getInstance();
 
   public static synchronized DrivetrainSubsystem getInstance() {
     if (instance == null) {
@@ -135,6 +136,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Update the odometry in the periodic block
 
     SmartDashboard.putBoolean("Target", ll.detectsTarget());
+    SmartDashboard.putBoolean("Detect", vsp.targetDetected());
 
     m_odometry.update(
         Rotation2d.fromDegrees(-m_gyro.getAngle()),

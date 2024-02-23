@@ -136,6 +136,13 @@ public final class Constants {
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
   }
 
+  public static final class VisionConstants {
+
+    public static final double kCameraHeight = 0.1;
+    public static final double kCameraPitch = 0;
+
+  }
+
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
