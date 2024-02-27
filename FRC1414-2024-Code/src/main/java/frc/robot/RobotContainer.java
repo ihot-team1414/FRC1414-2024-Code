@@ -15,6 +15,8 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
 import edu.wpi.first.wpilibj.PS5Controller;
 import frc.robot.Constants.AutoConstants;
@@ -53,8 +55,18 @@ public class RobotContainer {
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
+
+  // AUTOS
+  private SendableChooser<Command> chooser = new SendableChooser<>();
+
   public RobotContainer() {
 
+    // AUTO CHOOSER
+    SmartDashboard.putData("Auto Chooser", this.chooser);
+    chooser.addOption("Simple", new PathPlannerAuto("Simple"));
+    chooser.addOption("1", new PathPlannerAuto("Wing-1 (Left Amp) to Center Left Auto"));
+    chooser.setDefaultOption("Simple", new PathPlannerAuto("Simple"));
+    
     NamedCommands.registerCommand("Lock", new RunCommand(() -> m_robotDrive.setX()));
 
     // Configure the button bindings
@@ -99,7 +111,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("Simple");
+    return chooser.getSelected();
   }
 
 
