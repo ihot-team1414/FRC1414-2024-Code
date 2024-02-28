@@ -4,9 +4,12 @@
 
 package frc.robot.subsystems;
 
+import org.opencv.photo.Photo;
+
 import com.kauailabs.navx.frc.AHRS;
 import frc.utils.Limelight;
-import frc.utils.VisionPoseEstimation;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -14,8 +17,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -29,7 +34,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private static DrivetrainSubsystem instance;
   private Limelight ll = Limelight.getInstance();
-  private VisionPoseEstimation vsp = VisionPoseEstimation.getInstance();
+  private PhotonVision at1 = new PhotonVision("at2");
 
   public static synchronized DrivetrainSubsystem getInstance() {
     if (instance == null) {
@@ -134,9 +139,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-
-    SmartDashboard.putBoolean("Target", ll.detectsTarget());
-    SmartDashboard.putBoolean("Detect", vsp.targetDetected());
+    SmartDashboard.putBoolean("Detected", detectTarget());
 
     m_odometry.update(
         Rotation2d.fromDegrees(-m_gyro.getAngle()),
@@ -218,6 +221,24 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+  }
+
+  public boolean detectTarget(){
+    return(at1.targetDetected());
+  }
+
+  public void getRotationFromTarget(double xSpeedCommanded, double ySpeedCommanded){
+
+    // Convert the commanded speeds into the correct units for the drivetrain
+    double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
+    double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
+
+    if(at1.getBestTarget() == null){
+
+    } else{
+      drive(xSpeedDelivered, ySpeedDelivered, (new ProfiledPIDController(0.01, 0.05, 0, new TrapezoidProfile.Constraints(1, 1.0))
+                                              .calculate(at1.getBestTarget().getYaw(), 0)), true);
+    }
   }
 
   /**

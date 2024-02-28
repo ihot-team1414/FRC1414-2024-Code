@@ -103,6 +103,11 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kL1.value).onTrue(new InstantCommand( () -> m_robotDrive.zeroHeading() ));
     new JoystickButton(m_driverController, Button.kCircle.value).whileTrue(new PrintCommand("Color " + DriverStation.getAlliance()));
     new JoystickButton(m_driverController, Button.kSquare.value).onTrue(new PrintCommand("" + Limelight.getInstance().detectsTarget()));
+    new JoystickButton(m_driverController, Button.kTriangle.value)
+                      .whileTrue(new RunCommand( () -> m_robotDrive.getRotationFromTarget(
+                        MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband)
+                        )));
   }
 
   /**
