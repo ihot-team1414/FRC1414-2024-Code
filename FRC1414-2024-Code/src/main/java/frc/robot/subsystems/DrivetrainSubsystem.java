@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import org.opencv.photo.Photo;
-
 import com.kauailabs.navx.frc.AHRS;
 import frc.utils.Limelight;
 import edu.wpi.first.math.controller.PIDController;
@@ -20,8 +18,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
@@ -33,8 +29,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 public class DrivetrainSubsystem extends SubsystemBase {
 
   private static DrivetrainSubsystem instance;
-  private Limelight ll = Limelight.getInstance();
-  private PhotonVision at1 = new PhotonVision("at2");
+  private PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");
 
   public static synchronized DrivetrainSubsystem getInstance() {
     if (instance == null) {
@@ -67,7 +62,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   // The gyro sensor
   private final AHRS m_gyro = new AHRS();
 
-  // Slew rate filter variables for controlling lateral acceleration
+  // Rotation of chassis
   private double m_currentRotation = 0.0;
 
 
@@ -138,9 +133,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Update the odometry in the periodic block
-    SmartDashboard.putBoolean("Detected", detectTarget());
 
+    SmartDashboard.putNumber("Distance", distanceFromTarget());
+    SmartDashboard.putNumber("Height", frontCamera.getHeightFromID());
+
+    // Update the odometry in the periodic block
     m_odometry.update(
         Rotation2d.fromDegrees(-m_gyro.getAngle()),
         new SwerveModulePosition[] {
@@ -149,6 +146,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
+
   }
 
   /**
@@ -223,22 +221,22 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
-  public boolean detectTarget(){
-    return(at1.targetDetected());
+  public void aimToTarget(double xSpeed, double ySpeed){
+
+    double yaw = 0;
+
+    if(frontCamera.targetDetected())
+      yaw = frontCamera.getYaw();
+      if(!(yaw < 0 && yaw > -DriveConstants.kYawThreshold || yaw > 0 && yaw < DriveConstants.kYawThreshold)){
+        drive(xSpeed, ySpeed, new ProfiledPIDController(0.01, 0, 0, new TrapezoidProfile.Constraints(0.05, 0.05))
+                                              .calculate(yaw, 
+                                              0), 
+                                              true);
+      }
   }
 
-  public void getRotationFromTarget(double xSpeedCommanded, double ySpeedCommanded){
-
-    // Convert the commanded speeds into the correct units for the drivetrain
-    double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
-    double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
-
-    if(at1.getBestTarget() == null){
-
-    } else{
-      drive(xSpeedDelivered, ySpeedDelivered, (new ProfiledPIDController(0.01, 0.05, 0, new TrapezoidProfile.Constraints(1, 1.0))
-                                              .calculate(at1.getBestTarget().getYaw(), 0)), true);
-    }
+  public double distanceFromTarget(){
+    return frontCamera.getDistance();
   }
 
   /**

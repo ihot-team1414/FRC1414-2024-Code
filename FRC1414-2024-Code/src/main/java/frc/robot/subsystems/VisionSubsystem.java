@@ -20,9 +20,9 @@ import frc.robot.Constants.VisionConstants;
 public class VisionSubsystem extends SubsystemBase{
     
     private static VisionSubsystem instance;
+    private static DrivetrainSubsystem driveTrain;
 
-    PhotonVision at1 = new PhotonVision("at1");
-    PhotonVision at2 = new PhotonVision("at2");
+    PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");
 
     @Override
     public void periodic(){

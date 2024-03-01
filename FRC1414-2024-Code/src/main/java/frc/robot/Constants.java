@@ -6,7 +6,9 @@ package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -63,6 +65,8 @@ public final class Constants {
     public static final int kRearRightTurningCanId = 23;
 
     public static final boolean kGyroReversed = false;
+
+    public static final double kYawThreshold = 1.0; // for aimToTarget rotation
   }
 
   public static final class ModuleConstants {
@@ -138,8 +142,16 @@ public final class Constants {
 
   public static final class VisionConstants {
 
-    public static final double kCameraHeight = 0.1;
-    public static final double kCameraPitch = 0;
+    public static final double kFrontCameraHeight = Units.inchesToMeters(7.25);
+    public static final double kFrontCameraPitch = Math.toRadians(40);
+    public static final Translation3d kFrontCameraToRobot = new Translation3d(
+        Units.inchesToMeters(14.75), 
+        Units.inchesToMeters(14.5), 
+        Units.inchesToMeters(4));
+
+    public static final double kStageHeight = 1.32; // IDS: 11 - 16
+    public static final double kAmpHeight = 1.36; // IDS: 1, 2, 5, 6, 9, 10
+    public static final double kSpeakerHeight = 1.45; // IDS: 3, 4, 7, 8
 
   }
 
