@@ -17,11 +17,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PS5Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -30,6 +32,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private static DrivetrainSubsystem instance;
   private PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");
+  private int cardinalRotationGoal;
 
   public static synchronized DrivetrainSubsystem getInstance() {
     if (instance == null) {
@@ -136,6 +139,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Distance", distanceFromTarget());
     SmartDashboard.putNumber("Height", frontCamera.getHeightFromID());
+    SmartDashboard.putNumber("Gyro", -m_gyro.getAngle() - cardinalRotationGoal);
 
     // Update the odometry in the periodic block
     m_odometry.update(
@@ -225,7 +229,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     double yaw = 0;
 
-    if(frontCamera.targetDetected())
+    if(frontCamera.targetDetected() && frontCamera.targetAppropiate()){
       yaw = frontCamera.getYaw();
       if(!(yaw < 0 && yaw > -DriveConstants.kYawThreshold || yaw > 0 && yaw < DriveConstants.kYawThreshold)){
         drive(xSpeed, ySpeed, new ProfiledPIDController(0.01, 0, 0, new TrapezoidProfile.Constraints(0.05, 0.05))
@@ -233,6 +237,22 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                               0), 
                                               true);
       }
+    }
+    // else { drive(xSpeed, ySpeed, rot, true); } add robot move during lock?
+  }
+
+  public void cardinalDirection(double xSpeed, double ySpeed, int goal){
+
+    drive(xSpeed, ySpeed, new ProfiledPIDController(0.01, 0, 0, new TrapezoidProfile.Constraints(0.01, 0.05))
+                                              .calculate(-m_gyro.getAngle(), goal), 
+                                              true);
+  }
+
+  public void slowMode(double xSpeed, double ySpeed, double rot){
+    drive(xSpeed * DriveConstants.kSlowMode, 
+          ySpeed * DriveConstants.kSlowMode, 
+          rot * DriveConstants.kSlowMode, 
+          true);
   }
 
   public double distanceFromTarget(){

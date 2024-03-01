@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Transform3d;
@@ -67,6 +69,7 @@ public final class Constants {
     public static final boolean kGyroReversed = false;
 
     public static final double kYawThreshold = 1.0; // for aimToTarget rotation
+    public static final double kSlowMode = 0.1;
   }
 
   public static final class ModuleConstants {
@@ -152,6 +155,9 @@ public final class Constants {
     public static final double kStageHeight = 1.32; // IDS: 11 - 16
     public static final double kAmpHeight = 1.36; // IDS: 1, 2, 5, 6, 9, 10
     public static final double kSpeakerHeight = 1.45; // IDS: 3, 4, 7, 8
+
+    public static final ArrayList<Integer> kRedSpeakerID = new ArrayList<Integer>(){{add(3); add(4); }};
+    public static final ArrayList<Integer> kBlueSpeakerID = new ArrayList<Integer>(){{add(7); add(8); }};
 
   }
 
