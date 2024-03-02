@@ -242,10 +242,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public void cardinalDirection(double xSpeed, double ySpeed, int goal){
+    
+    PIDController rotController = new PIDController(0.01, 0, 0);
+    rotController.enableContinuousInput(-180, 180);
 
-    drive(xSpeed, ySpeed, new ProfiledPIDController(0.01, 0, 0, new TrapezoidProfile.Constraints(0.01, 0.05))
-                                              .calculate(-m_gyro.getAngle(), goal), 
-                                              true);
+    double speed = rotController.calculate(m_odometry.getPoseMeters().getRotation().getDegrees() % 180,
+                                          goal % 180);
+    
+    drive(xSpeed, ySpeed, -speed, true);
   }
 
   public void slowMode(double xSpeed, double ySpeed, double rot){
