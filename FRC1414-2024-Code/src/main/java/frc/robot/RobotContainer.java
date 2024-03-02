@@ -22,8 +22,11 @@ import edu.wpi.first.wpilibj.PS5Controller;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.AimToTarget;
 import frc.robot.commands.Drive;
 import frc.robot.commands.Lock;
+import frc.robot.commands.LockToDirection;
+import frc.robot.commands.SlowMode;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.utils.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -104,14 +107,14 @@ public class RobotContainer {
     
     //Aim while moving
     new JoystickButton(m_driverController, Button.kR1.value)
-                      .whileTrue(new RunCommand( () -> m_robotDrive.aimToTarget(
+                      .whileTrue(new RunCommand( () -> new AimToTarget(
                         MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                         MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband)
                         )));
 
     //Slow mode while moving
     new JoystickButton(m_driverController, Button.kL1.value).whileTrue(
-                      new RunCommand(() -> m_robotDrive.slowMode(
+                      new RunCommand(() -> new SlowMode(
                         MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                         MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                         -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband))));
@@ -124,8 +127,8 @@ public class RobotContainer {
 
   }
 
-  private void lockToCardinal(int goal){
-    m_robotDrive.cardinalDirection(
+  private Command lockToCardinal(int goal){
+    return new LockToDirection(
                         MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                         MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                         goal);

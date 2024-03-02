@@ -31,7 +31,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 public class DrivetrainSubsystem extends SubsystemBase {
 
   private static DrivetrainSubsystem instance;
-  private PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");
+  private PhotonVisionHelper frontCamera = VisionSubsystem.getInstance().getFrontCamera();
   private int cardinalRotationGoal;
 
   public static synchronized DrivetrainSubsystem getInstance() {
@@ -225,6 +225,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
+  /*
   public void aimToTarget(double xSpeed, double ySpeed){
 
     double yaw = 0;
@@ -239,8 +240,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
       }
     }
     // else { drive(xSpeed, ySpeed, rot, true); } add robot move during lock?
-  }
+  }*/
 
+  /*
   public void cardinalDirection(double xSpeed, double ySpeed, int goal){
     
     PIDController rotController = new PIDController(0.01, 0, 0);
@@ -250,14 +252,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                           goal % 180);
     
     drive(xSpeed, ySpeed, -speed, true);
-  }
+  }*/
 
+  /*
   public void slowMode(double xSpeed, double ySpeed, double rot){
     drive(xSpeed * DriveConstants.kSlowMode, 
           ySpeed * DriveConstants.kSlowMode, 
           rot * DriveConstants.kSlowMode, 
           true);
-  }
+  }*/
 
   public double distanceFromTarget(){
     return frontCamera.getDistance();

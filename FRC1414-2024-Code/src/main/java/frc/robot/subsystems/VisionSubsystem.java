@@ -13,9 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import com.kauailabs.navx.frc.AHRS;
-
-import frc.robot.Constants.VisionConstants;
 
 public class VisionSubsystem extends SubsystemBase{
     
@@ -23,10 +20,16 @@ public class VisionSubsystem extends SubsystemBase{
     private static DrivetrainSubsystem driveTrain;
 
     PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");
+    PhotonVisionHelper backCamera = new PhotonVisionHelper("backCamera");
 
-    @Override
-    public void periodic(){
-      
+    //Get front camera
+    public PhotonVisionHelper getFrontCamera(){
+        return frontCamera;
+    }
+
+    //Get back camera
+    public PhotonVisionHelper getBackCamera(){
+        return backCamera;
     }
 
     public static VisionSubsystem getInstance() {
