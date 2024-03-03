@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class LockToDirection extends Command {
+  
   private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
   private double xSpeed;
   private double ySpeed;

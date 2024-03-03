@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -147,10 +148,12 @@ public final class Constants {
 
     public static final double kFrontCameraHeight = Units.inchesToMeters(7.25);
     public static final double kFrontCameraPitch = Math.toRadians(40);
-    public static final Translation3d kFrontCameraToRobot = new Translation3d(
+    public static final Transform3d kFrontCameraToRobot = new Transform3d(
+      new Translation3d(
         Units.inchesToMeters(14.75), 
         Units.inchesToMeters(14.5), 
-        Units.inchesToMeters(4));
+        Units.inchesToMeters(4)),
+      new Rotation3d(0, 40, 0));
 
     public static final double kStageHeight = 1.32; // IDS: 11 - 16
     public static final double kAmpHeight = 1.36; // IDS: 1, 2, 5, 6, 9, 10

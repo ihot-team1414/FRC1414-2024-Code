@@ -79,6 +79,9 @@ public class PhotonVisionHelper extends SubsystemBase {
         return 0.0;
     }
 
+    public PhotonCamera getCamera(){
+        return camera;
+    }
     
     @Override
     public void periodic(){

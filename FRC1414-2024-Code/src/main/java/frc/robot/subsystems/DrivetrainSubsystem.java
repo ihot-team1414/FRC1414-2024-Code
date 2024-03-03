@@ -6,8 +6,10 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import frc.utils.Limelight;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -16,8 +18,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -31,8 +35,11 @@ import com.pathplanner.lib.util.ReplanningConfig;
 public class DrivetrainSubsystem extends SubsystemBase {
 
   private static DrivetrainSubsystem instance;
-  private PhotonVisionHelper frontCamera = VisionSubsystem.getInstance().getFrontCamera();
-  private int cardinalRotationGoal;
+  private VisionSubsystem visionSubsystem = VisionSubsystem.getInstance();
+  private PhotonVisionHelper frontCamera = visionSubsystem.getFrontCamera();
+  private Field2d field = new Field2d();
+  
+   private int cardinalRotationGoal;
 
   public static synchronized DrivetrainSubsystem getInstance() {
     if (instance == null) {
@@ -65,9 +72,21 @@ public class DrivetrainSubsystem extends SubsystemBase {
   // The gyro sensor
   private final AHRS m_gyro = new AHRS();
 
+  private final SwerveDrivePoseEstimator poseEstimator = new 
+  SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
+                            m_gyro.getRotation2d(), 
+                            new SwerveModulePosition[] {
+                              m_frontLeft.getPosition(),
+                              m_frontRight.getPosition(),
+                              m_rearLeft.getPosition(),
+                              m_rearRight.getPosition()
+                            }, 
+                            new Pose2d(), /* vs getPose()? */
+                            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // Tune | State estimation deviation
+                            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // Tune | Vision estimation deviation
+
   // Rotation of chassis
   private double m_currentRotation = 0.0;
-
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -140,6 +159,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Distance", distanceFromTarget());
     SmartDashboard.putNumber("Height", frontCamera.getHeightFromID());
     SmartDashboard.putNumber("Gyro", -m_gyro.getAngle() - cardinalRotationGoal);
+    SmartDashboard.putData("Field", field);
 
     // Update the odometry in the periodic block
     m_odometry.update(
@@ -151,6 +171,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_rearRight.getPosition()
         });
 
+    visionSubsystem.getVisionPoseEstimatorFront().update().ifPresent(estimatedRobotPose -> {
+      poseEstimator.addVisionMeasurement(
+        estimatedRobotPose.estimatedPose.toPose2d(),
+        estimatedRobotPose.timestampSeconds
+      );
+    });
+
+    field.setRobotPose(poseEstimator.getEstimatedPosition());
   }
 
   /**
@@ -225,43 +253,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
-  /*
-  public void aimToTarget(double xSpeed, double ySpeed){
-
-    double yaw = 0;
-
-    if(frontCamera.targetDetected() && frontCamera.targetAppropiate()){
-      yaw = frontCamera.getYaw();
-      if(!(yaw < 0 && yaw > -DriveConstants.kYawThreshold || yaw > 0 && yaw < DriveConstants.kYawThreshold)){
-        drive(xSpeed, ySpeed, new ProfiledPIDController(0.01, 0, 0, new TrapezoidProfile.Constraints(0.05, 0.05))
-                                              .calculate(yaw, 
-                                              0), 
-                                              true);
-      }
-    }
-    // else { drive(xSpeed, ySpeed, rot, true); } add robot move during lock?
-  }*/
-
-  /*
-  public void cardinalDirection(double xSpeed, double ySpeed, int goal){
-    
-    PIDController rotController = new PIDController(0.01, 0, 0);
-    rotController.enableContinuousInput(-180, 180);
-
-    double speed = rotController.calculate(m_odometry.getPoseMeters().getRotation().getDegrees() % 180,
-                                          goal % 180);
-    
-    drive(xSpeed, ySpeed, -speed, true);
-  }*/
-
-  /*
-  public void slowMode(double xSpeed, double ySpeed, double rot){
-    drive(xSpeed * DriveConstants.kSlowMode, 
-          ySpeed * DriveConstants.kSlowMode, 
-          rot * DriveConstants.kSlowMode, 
-          true);
-  }*/
-
   public double distanceFromTarget(){
     return frontCamera.getDistance();
   }
@@ -310,5 +301,46 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public double getTurnRate() {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   }
+
+  public SwerveDrivePoseEstimator getPoseEstimator(){
+    return poseEstimator;
+  }
+
+  /*
+  public void aimToTarget(double xSpeed, double ySpeed){
+
+    double yaw = 0;
+
+    if(frontCamera.targetDetected() && frontCamera.targetAppropiate()){
+      yaw = frontCamera.getYaw();
+      if(!(yaw < 0 && yaw > -DriveConstants.kYawThreshold || yaw > 0 && yaw < DriveConstants.kYawThreshold)){
+        drive(xSpeed, ySpeed, new ProfiledPIDController(0.01, 0, 0, new TrapezoidProfile.Constraints(0.05, 0.05))
+                                              .calculate(yaw, 
+                                              0), 
+                                              true);
+      }
+    }
+    // else { drive(xSpeed, ySpeed, rot, true); } add robot move during lock?
+  }*/
+
+  /*
+  public void cardinalDirection(double xSpeed, double ySpeed, int goal){
+    
+    PIDController rotController = new PIDController(0.01, 0, 0);
+    rotController.enableContinuousInput(-180, 180);
+
+    double speed = rotController.calculate(m_odometry.getPoseMeters().getRotation().getDegrees() % 180,
+                                          goal % 180);
+    
+    drive(xSpeed, ySpeed, -speed, true);
+  }*/
+
+  /*
+  public void slowMode(double xSpeed, double ySpeed, double rot){
+    drive(xSpeed * DriveConstants.kSlowMode, 
+          ySpeed * DriveConstants.kSlowMode, 
+          rot * DriveConstants.kSlowMode, 
+          true);
+  }*/
 
 }

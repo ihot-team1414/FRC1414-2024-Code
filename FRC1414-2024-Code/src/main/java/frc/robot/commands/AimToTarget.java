@@ -14,8 +14,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class AimToTarget extends Command {
+  
   private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
-  private final PhotonVisionHelper frontCamera = VisionSubsystem.getInstance().getFrontCamera();
+  private final VisionSubsystem visionSubsystem = VisionSubsystem.getInstance();
+  private final PhotonVisionHelper frontCamera = visionSubsystem.getFrontCamera();
+  
   private double xSpeed;
   private double ySpeed;
   double yaw = 0;

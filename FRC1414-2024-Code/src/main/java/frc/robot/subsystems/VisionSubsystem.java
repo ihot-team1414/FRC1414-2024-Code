@@ -1,26 +1,57 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.proto.Photon;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.VisionConstants;
 
 
 public class VisionSubsystem extends SubsystemBase{
     
     private static VisionSubsystem instance;
-    private static DrivetrainSubsystem driveTrain;
+    private final DrivetrainSubsystem drivetrainSubsystem = DrivetrainSubsystem.getInstance();
+    private AprilTagFieldLayout fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
-    PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");
+    PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");    
     PhotonVisionHelper backCamera = new PhotonVisionHelper("backCamera");
+    PhotonPoseEstimator visionEstimatorFront = new PhotonPoseEstimator(
+                                              fieldLayout, 
+                                              PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                                              frontCamera.getCamera(),
+                                              VisionConstants.kFrontCameraToRobot);
+
+    private VisionSubsystem(){
+        visionEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    }
+                  
+    @Override
+    public void periodic(){
+
+    }
+
+    public PhotonPoseEstimator getVisionPoseEstimatorFront(){
+      return visionEstimatorFront;
+    }
 
     //Get front camera
     public PhotonVisionHelper getFrontCamera(){
@@ -30,6 +61,11 @@ public class VisionSubsystem extends SubsystemBase{
     //Get back camera
     public PhotonVisionHelper getBackCamera(){
         return backCamera;
+    }
+
+    //Get pose estimator
+    public PhotonPoseEstimator getPoseEstimator(){
+        return visionEstimatorFront;
     }
 
     public static VisionSubsystem getInstance() {
