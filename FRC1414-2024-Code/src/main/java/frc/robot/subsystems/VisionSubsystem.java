@@ -33,14 +33,15 @@ public class VisionSubsystem extends SubsystemBase{
 
     PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");    
     PhotonVisionHelper backCamera = new PhotonVisionHelper("backCamera");
-    PhotonPoseEstimator visionEstimatorFront = new PhotonPoseEstimator(
-                                              fieldLayout, 
-                                              PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                                              frontCamera.getCamera(),
-                                              VisionConstants.kFrontCameraToRobot);
+    PhotonPoseEstimator visionEstimatorFront;
 
     private VisionSubsystem(){
-        visionEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      visionEstimatorFront = new PhotonPoseEstimator(fieldLayout, 
+                                                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                                                    frontCamera.getCamera(),
+                                                    VisionConstants.kFrontCameraToRobot);
+
+      visionEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
                   
     @Override

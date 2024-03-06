@@ -17,12 +17,16 @@ public class PhotonVisionHelper extends SubsystemBase {
     
     private PhotonCamera camera;
     private PhotonPipelineResult result;
-    private AprilTagFieldLayout fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    private AprilTagFieldLayout fieldLayout;
 
-    private Optional<Alliance> allianceColor = DriverStation.getAlliance();
+    private Optional<Alliance> allianceColor;
 
     public PhotonVisionHelper(String networkTable){
+
+        fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         camera = new PhotonCamera(networkTable);
+        allianceColor = DriverStation.getAlliance();
+        
     }
 
     

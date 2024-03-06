@@ -6,12 +6,14 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import frc.utils.Limelight;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -35,11 +37,16 @@ import com.pathplanner.lib.util.ReplanningConfig;
 public class DrivetrainSubsystem extends SubsystemBase {
 
   private static DrivetrainSubsystem instance;
-  private VisionSubsystem visionSubsystem = VisionSubsystem.getInstance();
-  private PhotonVisionHelper frontCamera = visionSubsystem.getFrontCamera();
-  private Field2d field = new Field2d();
+  private VisionSubsystem visionSubsystem;
+  private Field2d field;
+  private PIDController rotController;
+  private final SwerveDrivePoseEstimator poseEstimator;
   
-   private double cardinalRotationGoal;
+  // The gyro sensor
+  private final AHRS m_gyro = new AHRS();
+  
+  // Rotation of chassis
+  private double m_currentRotation = 0.0;
 
   public static synchronized DrivetrainSubsystem getInstance() {
     if (instance == null) {
@@ -69,24 +76,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
 
-  // The gyro sensor
-  private final AHRS m_gyro = new AHRS();
-
-  private final SwerveDrivePoseEstimator poseEstimator = new 
-  SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
-                            m_gyro.getRotation2d(), 
-                            new SwerveModulePosition[] {
-                              m_frontLeft.getPosition(),
-                              m_frontRight.getPosition(),
-                              m_rearLeft.getPosition(),
-                              m_rearRight.getPosition()
-                            }, 
-                            new Pose2d(), /* vs getPose()? */
-                            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // Tune | State estimation deviation
-                            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // Tune | Vision estimation deviation
-
-  // Rotation of chassis
-  private double m_currentRotation = 0.0;
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -101,7 +90,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DrivetrainSubsystem() {
-      //TODO: Auto
+      
+    //TODO: Auto
       AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
             this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
@@ -127,6 +117,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
             },
             this // Reference to this subsystem to set requirements
     );
+
+    rotController = new PIDController(0.01, 0, 0);
+    rotController.enableContinuousInput(-180, 180);
+
+    poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
+                            m_gyro.getRotation2d(), 
+                            new SwerveModulePosition[] {
+                              m_frontLeft.getPosition(),
+                              m_frontRight.getPosition(),
+                              m_rearLeft.getPosition(),
+                              m_rearRight.getPosition()
+                            }, 
+                            new Pose2d(), /* vs getPose()? */
+                            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // Tune | State estimation deviation
+                            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // Tune | Vision estimation deviation
+
+    visionSubsystem = VisionSubsystem.getInstance();
+    field = new Field2d();
+
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds(){
@@ -157,8 +166,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public void periodic() {
 
     SmartDashboard.putNumber("Distance", distanceFromTarget());
-    SmartDashboard.putNumber("Height", frontCamera.getHeightFromID());
-    SmartDashboard.putNumber("Gyro", cardinalRotationGoal);
+    SmartDashboard.putNumber("Height", visionSubsystem.getFrontCamera().getHeightFromID());
     SmartDashboard.putNumber("Field", field.getRobotPose().getX());
 
     // Update the odometry in the periodic block
@@ -243,6 +251,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
+  public void drive(Translation2d translation, double rot){
+    drive(translation.getX(), translation.getY(), rot, true);
+  }
+
   /**zero
    * Sets the wheels into an X formation to prevent movement.
    */
@@ -254,7 +266,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public double distanceFromTarget(){
-    return frontCamera.getDistance();
+    return visionSubsystem.getFrontCamera().getDistance();
   }
 
   /**
@@ -309,10 +321,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   
   public void aimToTarget(double xSpeed, double ySpeed){
 
-    double yaw = 0;
-
-    if(frontCamera.targetDetected() && frontCamera.targetAppropiate()){
-      yaw = frontCamera.getYaw();
+    if(visionSubsystem.getFrontCamera().targetDetected() && visionSubsystem.getFrontCamera().targetAppropiate()){
+      double yaw = visionSubsystem.getFrontCamera().getYaw();
       if(!(yaw < 0 && yaw > -DriveConstants.kYawThreshold || yaw > 0 && yaw < DriveConstants.kYawThreshold)){
         drive(xSpeed, ySpeed, new ProfiledPIDController(0.01, 0, 0, new TrapezoidProfile.Constraints(0.05, 0.05))
                                               .calculate(yaw, 
@@ -326,13 +336,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
   
   public void cardinalDirection(double xSpeed, double ySpeed, double goal){
     
-    ProfiledPIDController rotController = new ProfiledPIDController(0.01, 0, 0, new TrapezoidProfile.Constraints(0.01, 0.01));
-    rotController.enableContinuousInput(-180, 180);
+    rotController.setSetpoint(goal);
+    double rotationVal = rotController.calculate(-(MathUtil.inputModulus(m_gyro.getYaw(), -180, 180)), rotController.getSetpoint());
+    drive(xSpeed, ySpeed, rotationVal, true);
 
-    cardinalRotationGoal = rotController.calculate(m_odometry.getPoseMeters().getRotation().getDegrees() % 180,
-                                          goal % 180);
-    
-    drive(xSpeed, ySpeed, cardinalRotationGoal, true);
   }
 
   
