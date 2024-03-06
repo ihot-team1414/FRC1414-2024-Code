@@ -21,7 +21,7 @@ public class LockToDirection extends Command {
   private double ySpeed;
   private double goal;
   private double rot;
-  private PIDController rotController = new PIDController(0.01, 0, 0);
+  private ProfiledPIDController rotController = new ProfiledPIDController(0.005, 0, 0, new TrapezoidProfile.Constraints(0.001, 0.01));
 
   /**
    * Creates a new ExampleCommand.

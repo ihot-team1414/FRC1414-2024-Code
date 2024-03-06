@@ -6,16 +6,12 @@ package frc.robot.commands;
 
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.PhotonVisionHelper;
-import frc.robot.subsystems.VisionSubsystem;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that uses an example subsystem. */
 public class SlowMode extends Command {
   
-    private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
+  private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
   private double xSpeed;
   private double ySpeed;
   private double rot;

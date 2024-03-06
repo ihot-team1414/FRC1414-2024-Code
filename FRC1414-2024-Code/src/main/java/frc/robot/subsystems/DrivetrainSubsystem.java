@@ -39,7 +39,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private PhotonVisionHelper frontCamera = visionSubsystem.getFrontCamera();
   private Field2d field = new Field2d();
   
-   private int cardinalRotationGoal;
+   private double cardinalRotationGoal;
 
   public static synchronized DrivetrainSubsystem getInstance() {
     if (instance == null) {
@@ -158,8 +158,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Distance", distanceFromTarget());
     SmartDashboard.putNumber("Height", frontCamera.getHeightFromID());
-    SmartDashboard.putNumber("Gyro", -m_gyro.getAngle() - cardinalRotationGoal);
-    SmartDashboard.putData("Field", field);
+    SmartDashboard.putNumber("Gyro", cardinalRotationGoal);
+    SmartDashboard.putNumber("Field", field.getRobotPose().getX());
 
     // Update the odometry in the periodic block
     m_odometry.update(
@@ -306,7 +306,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     return poseEstimator;
   }
 
-  /*
+  
   public void aimToTarget(double xSpeed, double ySpeed){
 
     double yaw = 0;
@@ -321,26 +321,26 @@ public class DrivetrainSubsystem extends SubsystemBase {
       }
     }
     // else { drive(xSpeed, ySpeed, rot, true); } add robot move during lock?
-  }*/
+  }
 
-  /*
-  public void cardinalDirection(double xSpeed, double ySpeed, int goal){
+  
+  public void cardinalDirection(double xSpeed, double ySpeed, double goal){
     
-    PIDController rotController = new PIDController(0.01, 0, 0);
+    ProfiledPIDController rotController = new ProfiledPIDController(0.01, 0, 0, new TrapezoidProfile.Constraints(0.01, 0.01));
     rotController.enableContinuousInput(-180, 180);
 
-    double speed = rotController.calculate(m_odometry.getPoseMeters().getRotation().getDegrees() % 180,
+    cardinalRotationGoal = rotController.calculate(m_odometry.getPoseMeters().getRotation().getDegrees() % 180,
                                           goal % 180);
     
-    drive(xSpeed, ySpeed, -speed, true);
-  }*/
+    drive(xSpeed, ySpeed, cardinalRotationGoal, true);
+  }
 
-  /*
+  
   public void slowMode(double xSpeed, double ySpeed, double rot){
     drive(xSpeed * DriveConstants.kSlowMode, 
           ySpeed * DriveConstants.kSlowMode, 
           rot * DriveConstants.kSlowMode, 
           true);
-  }*/
+  }
 
 }

@@ -29,7 +29,6 @@ import frc.robot.Constants.VisionConstants;
 public class VisionSubsystem extends SubsystemBase{
     
     private static VisionSubsystem instance;
-    private final DrivetrainSubsystem drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private AprilTagFieldLayout fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
     PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");    

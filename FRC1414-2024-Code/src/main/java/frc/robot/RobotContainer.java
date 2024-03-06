@@ -25,8 +25,9 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AimToTarget;
 import frc.robot.commands.Drive;
 import frc.robot.commands.Lock;
-import frc.robot.commands.LockToDirection;
+import frc.robot.commands.AimToTarget;
 import frc.robot.commands.SlowMode;
+import frc.robot.commands.LockToDirection;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.utils.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -107,28 +108,31 @@ public class RobotContainer {
     
     //Aim while moving
     new JoystickButton(m_driverController, Button.kR1.value)
-                      .whileTrue(new RunCommand( () -> new AimToTarget(
+                      .whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(
                         MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                         MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband)
                         )));
 
     //Slow mode while moving
     new JoystickButton(m_driverController, Button.kL1.value).whileTrue(
-                      new RunCommand(() -> new SlowMode(
+                      new RunCommand(() -> m_robotDrive.slowMode(
                         MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                         MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                         -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband))));
                         
     //Cardinal positions
-    new JoystickButton(m_driverController, Button.kCircle.value).whileTrue(new RunCommand( () -> lockToCardinal(90)));
-    new JoystickButton(m_driverController, Button.kTriangle.value).whileTrue(new RunCommand( () -> lockToCardinal(180)));
-    new JoystickButton(m_driverController, Button.kSquare.value).whileTrue(new RunCommand( () -> lockToCardinal(-90)));
-    new JoystickButton(m_driverController, Button.kCross.value).whileTrue(new RunCommand( () -> lockToCardinal(0)));
+    new JoystickButton(m_driverController, Button.kCircle.value).whileTrue(new RunCommand(() -> lockToCardinal(100)));
+    new JoystickButton(m_driverController, Button.kTriangle.value).whileTrue(new RunCommand(() -> lockToCardinal(0)));
+    new JoystickButton(m_driverController, Button.kSquare.value).whileTrue(new RunCommand(() -> lockToCardinal(200)));
+    new JoystickButton(m_driverController, Button.kCross.value).whileTrue(new LockToDirection(
+                                                                          MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                                                                          MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                                                                     0));
 
   }
 
-  private Command lockToCardinal(int goal){
-    return new LockToDirection(
+  private void lockToCardinal(double goal){
+    m_robotDrive.cardinalDirection(
                         MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
                         MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                         goal);
