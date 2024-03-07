@@ -19,8 +19,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
@@ -30,6 +33,7 @@ public class VisionSubsystem extends SubsystemBase{
     
     private static VisionSubsystem instance;
     private AprilTagFieldLayout fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    private double previous = 0;
 
     PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");    
     PhotonVisionHelper backCamera = new PhotonVisionHelper("backCamera");
@@ -46,7 +50,16 @@ public class VisionSubsystem extends SubsystemBase{
                   
     @Override
     public void periodic(){
+      SmartDashboard.putBoolean("rgn", getEstimatedGlobalPose().isPresent());
+      SmartDashboard.putBoolean("detect", frontCamera.targetDetected());
+    }
 
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(/*PhotonPoseEstimator photonPose, PhotonVisionHelper camera*/) {
+      var visionEst = visionEstimatorFront.update();
+      double latest = frontCamera.getCamera().getLatestResult().getTimestampSeconds();
+      boolean newResult = Math.abs(latest - previous) > 1e-5;
+      if (newResult) previous = latest;
+      return visionEst;
     }
 
     public PhotonPoseEstimator getVisionPoseEstimatorFront(){

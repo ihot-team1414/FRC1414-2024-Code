@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
-import frc.utils.Limelight;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -22,9 +21,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PS5Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 
@@ -77,6 +76,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
       DriveConstants.kBackRightChassisAngularOffset);
 
 
+/*
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
@@ -87,6 +87,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
       });
+
+  */
 
   /** Creates a new DriveSubsystem. */
   public DrivetrainSubsystem() {
@@ -167,8 +169,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Distance", distanceFromTarget());
     SmartDashboard.putNumber("Height", visionSubsystem.getFrontCamera().getHeightFromID());
-    SmartDashboard.putNumber("Field", field.getRobotPose().getX());
+    SmartDashboard.putNumber("x pose", poseEstimator.getEstimatedPosition().getX());
 
+    poseEstimator.update(m_gyro.getRotation2d(), new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        });
+
+    /*
     // Update the odometry in the periodic block
     m_odometry.update(
         Rotation2d.fromDegrees(-m_gyro.getAngle()),
@@ -177,16 +187,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_frontRight.getPosition(),
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
-        });
-
-    visionSubsystem.getVisionPoseEstimatorFront().update().ifPresent(estimatedRobotPose -> {
-      poseEstimator.addVisionMeasurement(
-        estimatedRobotPose.estimatedPose.toPose2d(),
-        estimatedRobotPose.timestampSeconds
-      );
-    });
-
-    field.setRobotPose(poseEstimator.getEstimatedPosition());
+        });*/
   }
 
   /**
@@ -195,7 +196,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return poseEstimator.getEstimatedPosition();
   }
 
   /**
@@ -204,7 +205,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    m_odometry.resetPosition(
+    poseEstimator.resetPosition(
         Rotation2d.fromDegrees(-m_gyro.getAngle()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
@@ -317,7 +318,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public SwerveDrivePoseEstimator getPoseEstimator(){
     return poseEstimator;
   }
-
   
   public void aimToTarget(double xSpeed, double ySpeed){
 
@@ -341,7 +341,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     drive(xSpeed, ySpeed, rotationVal, true);
 
   }
-
   
   public void slowMode(double xSpeed, double ySpeed, double rot){
     drive(xSpeed * DriveConstants.kSlowMode, 
