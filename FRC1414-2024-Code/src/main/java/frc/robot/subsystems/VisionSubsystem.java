@@ -14,11 +14,14 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,7 +35,8 @@ import frc.robot.Constants.VisionConstants;
 public class VisionSubsystem extends SubsystemBase{
     
     private static VisionSubsystem instance;
-    private AprilTagFieldLayout fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    private AprilTagFieldLayout fieldLayout;
+    private Optional<Alliance> allianceColor;
     private double previous = 0;
 
     PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");    
@@ -40,6 +44,15 @@ public class VisionSubsystem extends SubsystemBase{
     PhotonPoseEstimator visionEstimatorFront;
 
     private VisionSubsystem(){
+
+      fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+      allianceColor = DriverStation.getAlliance();
+      
+      if(allianceColor.isPresent()){ 
+        if(allianceColor.get().equals(Alliance.Red)){ fieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide); }
+        else{ fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide); }}
+
+
       visionEstimatorFront = new PhotonPoseEstimator(fieldLayout, 
                                                     PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                                                     frontCamera.getCamera(),
@@ -52,6 +65,7 @@ public class VisionSubsystem extends SubsystemBase{
     public void periodic(){
       SmartDashboard.putBoolean("rgn", getEstimatedGlobalPose().isPresent());
       SmartDashboard.putBoolean("detect", frontCamera.targetDetected());
+      SmartDashboard.putNumber("previous", previous);
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(/*PhotonPoseEstimator photonPose, PhotonVisionHelper camera*/) {

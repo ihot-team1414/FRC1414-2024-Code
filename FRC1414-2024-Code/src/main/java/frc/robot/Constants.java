@@ -150,10 +150,10 @@ public final class Constants {
     public static final double kFrontCameraPitch = Math.toRadians(40);
     public static final Transform3d kFrontCameraToRobot = new Transform3d(
       new Translation3d(
-        Units.inchesToMeters(14.75), 
         Units.inchesToMeters(14.5), 
-        Units.inchesToMeters(4)),
-      new Rotation3d(0, 40, 0));
+        Units.inchesToMeters(1), 
+        Units.inchesToMeters(2)),
+      new Rotation3d(-5, 40, 0));
 
     public static final double kStageHeight = 1.32; // IDS: 11 - 16
     public static final double kAmpHeight = 1.36; // IDS: 1, 2, 5, 6, 9, 10

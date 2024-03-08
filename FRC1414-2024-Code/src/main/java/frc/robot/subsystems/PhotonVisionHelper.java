@@ -6,8 +6,6 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,13 +15,11 @@ public class PhotonVisionHelper extends SubsystemBase {
     
     private PhotonCamera camera;
     private PhotonPipelineResult result;
-    private AprilTagFieldLayout fieldLayout;
 
     private Optional<Alliance> allianceColor;
 
     public PhotonVisionHelper(String networkTable){
 
-        fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
         camera = new PhotonCamera(networkTable);
         allianceColor = DriverStation.getAlliance();
         
@@ -53,7 +49,7 @@ public class PhotonVisionHelper extends SubsystemBase {
 
     public boolean targetAppropiate(){
 
-        if(targetDetected()){
+        if(targetDetected() && allianceColor.isPresent()){
             int id = result.getBestTarget().getFiducialId();
             if(allianceColor.get().equals(Alliance.Red) && VisionConstants.kRedSpeakerID.contains(id) || 
                 allianceColor.get().equals(Alliance.Blue) && VisionConstants.kBlueSpeakerID.contains(id)){
