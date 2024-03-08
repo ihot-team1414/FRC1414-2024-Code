@@ -59,7 +59,7 @@ public class VisionSubsystem extends SubsystemBase{
 
 
       visionEstimatorFront = new PhotonPoseEstimator(fieldLayout, 
-                                                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                                                    PoseStrategy.LOWEST_AMBIGUITY,
                                                     frontCamera.getCamera(),
                                                     VisionConstants.kFrontCameraToRobot);
 

@@ -127,8 +127,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                             Rotation2d.fromDegrees(-m_gyro.getAngle()), 
                             getSwerveModulePositions(), 
                             new Pose2d(), /* vs getPose()? */
-                            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // Tune | State estimation deviation
-                            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // Tune | Vision estimation deviation
+                            VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(5)), // Tune | State estimation deviation
+                            VecBuilder.fill(0.75, 0.75, Units.degreesToRadians(130))); // Tune | Vision estimation deviation
 
     visionSubsystem = VisionSubsystem.getInstance();
     field = new Field2d();
