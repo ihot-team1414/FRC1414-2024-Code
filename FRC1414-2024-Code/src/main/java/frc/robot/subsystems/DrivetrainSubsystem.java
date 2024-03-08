@@ -40,6 +40,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private Field2d field;
   private PIDController rotController;
   private final SwerveDrivePoseEstimator poseEstimator;
+  private double x = 0;
   
   // The gyro sensor
   private final AHRS m_gyro = new AHRS();
@@ -126,8 +127,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                             Rotation2d.fromDegrees(-m_gyro.getAngle()), 
                             getSwerveModulePositions(), 
                             new Pose2d(), /* vs getPose()? */
-                            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(30)), // Tune | State estimation deviation
-                            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(30))); // Tune | Vision estimation deviation
+                            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // Tune | State estimation deviation
+                            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // Tune | Vision estimation deviation
 
     visionSubsystem = VisionSubsystem.getInstance();
     field = new Field2d();
@@ -174,9 +175,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Height", visionSubsystem.getFrontCamera().getHeightFromID());
     SmartDashboard.putNumber("x pose", poseEstimator.getEstimatedPosition().getX());
     SmartDashboard.putNumber("y pose", poseEstimator.getEstimatedPosition().getY());
+    SmartDashboard.putNumber("x rot", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
+    SmartDashboard.putNumber("x", x);
     SmartDashboard.putData("Field", field);
 
     poseEstimator.update(Rotation2d.fromDegrees(-m_gyro.getAngle()), getSwerveModulePositions());
+
+    var visionEst = visionSubsystem.getEstimatedGlobalPose(/*visionSubsystem.getPoseEstimator(), visionSubsystem.getFrontCamera()*/);
+    visionEst.ifPresent(
+        est -> {
+          var estPose = est.estimatedPose.toPose2d();
+          // Change our trust in the measurement based on the tags we can see
+          var estStdDevs = visionSubsystem.getEstimationStdDevs(estPose);
+          x = est.estimatedPose.toPose2d().getX();
+          poseEstimator.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds);
+        }
+
+    );
 
     field.setRobotPose(getPose());
 
@@ -292,6 +307,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.zeroYaw();
+  }
+
+  public double getYaw(){
+    return m_gyro.getYaw();
   }
 
   /**

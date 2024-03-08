@@ -153,7 +153,7 @@ public final class Constants {
         Units.inchesToMeters(14.5), 
         Units.inchesToMeters(1), 
         Units.inchesToMeters(2)),
-      new Rotation3d(-5, 40, 0));
+      new Rotation3d(0, 40, 0));
 
     public static final double kStageHeight = 1.32; // IDS: 11 - 16
     public static final double kAmpHeight = 1.36; // IDS: 1, 2, 5, 6, 9, 10
