@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -69,7 +70,7 @@ public final class Constants {
 
     public static final boolean kGyroReversed = false;
 
-    public static final double kYawThreshold = 1.0; // for aimToTarget rotation
+    public static final double kYawThreshold = 1.5; // for aimToTarget rotation
     public static final double kSlowMode = 0.1;
   }
 
@@ -153,14 +154,14 @@ public final class Constants {
         Units.inchesToMeters(-14.5), 
         Units.inchesToMeters(1), 
         Units.inchesToMeters(2)),
-      new Rotation3d(5, 40.6, 90));
+      new Rotation3d(Units.degreesToRadians(5), Units.degreesToRadians(7.5), Units.degreesToRadians(0)));
 
     public static final double kStageHeight = 1.32; // IDS: 11 - 16
     public static final double kAmpHeight = 1.36; // IDS: 1, 2, 5, 6, 9, 10
     public static final double kSpeakerHeight = 1.45; // IDS: 3, 4, 7, 8
 
-    public static final ArrayList<Integer> kRedSpeakerID = new ArrayList<Integer>(){{add(3); add(4); }};
-    public static final ArrayList<Integer> kBlueSpeakerID = new ArrayList<Integer>(){{add(7); add(8); }};
+    public static final ArrayList<Integer> kRedSpeakerID = new ArrayList<Integer>(){{add(3);}};
+    public static final ArrayList<Integer> kBlueSpeakerID = new ArrayList<Integer>(){{add(7); }};
 
   }
 

@@ -340,7 +340,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     if(visionSubsystem.getFrontCamera().targetDetected() && visionSubsystem.getFrontCamera().targetAppropiate()){
       double yaw = visionSubsystem.getFrontCamera().getYaw();
       if(!(yaw < 0 && yaw > -DriveConstants.kYawThreshold || yaw > 0 && yaw < DriveConstants.kYawThreshold)){
-        drive(xSpeed, ySpeed, new ProfiledPIDController(0.01, 0, 0, new TrapezoidProfile.Constraints(0.05, 0.05))
+        drive(xSpeed, ySpeed, new ProfiledPIDController(0.015, 0, 0, new TrapezoidProfile.Constraints(1, 1))
                                               .calculate(yaw, 
                                               0), 
                                               true);

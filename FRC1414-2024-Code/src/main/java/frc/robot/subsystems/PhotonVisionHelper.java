@@ -85,7 +85,7 @@ public class PhotonVisionHelper extends SubsystemBase {
     
     @Override
     public void periodic(){
-
+        result = camera.getLatestResult();
     }
 
 }
