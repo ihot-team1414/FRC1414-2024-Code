@@ -176,8 +176,8 @@ public final class Constants {
     public static final boolean kIntakeMotorInverted = false;
     public static final int kIntakeMotorCurrentLimit = 40;
     public static double kIntakeSpeed = 1;
-    public static int kIntakeSensorPort = 0;
-    public static double kIndexThreshold = 8;
+    public static int kIntakeSensorPort = 50;
+    public static double kIndexThreshold = 45;
   }
 
   public static final class ShooterConstants {

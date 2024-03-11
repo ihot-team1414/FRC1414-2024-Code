@@ -28,12 +28,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.IntakeConstants;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.playingwithfusion.TimeOfFlight;
+import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -42,7 +45,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private Field2d field;
   private PIDController rotController;
   private final SwerveDrivePoseEstimator poseEstimator;
+  private final TimeOfFlight intakeSensor;
+  private double angle;
   private double x = 0;
+  private double vectordistance = 0;
   
   // The gyro sensor
   private final AHRS m_gyro = new AHRS();
@@ -134,7 +140,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     visionSubsystem = VisionSubsystem.getInstance();
     field = new Field2d();
+    intakeSensor = new TimeOfFlight(50);
+    intakeSensor.setRangingMode(RangingMode.Short, 24);
 
+
+  }
+
+  public boolean isLoaded(){
+        double distance = intakeSensor.getRange();
+        return intakeSensor.isRangeValid() ? distance < IntakeConstants.kIndexThreshold : false;
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds(){
@@ -180,6 +194,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("x rot", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
     SmartDashboard.putNumber("x", x);
     SmartDashboard.putData("Field", field);
+    SmartDashboard.putBoolean("Filled", isLoaded());
+    SmartDashboard.putNumber("Sensor", intakeSensor.getRange());
+    SmartDashboard.putNumber("Angle", angle);
+    SmartDashboard.putNumber("Vector Distance", vectordistance);
 
     poseEstimator.update(Rotation2d.fromDegrees(-m_gyro.getAngle()), getSwerveModulePositions());
 
@@ -358,10 +376,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
     Vector<N2> robotVector = translationToVector(getPose().getTranslation());
     Vector<N2> goalVector = translationToVector(target);
 
+    //Vector from goal to robot
+    goalVector = goalVector.minus(robotVector);
+    vectordistance = goalVector.norm();
+
+    //Unit vector in the direction of the robot
+
     //Get the angle of the two vectors with the dot product
     double dotProduct = robotVector.dot(goalVector);
     double magnitude = robotVector.norm() * goalVector.norm();
-    double angle = Math.acos(dotProduct / magnitude);
+    angle = Math.acos(dotProduct / magnitude);
+    angle = Units.radiansToDegrees(angle);
     
     rotController.setSetpoint(angle);
     double rotationVal = rotController.calculate(-(MathUtil.inputModulus(m_gyro.getYaw(), -180, 180)), rotController.getSetpoint());

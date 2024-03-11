@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
@@ -19,10 +21,12 @@ import frc.utils.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -40,8 +44,8 @@ public class RobotContainer {
   // The driver's controller
   PS5Controller m_driverController = new PS5Controller(OIConstants.kDriverControllerPort);
   PathConstraints constraints;
-  PathPlannerPath simple;
-  PathPlannerPath wing1;
+  Pose2d simpleStart;
+  //PathPlannerPath wing1;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -55,16 +59,16 @@ public class RobotContainer {
     // AUTO CHOOSER
     NamedCommands.registerCommand("Lock", new RunCommand(() -> m_robotDrive.setX()));
     
-    simple = PathPlannerPath.fromPathFile("Simple");
-    wing1 = PathPlannerPath.fromPathFile("Wing1");
+    simpleStart = new Pose2d(2, 7, Rotation2d.fromDegrees(180));
+    //wing1 = PathPlannerPath.fromPathFile("Wing1");
 
     constraints = new PathConstraints(
       3.0, 4.0, 
       Units.degreesToRadians(540), 
       Units.degreesToRadians(720));
 
-    chooser.setDefaultOption("Simple", findPath(simple));
-    chooser.addOption("Wing 1", findPath(wing1));
+    chooser.setDefaultOption("Simple", findPoseToAuto(simpleStart, "Simple"));
+    //chooser.addOption("Wing 1", findPath(wing1));
     
 
     SmartDashboard.putData("Auto Chooser", this.chooser);
@@ -121,7 +125,7 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kSquare.value).whileTrue(new RunCommand(() -> lockToCardinal(-90)));
     new JoystickButton(m_driverController, Button.kCross.value).whileTrue(new RunCommand(() -> lockToCardinal(0)));
 
-    new JoystickButton(m_driverController, Button.kL2.value).whileTrue(new RunCommand(() -> aimWithPose(FieldConstants.getTagTranslation(1))));
+    new JoystickButton(m_driverController, Button.kL2.value).whileTrue(new RunCommand(() -> aimWithPose(FieldConstants.getTagTranslation(7))));
   }
 
   private void lockToCardinal(double goal){
@@ -148,8 +152,8 @@ public class RobotContainer {
     return chooser.getSelected();
   }
 
-  public Command findPath(PathPlannerPath path){
-    return AutoBuilder.pathfindThenFollowPath(path, constraints, 0);
+  public SequentialCommandGroup findPoseToAuto(Pose2d start, String auto){
+    return new SequentialCommandGroup(AutoBuilder.pathfindToPose(start, constraints, 0), new PathPlannerAuto(auto));
 
   }
 
