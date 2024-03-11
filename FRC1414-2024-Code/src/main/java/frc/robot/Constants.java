@@ -209,28 +209,28 @@ public final class Constants {
   public static final class FieldConstants {
     public static final TreeMap<Integer, Translation2d> kRedAprilTagLayout = new TreeMap<Integer, Translation2d>() {
       {
-        put(1, new Translation2d(Units.inchesToMeters(593.68), Units.inchesToMeters(0)));
-        put(2, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(3, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(4, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(5, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(11, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(12, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(13, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(1, new Translation2d(Units.inchesToMeters(593.68), Units.inchesToMeters(9.68)));
+        put(2, new Translation2d(Units.inchesToMeters(637.21), Units.inchesToMeters(34.79)));
+        put(3, new Translation2d(Units.inchesToMeters(652.73), Units.inchesToMeters(196.17)));
+        put(4, new Translation2d(Units.inchesToMeters(652.73), Units.inchesToMeters(218.42)));
+        put(5, new Translation2d(Units.inchesToMeters(578.77), Units.inchesToMeters(323.00)));
+        put(11, new Translation2d(Units.inchesToMeters(468.69), Units.inchesToMeters(146.19)));
+        put(12, new Translation2d(Units.inchesToMeters(468.69), Units.inchesToMeters(177.10)));
+        put(13, new Translation2d(Units.inchesToMeters(441.74), Units.inchesToMeters(161.62)));
       }
      
     };
 
     public static final TreeMap<Integer, Translation2d> kBlueAprilTagLayout = new TreeMap<Integer, Translation2d>() {
       {
-        put(6, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(7, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(8, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(9, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(10, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(14, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(15, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
-        put(16, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(6, new Translation2d(Units.inchesToMeters(72.5), Units.inchesToMeters(323.00)));
+        put(7, new Translation2d(Units.inchesToMeters(-1.50), Units.inchesToMeters(218.42)));
+        put(8, new Translation2d(Units.inchesToMeters(-1.50), Units.inchesToMeters(196.17)));
+        put(9, new Translation2d(Units.inchesToMeters(14.02), Units.inchesToMeters(34.79)));
+        put(10, new Translation2d(Units.inchesToMeters(57.54), Units.inchesToMeters(9.68)));
+        put(14, new Translation2d(Units.inchesToMeters(209.48), Units.inchesToMeters(161.62)));
+        put(15, new Translation2d(Units.inchesToMeters(182.73), Units.inchesToMeters(177.10)));
+        put(16, new Translation2d(Units.inchesToMeters(182.73), Units.inchesToMeters(146.19)));
       }
     };
 
