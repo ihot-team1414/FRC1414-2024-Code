@@ -58,7 +58,12 @@ public class PivotSubsystem extends SubsystemBase {
 
     public double getPivotAngle() {
         double distance = VisionSubsystem.getInstance().getFrontCamera().getDistance();
-        return ShooterData.getInstance().getShooterAngle(distance);
+        position = ShooterData.getInstance().getShooterAngle(distance);
+        return position;
+    }
+
+    public boolean isWithinThreshold(){
+        return Math.abs(pivotMotor1.getPosition().getValueAsDouble() - position) < PivotConstants.kPivotThreshold;
     }
 
     // Angle will be filled by getPivotAngle()
@@ -82,5 +87,6 @@ public class PivotSubsystem extends SubsystemBase {
     public void periodic(){
         SmartDashboard.putNumber("Motor Angle 1", pivotMotor1.getPosition().getValueAsDouble());
         SmartDashboard.putNumber("Motor Angle 2", pivotMotor2.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Commanded Angle", position);
     }
 }
