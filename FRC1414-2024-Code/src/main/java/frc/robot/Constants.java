@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -167,5 +168,32 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+
+  public static final class IntakeConstants {
+    public static final int kIntakeMotor1CanId = 30;
+    public static final int kIntakeMotor2CanId = 31;
+    public static final boolean kIntakeMotorInverted = false;
+    public static final int kIntakeMotorCurrentLimit = 40;
+    public static double kIntakeSpeed = 1;
+    public static int kIntakeSensorPort = 0;
+    public static double kIndexThreshold = 8;
+  }
+
+  public static final class ShooterConstants {
+    public static final int kShooterMotor1CanId = 40;
+    public static final int kShooterMotor2CanId = 41;
+    public static final boolean kShooterMotorInverted = false;
+    public static final int kShooterMotorCurrentLimit = 40;
+
+    //Fill
+    public static final Slot0Configs kShooterConfiguration = null;
+  }
+
+  public static final class PivotConstants {
+    public static final int kPivotMotor1CanId = 50;
+    public static final int kPivotMotor2CanId = 51;
+    public static final double kMaxAngleThreshold = 0;
+    public static final double kMinAngleThreshold = 0;
   }
 }
