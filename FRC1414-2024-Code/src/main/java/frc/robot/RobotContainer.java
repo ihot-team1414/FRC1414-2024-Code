@@ -15,14 +15,21 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
 import edu.wpi.first.wpilibj.PS5Controller;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.AimToTarget;
 import frc.robot.commands.Drive;
 import frc.robot.commands.Lock;
+import frc.robot.commands.AimToTarget;
+import frc.robot.commands.SlowMode;
+import frc.robot.commands.LockToDirection;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.utils.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -31,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
 
+import javax.xml.validation.Validator;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -43,7 +51,8 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DrivetrainSubsystem m_robotDrive = new DrivetrainSubsystem();
+  private final DrivetrainSubsystem m_robotDrive = DrivetrainSubsystem.getInstance();
+  private final Limelight ll = Limelight.getInstance();
 
   // The driver's controller
   PS5Controller m_driverController = new PS5Controller(OIConstants.kDriverControllerPort);
@@ -51,8 +60,18 @@ public class RobotContainer {
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
+
+  // AUTOS
+  private SendableChooser<Command> chooser = new SendableChooser<>();
+
   public RobotContainer() {
 
+    // AUTO CHOOSER
+    SmartDashboard.putData("Auto Chooser", this.chooser);
+    chooser.addOption("Simple", new PathPlannerAuto("Simple"));
+    chooser.addOption("1", new PathPlannerAuto("Wing-1 (Left Amp) to Center Left Auto"));
+    chooser.setDefaultOption("Simple", new PathPlannerAuto("Simple"));
+    
     NamedCommands.registerCommand("Lock", new RunCommand(() -> m_robotDrive.setX()));
 
     // Configure the button bindings
@@ -81,13 +100,39 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driverController, Button.kR1.value)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive));
 
-    new JoystickButton(m_driverController, Button.kL1.value).onTrue(new InstantCommand( () -> m_robotDrive.zeroHeading() ));
-    new JoystickButton(m_driverController, Button.kCircle.value).whileTrue(new PrintCommand("Color " + DriverStation.getAlliance()));
+    //DRIVER CONTROLS
+
+    //Zero the heading
+    new JoystickButton(m_driverController, Button.kOptions.value).onTrue(new InstantCommand( () -> m_robotDrive.zeroHeading() ));
+    
+    //Aim while moving
+    new JoystickButton(m_driverController, Button.kR1.value)
+                      .whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(
+                        MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband)
+                        )));
+
+    //Slow mode while moving
+    new JoystickButton(m_driverController, Button.kL1.value).whileTrue(
+                      new RunCommand(() -> m_robotDrive.slowMode(
+                        MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                        -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband))));
+                        
+    //Cardinal positions
+    new JoystickButton(m_driverController, Button.kCircle.value).whileTrue(new RunCommand(() -> lockToCardinal(90)));
+    new JoystickButton(m_driverController, Button.kTriangle.value).whileTrue(new RunCommand(() -> lockToCardinal(180)));
+    new JoystickButton(m_driverController, Button.kSquare.value).whileTrue(new RunCommand(() -> lockToCardinal(-90)));
+    new JoystickButton(m_driverController, Button.kCross.value).whileTrue(new RunCommand(() -> lockToCardinal(0)));
+
+  }
+
+  private void lockToCardinal(double goal){
+    m_robotDrive.cardinalDirection(
+                        MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                        goal);
   }
 
   /**
@@ -96,7 +141,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new PathPlannerAuto("Simple");
+    return chooser.getSelected();
   }
 
 
