@@ -187,7 +187,14 @@ public final class Constants {
     public static final int kShooterMotorCurrentLimit = 40;
 
     //Fill
-    public static final Slot0Configs kShooterConfiguration = null;
+    public static final Slot0Configs kShooterConfiguration = new Slot0Configs();
+    public static final double kOuttakeVelocity = 0;
+    public static final double kShooterThreshold = 0;
+    static {
+      kShooterConfiguration.kP = 1;
+      kShooterConfiguration.kI = 0;
+      kShooterConfiguration.kD = 0;
+    }
   }
 
   public static final class PivotConstants {
@@ -195,5 +202,6 @@ public final class Constants {
     public static final int kPivotMotor2CanId = 51;
     public static final double kMaxAngleThreshold = 0;
     public static final double kMinAngleThreshold = 0;
+    public static final Slot0Configs kPivotConfiguration = new Slot0Configs();
   }
 }

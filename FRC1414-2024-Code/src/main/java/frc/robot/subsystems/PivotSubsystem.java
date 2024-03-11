@@ -1,6 +1,10 @@
 package frc.robot.subsystems;
 
+import javax.swing.text.Position;
+
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.RelativeEncoder;
@@ -15,6 +19,9 @@ public class PivotSubsystem extends SubsystemBase {
     private final TalonFX pivotMotor1;
     private final TalonFX pivotMotor2;
     private final Follower follower;
+    private final PositionDutyCycle pivotPosition;
+    private final TalonFXConfiguration pivotMotorConfig;
+    private double position;
 
     private static PivotSubsystem instance;
 
@@ -22,14 +29,24 @@ public class PivotSubsystem extends SubsystemBase {
             
         pivotMotor1 = new TalonFX(PivotConstants.kPivotMotor1CanId);
         pivotMotor2 = new TalonFX(PivotConstants.kPivotMotor2CanId);
+        pivotPosition = new PositionDutyCycle(0);
+        position = 0;
 
         pivotMotor1.setNeutralMode(NeutralModeValue.Brake);
         pivotMotor2.setNeutralMode(NeutralModeValue.Brake);
 
+        pivotMotorConfig = new TalonFXConfiguration();
+        pivotMotorConfig.withSlot0(PivotConstants.kPivotConfiguration);
+
+        pivotMotor1.getConfigurator().apply(pivotMotorConfig);
         follower = new Follower(pivotMotor1.getDeviceID(), true);
 
         pivotMotor2.setControl(follower);
-        pivotMotor2.setInverted(true);
+
+        pivotMotor1.getConfigurator().refresh(PivotConstants.kPivotConfiguration);
+
+        //Refresh?
+        //Configure PID, max output, voltage compensation
     }
 
     public static synchronized PivotSubsystem getInstance(){
@@ -54,7 +71,7 @@ public class PivotSubsystem extends SubsystemBase {
             angle = PivotConstants.kMinAngleThreshold;
         }
         //Set motors to angle
-
+        pivotMotor1.setControl(pivotPosition.withPosition(angle));
     }
 
     public void home(){
