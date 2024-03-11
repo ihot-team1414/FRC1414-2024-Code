@@ -25,7 +25,6 @@ public class PhotonVisionHelper extends SubsystemBase {
         
     }
 
-    
     public double getDistance(){
         return Math.abs(PhotonUtils.calculateDistanceToTargetMeters(
                         VisionConstants.kFrontCameraHeight, 

@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -18,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -349,6 +351,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // else { drive(xSpeed, ySpeed, rot, true); } add robot move during lock?
   }
 
+  public void rotateToPose(double xSpeed, double ySpeed, Translation2d target){
+
+    //Get the distance between the robots current pose and the target pose
+
+    Vector<N2> robotVector = translationToVector(getPose().getTranslation());
+    Vector<N2> goalVector = translationToVector(target);
+
+    //Get the angle of the two vectors with the dot product
+    double dotProduct = robotVector.dot(goalVector);
+    double magnitude = robotVector.norm() * goalVector.norm();
+    double angle = Math.acos(dotProduct / magnitude);
+    
+    rotController.setSetpoint(angle);
+    double rotationVal = rotController.calculate(-(MathUtil.inputModulus(m_gyro.getYaw(), -180, 180)), rotController.getSetpoint());
+    drive(xSpeed, ySpeed, rotationVal, true);
+
+  }
   
   public void cardinalDirection(double xSpeed, double ySpeed, double goal){
     
@@ -363,6 +382,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
           ySpeed * DriveConstants.kSlowMode, 
           rot * DriveConstants.kSlowMode, 
           true);
+  }
+
+  public Vector<N2> translationToVector(Translation2d translation){
+    return VecBuilder.fill(translation.getX(), translation.getY());
   }
 
 }

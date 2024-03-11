@@ -5,11 +5,11 @@
 package frc.robot;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.revrobotics.CANSparkBase.IdleMode;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -203,5 +203,55 @@ public final class Constants {
     public static final double kMaxAngleThreshold = 0;
     public static final double kMinAngleThreshold = 0;
     public static final Slot0Configs kPivotConfiguration = new Slot0Configs();
+    public static double kPivotThreshold;
+  }
+
+  public static final class FieldConstants {
+    public static final TreeMap<Integer, Translation2d> kRedAprilTagLayout = new TreeMap<Integer, Translation2d>() {
+      {
+        put(1, new Translation2d(Units.inchesToMeters(593.68), Units.inchesToMeters(0)));
+        put(2, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(3, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(4, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(5, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(11, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(12, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(13, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+      }
+     
+    };
+
+    public static final TreeMap<Integer, Translation2d> kBlueAprilTagLayout = new TreeMap<Integer, Translation2d>() {
+      {
+        put(6, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(7, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(8, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(9, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(10, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(14, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(15, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+        put(16, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)));
+      }
+    };
+
+      private static Translation2d getRedTagTranslation(int id) {
+        return kRedAprilTagLayout.get(id);
+      }
+
+      private static Translation2d getBlueTagTranslation(int id) {
+        return kBlueAprilTagLayout.get(id);
+      }
+
+      public static Translation2d getTagTranslation(int id) {
+        if(kRedAprilTagLayout.containsKey(id)){
+          return getRedTagTranslation(id);
+        }
+        else if(kBlueAprilTagLayout.containsKey(id)){
+          return getBlueTagTranslation(id);
+        }
+        else{
+          return null;
+        }
+      }
   }
 }
