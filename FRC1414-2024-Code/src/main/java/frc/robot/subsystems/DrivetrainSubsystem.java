@@ -370,7 +370,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public void rotateToPose(double xSpeed, double ySpeed, Translation2d target){
-
+    
+    /*
     //Get the distance between the robots current pose and the target pose
 
     Vector<N2> robotVector = translationToVector(getPose().getTranslation());
@@ -380,13 +381,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
     goalVector = goalVector.minus(robotVector);
     vectordistance = goalVector.norm();
 
-    //Unit vector in the direction of the robot
+    //Convert the rotation of the robot into a slope
+    double slope = Math.tan(Math.toRadians(poseEstimator.getEstimatedPosition().getRotation().getDegrees()));
+    
+    //normal to the slope
+    slope = -1 / slope;
+
+    //Get the y-intercept using the current robot position
+    double yIntercept = robotVector.get(0, 1) - slope * robotVector.get(0, 0);
 
     //Get the angle of the two vectors with the dot product
     double dotProduct = robotVector.dot(goalVector);
     double magnitude = robotVector.norm() * goalVector.norm();
     angle = Math.acos(dotProduct / magnitude);
-    angle = Units.radiansToDegrees(angle);
+    angle = Units.radiansToDegrees(angle); */
+
+    //Get distance between robot x and target x
+    double robotToTargetX = Math.abs(getPose().getX() - target.getX());   
+    double robotToTargetY = Math.abs(getPose().getY() - target.getY());
+    angle = Math.toDegrees(Math.atan(robotToTargetY / robotToTargetX));
     
     rotController.setSetpoint(angle);
     double rotationVal = rotController.calculate(-(MathUtil.inputModulus(m_gyro.getYaw(), -180, 180)), rotController.getSetpoint());
