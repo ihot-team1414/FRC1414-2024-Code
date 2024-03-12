@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -44,6 +45,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private VisionSubsystem visionSubsystem;
   private Field2d field;
   private PIDController rotController;
+  private PIDController translateXController;
+  private PIDController translateYController;
   private final SwerveDrivePoseEstimator poseEstimator;
   private final TimeOfFlight intakeSensor;
   private double angle;
@@ -129,6 +132,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     );
 
     rotController = new PIDController(0.01, 0, 0);
+    translateXController = new PIDController(1, 0, 0);
+    translateYController = new PIDController(1, 0, 0);
     rotController.enableContinuousInput(-180, 180);
 
     poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
@@ -355,9 +360,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     return poseEstimator;
   }
   
-  public void aimToTarget(double xSpeed, double ySpeed){
+  public void aimToTarget(double xSpeed, double ySpeed, int id){
 
-    if(visionSubsystem.getFrontCamera().targetDetected() && visionSubsystem.getFrontCamera().targetAppropiate()){
+    if(visionSubsystem.getFrontCamera().targetDetected() && visionSubsystem.getFrontCamera().targetAppropiate(id)){
       double yaw = visionSubsystem.getFrontCamera().getYaw();
       if(!(yaw < 0 && yaw > -DriveConstants.kYawThreshold || yaw > 0 && yaw < DriveConstants.kYawThreshold)){
         drive(xSpeed, ySpeed, new ProfiledPIDController(0.015, 0, 0, new TrapezoidProfile.Constraints(1, 1))
@@ -366,10 +371,26 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                               true);
       }
     }
+
+    else {
+      rotateToPose(xSpeed, ySpeed, id);
+    }
     // else { drive(xSpeed, ySpeed, rot, true); } add robot move during lock?
   }
 
-  public void rotateToPose(double xSpeed, double ySpeed, Translation2d target){
+  public void driveToPose(Pose2d target){
+
+    translateXController.setSetpoint(target.getX());
+    translateYController.setSetpoint(target.getY());
+    rotController.setSetpoint(target.getRotation().getDegrees());
+    
+    double rotationVal = rotController.calculate(-(MathUtil.inputModulus(m_gyro.getYaw(), -180, 180)), rotController.getSetpoint());
+    double translateX = translateXController.calculate(poseEstimator.getEstimatedPosition().getX(), translateXController.getSetpoint());
+    double translateY = translateYController.calculate(poseEstimator.getEstimatedPosition().getY(), translateYController.getSetpoint());
+    drive(translateX, translateY, rotationVal, true);
+  }
+
+  public void rotateToPose(double xSpeed, double ySpeed, int id){
     
     /*
     //Get the distance between the robots current pose and the target pose
@@ -397,9 +418,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
     angle = Units.radiansToDegrees(angle); */
 
     //Get distance between robot x and target x
-    double robotToTargetX = Math.abs(getPose().getX() - target.getX());   
-    double robotToTargetY = Math.abs(getPose().getY() - target.getY());
-    angle = Math.toDegrees(Math.atan(robotToTargetY / robotToTargetX));
+
+    //Get the vector distance between the tag and the robot
+    //When close enough, switch to cardinal
+
+    Translation2d target = FieldConstants.getTagTranslation(id);
+    double robotToTargetX = getPose().getX() - target.getX();   
+    double robotToTargetY = getPose().getY() - target.getY();
+    double additive = 0;
+    if(robotToTargetX < 0) { additive = 180; } else { additive = 0; }
+    angle = Math.toDegrees(Math.atan(robotToTargetY / robotToTargetX)) + additive;
     
     rotController.setSetpoint(angle);
     double rotationVal = rotController.calculate(-(MathUtil.inputModulus(m_gyro.getYaw(), -180, 180)), rotController.getSetpoint());

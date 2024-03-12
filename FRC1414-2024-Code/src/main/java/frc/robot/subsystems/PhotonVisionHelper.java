@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
@@ -57,6 +58,15 @@ public class PhotonVisionHelper extends SubsystemBase {
         }
         return false;
 
+    }
+
+        public boolean targetAppropiate(int id){
+
+        if(targetDetected() && allianceColor.isPresent()){
+            if(id == result.getBestTarget().getFiducialId());
+                return true;
+            }
+        return false;
     }
 
     public boolean targetDetected(){

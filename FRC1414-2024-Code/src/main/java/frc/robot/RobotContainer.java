@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.PS5Controller.Button;
 import edu.wpi.first.wpilibj.PS5Controller;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.utils.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -109,8 +110,8 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kR1.value)
                       .whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(
                         MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband)
-                        )));
+                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                        7)));
 
     //Slow mode while moving
     new JoystickButton(m_driverController, Button.kL1.value).whileTrue(
@@ -125,7 +126,8 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kSquare.value).whileTrue(new RunCommand(() -> lockToCardinal(-90)));
     new JoystickButton(m_driverController, Button.kCross.value).whileTrue(new RunCommand(() -> lockToCardinal(0)));
 
-    new JoystickButton(m_driverController, Button.kL2.value).whileTrue(new RunCommand(() -> aimWithPose(FieldConstants.getTagTranslation(7))));
+    new JoystickButton(m_driverController, Button.kL2.value).whileTrue(new RunCommand(() -> aimWithPose(6)));
+    new JoystickButton(m_driverController, Button.kR2.value).whileTrue(new RunCommand(() -> m_robotDrive.driveToPose(new Pose2d(new Translation2d(2, 7), new Rotation2d(180)))));
   }
 
   private void lockToCardinal(double goal){
@@ -135,11 +137,11 @@ public class RobotContainer {
                         goal);
   }
 
-  private void aimWithPose(Translation2d pose){
+  private void aimWithPose(int id){
     m_robotDrive.rotateToPose(
       MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
       MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-      pose
+      id
     );
   }
 
