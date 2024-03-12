@@ -44,6 +44,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private double poseAngle;
   private double vectorDistance;
   private final AHRS m_gyro = new AHRS();
+  private int[] cardinalAngles;
   
   // Rotation of chassis
   private double m_currentRotation;
@@ -122,6 +123,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     field = new Field2d();
     m_currentRotation = 0;
     vectorDistance = 0;
+    cardinalAngles = new int[]{0, 90, -90};
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds(){
@@ -337,13 +339,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   //Distance between the robot and a specific tag from the pose
-  public void poseToTagDistance(int id){
+  public double poseToTagDistance(int id){
     Vector<N2> robotVector = translationToVector(getPose().getTranslation());
     Vector<N2> goalVector = translationToVector(FieldConstants.getTagTranslation(id));
 
     //Vector from goal to robot
     goalVector = goalVector.minus(robotVector);
     vectorDistance = goalVector.norm();
+    return vectorDistance;
   }
 
   //Rotate to a specific pose from current pose
@@ -358,8 +361,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
     
     rotController.setSetpoint(poseAngle);
     double rotationVal = rotController.calculate(-(MathUtil.inputModulus(m_gyro.getYaw(), -180, 180)), rotController.getSetpoint());
-    drive(xSpeed, ySpeed, rotationVal, true);
-
+    
+    if(poseToTagDistance(id) < 0.1){
+      if(id == FieldConstants.kRedSpeakerID || id == FieldConstants.kBlueSpeakerID){ 
+        cardinalDirection(xSpeed, ySpeed, cardinalAngles[0]);
+      } else if(FieldConstants.isRedTag(id)){
+        cardinalDirection(xSpeed, ySpeed, cardinalAngles[1]);
+      } else {
+        cardinalDirection(xSpeed, ySpeed, cardinalAngles[2]);
+      }
+    }
+    else{ drive(xSpeed, ySpeed, rotationVal, true); }
   }
   
   //Lock the robot to field-oriented N-E-S-W
