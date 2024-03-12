@@ -156,14 +156,6 @@ public final class Constants {
         Units.inchesToMeters(1), 
         Units.inchesToMeters(2)),
       new Rotation3d(Units.degreesToRadians(5), Units.degreesToRadians(7.5), Units.degreesToRadians(0)));
-
-    public static final double kStageHeight = 1.32; // IDS: 11 - 16
-    public static final double kAmpHeight = 1.36; // IDS: 1, 2, 5, 6, 9, 10
-    public static final double kSpeakerHeight = 1.45; // IDS: 3, 4, 7, 8
-
-    public static final ArrayList<Integer> kRedSpeakerID = new ArrayList<Integer>(){{add(3);}};
-    public static final ArrayList<Integer> kBlueSpeakerID = new ArrayList<Integer>(){{add(7); }};
-
   }
 
   public static final class NeoMotorConstants {
@@ -203,7 +195,7 @@ public final class Constants {
     public static final double kMaxAngleThreshold = 0;
     public static final double kMinAngleThreshold = 0;
     public static final Slot0Configs kPivotConfiguration = new Slot0Configs();
-    public static double kPivotThreshold;
+    public static double kPivotThreshold = 1;
   }
 
   public static final class FieldConstants {
@@ -233,6 +225,19 @@ public final class Constants {
         put(16, new Translation2d(Units.inchesToMeters(182.73), Units.inchesToMeters(146.19)));
       }
     };
+
+    public static final double originToWing = Units.inchesToMeters(229.19);
+    public static final double kBlueWingX = originToWing;
+    public static final double kRedWingX = 16.48 - originToWing;
+
+    public static final double kStageHeight = 1.32; // IDS: 11 - 16
+    public static final double kAmpHeight = 1.36; // IDS: 1, 2, 5, 6, 9, 10
+    public static final double kSpeakerHeight = 1.45; // IDS: 3, 4, 7, 8
+
+    public static final int kRedSpeakerID = 3;
+    public static final int kBlueSpeakerID = 7;
+    public static final int kRedAmpID = 5;
+    public static final int kBlueAmpID = 6;
 
       private static Translation2d getRedTagTranslation(int id) {
         return kRedAprilTagLayout.get(id);
