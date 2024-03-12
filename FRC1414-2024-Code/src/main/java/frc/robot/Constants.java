@@ -239,6 +239,10 @@ public final class Constants {
     public static final int kRedAmpID = 5;
     public static final int kBlueAmpID = 6;
 
+      public static boolean isRedTag(int id) {
+        return kRedAprilTagLayout.containsKey(id);
+      }
+
       private static Translation2d getRedTagTranslation(int id) {
         return kRedAprilTagLayout.get(id);
       }
