@@ -1,31 +1,27 @@
 package frc.robot.subsystems;
 
 import java.util.Optional;
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.VisionConstants;
 
 public class PhotonVisionHelper extends SubsystemBase {
     
     private PhotonCamera camera;
     private PhotonPipelineResult result;
-
     private Optional<Alliance> allianceColor;
 
     public PhotonVisionHelper(String networkTable){
-
         camera = new PhotonCamera(networkTable);
         allianceColor = DriverStation.getAlliance();
         
     }
 
-    
     public double getDistance(){
         return Math.abs(PhotonUtils.calculateDistanceToTargetMeters(
                         VisionConstants.kFrontCameraHeight, 
@@ -35,29 +31,34 @@ public class PhotonVisionHelper extends SubsystemBase {
     }
 
     public double getHeightFromID(){
-        
         if(targetDetected()){
-        
             int id = result.getBestTarget().getFiducialId();
-            if(id >= 11) { return VisionConstants.kStageHeight; }
-            else if (id == 3 || id == 4 || id == 7 || id == 8) { return VisionConstants.kSpeakerHeight; }
-            else { return VisionConstants.kAmpHeight; } 
+            if(id >= 11) { return FieldConstants.kStageHeight; }
+            else if (id == 3 || id == 4 || id == 7 || id == 8) { return FieldConstants.kSpeakerHeight; }
+            else { return FieldConstants.kAmpHeight; } 
         }
         return 0.0;
-    
     }
 
+    /*
     public boolean targetAppropiate(){
-
         if(targetDetected() && allianceColor.isPresent()){
             int id = result.getBestTarget().getFiducialId();
-            if(allianceColor.get().equals(Alliance.Red) && VisionConstants.kRedSpeakerID.contains(id) || 
-                allianceColor.get().equals(Alliance.Blue) && VisionConstants.kBlueSpeakerID.contains(id)){
+            if(allianceColor.get().equals(Alliance.Red) && VisionConstants.kRedSpeakerID == id || 
+                allianceColor.get().equals(Alliance.Blue) && VisionConstants.kBlueSpeakerID == id){
                 return true;
             }
         }
         return false;
+    }*/
 
+    public boolean targetAppropiate(int id){
+
+    if(targetDetected() && allianceColor.isPresent()){
+        if(id == result.getBestTarget().getFiducialId());
+            return true;
+        }
+    return false;
     }
 
     public boolean targetDetected(){

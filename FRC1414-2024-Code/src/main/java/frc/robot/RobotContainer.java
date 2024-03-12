@@ -5,43 +5,33 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS5Controller;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.AimToTarget;
-import frc.robot.commands.Drive;
-import frc.robot.commands.Lock;
-import frc.robot.commands.AimToTarget;
-import frc.robot.commands.SlowMode;
-import frc.robot.commands.LockToDirection;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.utils.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import java.util.List;
 
-import javax.xml.validation.Validator;
-
-import com.pathplanner.lib.auto.NamedCommands;
+import java.lang.reflect.Field;
+import java.util.Optional;
+import java.util.TreeMap;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -50,29 +40,36 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems
+  
   private final DrivetrainSubsystem m_robotDrive = DrivetrainSubsystem.getInstance();
-  private final Limelight ll = Limelight.getInstance();
-
-  // The driver's controller
-  PS5Controller m_driverController = new PS5Controller(OIConstants.kDriverControllerPort);
+  private final PS5Controller m_driverController = new PS5Controller(OIConstants.kDriverControllerPort);
+  private final Optional<Alliance> ds = DriverStation.getAlliance();
+  private TreeMap<String, Pose2d> autoPoses = new TreeMap<>();
+  private int[] targetID;
+  private PathConstraints constraints;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
 
-  // AUTOS
+  // AUTO CHOOSER
   private SendableChooser<Command> chooser = new SendableChooser<>();
 
   public RobotContainer() {
-
-    // AUTO CHOOSER
-    SmartDashboard.putData("Auto Chooser", this.chooser);
-    chooser.addOption("Simple", new PathPlannerAuto("Simple"));
-    chooser.addOption("1", new PathPlannerAuto("Wing-1 (Left Amp) to Center Left Auto"));
-    chooser.setDefaultOption("Simple", new PathPlannerAuto("Simple"));
     
-    NamedCommands.registerCommand("Lock", new RunCommand(() -> m_robotDrive.setX()));
+    if(ds.isPresent()){ 
+      targetID[0] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedSpeakerID : FieldConstants.kBlueSpeakerID;
+      targetID[1] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedAmpID : FieldConstants.kBlueAmpID;
+    }
+    
+    autoPoses.put("Simple", new Pose2d(2, 7, Rotation2d.fromDegrees(180)));
+    constraints = new PathConstraints(
+      3.0, 4.0, 
+      Units.degreesToRadians(540), 
+      Units.degreesToRadians(720));
+
+    chooser.setDefaultOption("Simple", findPoseToAuto("Simple"));
+    SmartDashboard.putData("Auto Chooser", this.chooser);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -83,9 +80,9 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> m_robotDrive.drive(
-                MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                getDriverLeftY(),
+                getDriverLeftX(),
+                getDriverRightX(),
                 true),
             m_robotDrive));
   }
@@ -109,29 +106,30 @@ public class RobotContainer {
     //Aim while moving
     new JoystickButton(m_driverController, Button.kR1.value)
                       .whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(
-                        MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband)
-                        )));
+                        getDriverLeftY(),
+                        getDriverLeftX(),
+                        targetID[0])));
 
     //Slow mode while moving
     new JoystickButton(m_driverController, Button.kL1.value).whileTrue(
                       new RunCommand(() -> m_robotDrive.slowMode(
-                        MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                        -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband))));
+                        getDriverLeftY(),
+                        getDriverLeftX(),
+                        getDriverRightX())));
                         
-    //Cardinal positions
+    //Cardinal directions
     new JoystickButton(m_driverController, Button.kCircle.value).whileTrue(new RunCommand(() -> lockToCardinal(90)));
     new JoystickButton(m_driverController, Button.kTriangle.value).whileTrue(new RunCommand(() -> lockToCardinal(180)));
     new JoystickButton(m_driverController, Button.kSquare.value).whileTrue(new RunCommand(() -> lockToCardinal(-90)));
     new JoystickButton(m_driverController, Button.kCross.value).whileTrue(new RunCommand(() -> lockToCardinal(0)));
 
+    new JoystickButton(m_driverController, Button.kR2.value).whileTrue(new RunCommand(() -> m_robotDrive.driveToPose(new Pose2d(new Translation2d(2, 7), new Rotation2d(180)))));
   }
 
   private void lockToCardinal(double goal){
     m_robotDrive.cardinalDirection(
-                        MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                        getDriverLeftY(),
+                        getDriverLeftX(),
                         goal);
   }
 
@@ -144,5 +142,25 @@ public class RobotContainer {
     return chooser.getSelected();
   }
 
+  public double getDriverLeftY(){
+    return MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband);
+  }
+
+  public double getDriverLeftX(){
+    return MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband);
+  }
+
+  public double getDriverRightX(){
+    return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
+  }
+
+  public Pose2d getStart(String auto){
+    return autoPoses.get(auto);
+  }
+
+  public SequentialCommandGroup findPoseToAuto(String auto){
+    return new SequentialCommandGroup(AutoBuilder.pathfindToPose(getStart(auto), constraints, 0), new PathPlannerAuto(auto));
+
+  }
 
 }   

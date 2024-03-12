@@ -5,10 +5,11 @@
 package frc.robot;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.revrobotics.CANSparkBase.IdleMode;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -155,17 +156,107 @@ public final class Constants {
         Units.inchesToMeters(1), 
         Units.inchesToMeters(2)),
       new Rotation3d(Units.degreesToRadians(5), Units.degreesToRadians(7.5), Units.degreesToRadians(0)));
+  }
+
+  public static final class NeoMotorConstants {
+    public static final double kFreeSpeedRpm = 5676;
+  }
+
+  public static final class IntakeConstants {
+    public static final int kIntakeMotor1CanId = 30;
+    public static final int kIntakeMotor2CanId = 31;
+    public static final boolean kIntakeMotorInverted = false;
+    public static final int kIntakeMotorCurrentLimit = 40;
+    public static double kIntakeSpeed = 1;
+    public static int kIntakeSensorPort = 50;
+    public static double kIndexThreshold = 45;
+  }
+
+  public static final class ShooterConstants {
+    public static final int kShooterMotor1CanId = 40;
+    public static final int kShooterMotor2CanId = 41;
+    public static final boolean kShooterMotorInverted = false;
+    public static final int kShooterMotorCurrentLimit = 40;
+
+    //Fill
+    public static final Slot0Configs kShooterConfiguration = new Slot0Configs();
+    public static final double kOuttakeVelocity = 0;
+    public static final double kShooterThreshold = 0;
+    static {
+      kShooterConfiguration.kP = 1;
+      kShooterConfiguration.kI = 0;
+      kShooterConfiguration.kD = 0;
+    }
+  }
+
+  public static final class PivotConstants {
+    public static final int kPivotMotor1CanId = 50;
+    public static final int kPivotMotor2CanId = 51;
+    public static final double kMaxAngleThreshold = 0;
+    public static final double kMinAngleThreshold = 0;
+    public static final Slot0Configs kPivotConfiguration = new Slot0Configs();
+    public static double kPivotThreshold = 1;
+  }
+
+  public static final class FieldConstants {
+    public static final TreeMap<Integer, Translation2d> kRedAprilTagLayout = new TreeMap<Integer, Translation2d>() {
+      {
+        put(1, new Translation2d(Units.inchesToMeters(593.68), Units.inchesToMeters(9.68)));
+        put(2, new Translation2d(Units.inchesToMeters(637.21), Units.inchesToMeters(34.79)));
+        put(3, new Translation2d(Units.inchesToMeters(652.73), Units.inchesToMeters(196.17)));
+        put(4, new Translation2d(Units.inchesToMeters(652.73), Units.inchesToMeters(218.42)));
+        put(5, new Translation2d(Units.inchesToMeters(578.77), Units.inchesToMeters(323.00)));
+        put(11, new Translation2d(Units.inchesToMeters(468.69), Units.inchesToMeters(146.19)));
+        put(12, new Translation2d(Units.inchesToMeters(468.69), Units.inchesToMeters(177.10)));
+        put(13, new Translation2d(Units.inchesToMeters(441.74), Units.inchesToMeters(161.62)));
+      }
+     
+    };
+
+    public static final TreeMap<Integer, Translation2d> kBlueAprilTagLayout = new TreeMap<Integer, Translation2d>() {
+      {
+        put(6, new Translation2d(Units.inchesToMeters(72.5), Units.inchesToMeters(323.00)));
+        put(7, new Translation2d(Units.inchesToMeters(-1.50), Units.inchesToMeters(218.42)));
+        put(8, new Translation2d(Units.inchesToMeters(-1.50), Units.inchesToMeters(196.17)));
+        put(9, new Translation2d(Units.inchesToMeters(14.02), Units.inchesToMeters(34.79)));
+        put(10, new Translation2d(Units.inchesToMeters(57.54), Units.inchesToMeters(9.68)));
+        put(14, new Translation2d(Units.inchesToMeters(209.48), Units.inchesToMeters(161.62)));
+        put(15, new Translation2d(Units.inchesToMeters(182.73), Units.inchesToMeters(177.10)));
+        put(16, new Translation2d(Units.inchesToMeters(182.73), Units.inchesToMeters(146.19)));
+      }
+    };
+
+    public static final double originToWing = Units.inchesToMeters(229.19);
+    public static final double kBlueWingX = originToWing;
+    public static final double kRedWingX = 16.48 - originToWing;
 
     public static final double kStageHeight = 1.32; // IDS: 11 - 16
     public static final double kAmpHeight = 1.36; // IDS: 1, 2, 5, 6, 9, 10
     public static final double kSpeakerHeight = 1.45; // IDS: 3, 4, 7, 8
 
-    public static final ArrayList<Integer> kRedSpeakerID = new ArrayList<Integer>(){{add(3);}};
-    public static final ArrayList<Integer> kBlueSpeakerID = new ArrayList<Integer>(){{add(7); }};
+    public static final int kRedSpeakerID = 3;
+    public static final int kBlueSpeakerID = 7;
+    public static final int kRedAmpID = 5;
+    public static final int kBlueAmpID = 6;
 
-  }
+      private static Translation2d getRedTagTranslation(int id) {
+        return kRedAprilTagLayout.get(id);
+      }
 
-  public static final class NeoMotorConstants {
-    public static final double kFreeSpeedRpm = 5676;
+      private static Translation2d getBlueTagTranslation(int id) {
+        return kBlueAprilTagLayout.get(id);
+      }
+
+      public static Translation2d getTagTranslation(int id) {
+        if(kRedAprilTagLayout.containsKey(id)){
+          return getRedTagTranslation(id);
+        }
+        else if(kBlueAprilTagLayout.containsKey(id)){
+          return getBlueTagTranslation(id);
+        }
+        else{
+          return null;
+        }
+      }
   }
 }
