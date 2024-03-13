@@ -16,7 +16,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N2;
@@ -25,19 +24,13 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.IntakeConstants;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.RotationTarget;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.playingwithfusion.TimeOfFlight;
-import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -48,16 +41,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private PIDController translateXController;
   private PIDController translateYController;
   private final SwerveDrivePoseEstimator poseEstimator;
-  private final TimeOfFlight intakeSensor;
-  private double angle;
-  private double x = 0;
-  private double vectordistance = 0;
+  private double poseAngle;
+  private double vectorDistance;
+  private int[] cardinalAngles;
   
   // The gyro sensor
   private final AHRS m_gyro = new AHRS();
   
   // Rotation of chassis
-  private double m_currentRotation = 0.0;
+  private double m_currentRotation;
 
   public static synchronized DrivetrainSubsystem getInstance() {
     if (instance == null) {
@@ -145,15 +137,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     visionSubsystem = VisionSubsystem.getInstance();
     field = new Field2d();
-    intakeSensor = new TimeOfFlight(50);
-    intakeSensor.setRangingMode(RangingMode.Short, 24);
+    m_currentRotation = 0.0;
+    vectorDistance = 0;
+    poseAngle = 0;
+    cardinalAngles = new int[]{0, 90, -90};
 
-
-  }
-
-  public boolean isLoaded(){
-        double distance = intakeSensor.getRange();
-        return intakeSensor.isRangeValid() ? distance < IntakeConstants.kIndexThreshold : false;
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds(){
@@ -192,44 +180,29 @@ public class DrivetrainSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    SmartDashboard.putNumber("Distance", distanceFromTarget());
-    SmartDashboard.putNumber("Height", visionSubsystem.getFrontCamera().getHeightFromID());
-    SmartDashboard.putNumber("x pose", poseEstimator.getEstimatedPosition().getX());
-    SmartDashboard.putNumber("y pose", poseEstimator.getEstimatedPosition().getY());
-    SmartDashboard.putNumber("x rot", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
-    SmartDashboard.putNumber("x", x);
+    SmartDashboard.putNumber("Distance from Tag", distanceFromTarget());
+    SmartDashboard.putNumber("Height of Tag", visionSubsystem.getFrontCamera().getHeightFromID());
+    SmartDashboard.putNumber("X Est Pose", poseEstimator.getEstimatedPosition().getX());
+    SmartDashboard.putNumber("Y Est Pose", poseEstimator.getEstimatedPosition().getY());
+    SmartDashboard.putNumber("Est Rot", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
     SmartDashboard.putData("Field", field);
-    SmartDashboard.putBoolean("Filled", isLoaded());
-    SmartDashboard.putNumber("Sensor", intakeSensor.getRange());
-    SmartDashboard.putNumber("Angle", angle);
-    SmartDashboard.putNumber("Vector Distance", vectordistance);
+    poseToTagDistance(11);
+    SmartDashboard.putNumber("Vector Distance", vectorDistance);
+    SmartDashboard.putBoolean("Target is Appropiate", visionSubsystem.getFrontCamera().targetAppropiate(7));
 
     poseEstimator.update(Rotation2d.fromDegrees(-m_gyro.getAngle()), getSwerveModulePositions());
 
-    var visionEst = visionSubsystem.getEstimatedGlobalPose(/*visionSubsystem.getPoseEstimator(), visionSubsystem.getFrontCamera()*/);
+    var visionEst = visionSubsystem.getEstimatedGlobalPose(visionSubsystem.getPoseEstimator(), visionSubsystem.getFrontCamera());
     visionEst.ifPresent(
         est -> {
           var estPose = est.estimatedPose.toPose2d();
           // Change our trust in the measurement based on the tags we can see
           var estStdDevs = visionSubsystem.getEstimationStdDevs(estPose);
-          x = est.estimatedPose.toPose2d().getX();
           poseEstimator.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds);
         }
 
     );
-
     field.setRobotPose(getPose());
-
-    /*
-    // Update the odometry in the periodic block
-    m_odometry.update(
-        Rotation2d.fromDegrees(-m_gyro.getAngle()),
-        new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-        });*/
   }
 
   /**
@@ -375,7 +348,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     else {
       rotateToPose(xSpeed, ySpeed, id);
     }
-    // else { drive(xSpeed, ySpeed, rot, true); } add robot move during lock?
   }
 
   public void driveToPose(Pose2d target){
@@ -390,49 +362,39 @@ public class DrivetrainSubsystem extends SubsystemBase {
     drive(translateX, translateY, rotationVal, true);
   }
 
-  public void rotateToPose(double xSpeed, double ySpeed, int id){
-    
-    /*
-    //Get the distance between the robots current pose and the target pose
-
+  public double poseToTagDistance(int id){
     Vector<N2> robotVector = translationToVector(getPose().getTranslation());
-    Vector<N2> goalVector = translationToVector(target);
+    Vector<N2> goalVector = translationToVector(FieldConstants.getTagTranslation(id));
 
     //Vector from goal to robot
     goalVector = goalVector.minus(robotVector);
-    vectordistance = goalVector.norm();
+    vectorDistance = goalVector.norm();
+    return vectorDistance;
+  }
 
-    //Convert the rotation of the robot into a slope
-    double slope = Math.tan(Math.toRadians(poseEstimator.getEstimatedPosition().getRotation().getDegrees()));
-    
-    //normal to the slope
-    slope = -1 / slope;
-
-    //Get the y-intercept using the current robot position
-    double yIntercept = robotVector.get(0, 1) - slope * robotVector.get(0, 0);
-
-    //Get the angle of the two vectors with the dot product
-    double dotProduct = robotVector.dot(goalVector);
-    double magnitude = robotVector.norm() * goalVector.norm();
-    angle = Math.acos(dotProduct / magnitude);
-    angle = Units.radiansToDegrees(angle); */
-
-    //Get distance between robot x and target x
-
-    //Get the vector distance between the tag and the robot
-    //When close enough, switch to cardinal
+  public void rotateToPose(double xSpeed, double ySpeed, int id){
 
     Translation2d target = FieldConstants.getTagTranslation(id);
     double robotToTargetX = getPose().getX() - target.getX();   
     double robotToTargetY = getPose().getY() - target.getY();
     double additive = 0;
     if(robotToTargetX < 0) { additive = 180; } else { additive = 0; }
-    angle = Math.toDegrees(Math.atan(robotToTargetY / robotToTargetX)) + additive;
+    poseAngle = Math.toDegrees(Math.atan(robotToTargetY / robotToTargetX)) + additive;
     
-    rotController.setSetpoint(angle);
+    rotController.setSetpoint(poseAngle);
     double rotationVal = rotController.calculate(-(MathUtil.inputModulus(m_gyro.getYaw(), -180, 180)), rotController.getSetpoint());
-    drive(xSpeed, ySpeed, rotationVal, true);
-
+    if(poseToTagDistance(id) < FieldConstants.kDistanceThreshold) {
+      if(id == FieldConstants.kRedSpeakerID || id == FieldConstants.kBlueSpeakerID){
+        cardinalDirection(xSpeed, ySpeed, cardinalAngles[0]);
+      }
+      else if(FieldConstants.isRedTag(id)){
+        cardinalDirection(xSpeed, ySpeed, cardinalAngles[1]);
+      }
+      else {
+        cardinalDirection(xSpeed, ySpeed, cardinalAngles[2]);
+      }
+    }
+    else{ drive(xSpeed, ySpeed, rotationVal, true);}
   }
   
   public void cardinalDirection(double xSpeed, double ySpeed, double goal){

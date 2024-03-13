@@ -16,20 +16,23 @@ import edu.wpi.first.wpilibj.PS5Controller.Button;
 import edu.wpi.first.wpilibj.PS5Controller;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.Drive;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.utils.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.DriverStation;
+import java.util.Optional;
+import java.util.TreeMap;
+
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -38,15 +41,13 @@ import com.pathplanner.lib.path.PathPlannerPath;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems
-  private final DrivetrainSubsystem m_robotDrive = DrivetrainSubsystem.getInstance();
-  private final Limelight ll = Limelight.getInstance();
 
-  // The driver's controller
+  private final DrivetrainSubsystem m_robotDrive = DrivetrainSubsystem.getInstance();
   PS5Controller m_driverController = new PS5Controller(OIConstants.kDriverControllerPort);
+  private final Optional<Alliance> ds = DriverStation.getAlliance();
+  private TreeMap<String, Pose2d> autoPoses = new TreeMap<>();
+  private int[] targetID;
   PathConstraints constraints;
-  Pose2d simpleStart;
-  //PathPlannerPath wing1;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -56,22 +57,19 @@ public class RobotContainer {
   private SendableChooser<Command> chooser = new SendableChooser<>();
 
   public RobotContainer() {
+    targetID = new int[2];
 
-    // AUTO CHOOSER
-    NamedCommands.registerCommand("Lock", new RunCommand(() -> m_robotDrive.setX()));
-    
-    simpleStart = new Pose2d(2, 7, Rotation2d.fromDegrees(180));
-    //wing1 = PathPlannerPath.fromPathFile("Wing1");
-
+    if(ds.isPresent()){
+      targetID[0] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedSpeakerID : FieldConstants.kBlueSpeakerID;
+      targetID[1] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedAmpID : FieldConstants.kBlueAmpID;
+    }
+    autoPoses.put("Simple", new Pose2d(2, 7, Rotation2d.fromDegrees(180))); 
     constraints = new PathConstraints(
       3.0, 4.0, 
       Units.degreesToRadians(540), 
       Units.degreesToRadians(720));
 
-    chooser.setDefaultOption("Simple", findPoseToAuto(simpleStart, "Simple"));
-    //chooser.addOption("Wing 1", findPath(wing1));
-    
-
+    chooser.setDefaultOption("Simple", findPoseToAuto("Simple"));    
     SmartDashboard.putData("Auto Chooser", this.chooser);
 
     // Configure the button bindings
@@ -83,9 +81,9 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> m_robotDrive.drive(
-                MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                getDriverLeftY(),
+                getDriverLeftX(),
+                getDriverRightX(),
                 true),
             m_robotDrive));
   }
@@ -105,20 +103,21 @@ public class RobotContainer {
 
     //Zero the heading
     new JoystickButton(m_driverController, Button.kOptions.value).onTrue(new InstantCommand( () -> m_robotDrive.zeroHeading() ));
-    
+    new JoystickButton(m_driverController, Button.kL2.value).whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(getDriverLeftY(), getDriverLeftX(), targetID[1])));
+
     //Aim while moving
     new JoystickButton(m_driverController, Button.kR1.value)
                       .whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(
-                        MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                        7)));
+                        getDriverLeftY(),
+                        getDriverLeftX(),
+                        targetID[0])));
 
     //Slow mode while moving
     new JoystickButton(m_driverController, Button.kL1.value).whileTrue(
                       new RunCommand(() -> m_robotDrive.slowMode(
-                        MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                        -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband))));
+                        getDriverLeftY(),
+                        getDriverLeftX(),
+                        getDriverRightX())));
                         
     //Cardinal positions
     new JoystickButton(m_driverController, Button.kCircle.value).whileTrue(new RunCommand(() -> lockToCardinal(90)));
@@ -126,24 +125,16 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kSquare.value).whileTrue(new RunCommand(() -> lockToCardinal(-90)));
     new JoystickButton(m_driverController, Button.kCross.value).whileTrue(new RunCommand(() -> lockToCardinal(0)));
 
-    new JoystickButton(m_driverController, Button.kL2.value).whileTrue(new RunCommand(() -> aimWithPose(6)));
     new JoystickButton(m_driverController, Button.kR2.value).whileTrue(new RunCommand(() -> m_robotDrive.driveToPose(new Pose2d(new Translation2d(2, 7), new Rotation2d(180)))));
   }
 
   private void lockToCardinal(double goal){
     m_robotDrive.cardinalDirection(
-                        MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                        MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+                        getDriverLeftY(),
+                        getDriverLeftX(),
                         goal);
   }
-
-  private void aimWithPose(int id){
-    m_robotDrive.rotateToPose(
-      MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-      MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-      id
-    );
-  }
+  
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -154,8 +145,24 @@ public class RobotContainer {
     return chooser.getSelected();
   }
 
-  public SequentialCommandGroup findPoseToAuto(Pose2d start, String auto){
-    return new SequentialCommandGroup(AutoBuilder.pathfindToPose(start, constraints, 0), new PathPlannerAuto(auto));
+  public double getDriverLeftY(){
+    return MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband);
+  }
+
+  public double getDriverLeftX(){
+    return MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband);
+  }
+
+  public double getDriverRightX(){
+    return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
+  }
+
+  public Pose2d getStart(String auto){
+    return autoPoses.get(auto);
+  }
+
+  public SequentialCommandGroup findPoseToAuto(String auto){
+    return new SequentialCommandGroup(AutoBuilder.pathfindToPose(getStart(auto), constraints, 0), new PathPlannerAuto(auto));
 
   }
 

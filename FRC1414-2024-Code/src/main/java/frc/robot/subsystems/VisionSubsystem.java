@@ -26,7 +26,7 @@ public class VisionSubsystem extends SubsystemBase{
     private static VisionSubsystem instance;
     private AprilTagFieldLayout fieldLayout;
     private Optional<Alliance> allianceColor;
-    private double previous = 0;
+    private double previous;
 
     PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");    
     PhotonVisionHelper backCamera = new PhotonVisionHelper("backCamera");
@@ -36,10 +36,12 @@ public class VisionSubsystem extends SubsystemBase{
 
       fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
       allianceColor = DriverStation.getAlliance();
+      previous = 0;
       
+      /*
       if(allianceColor.isPresent()){ 
         if(allianceColor.get().equals(Alliance.Red)){ fieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide); }
-        else{ fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide); }}
+        else{ fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide); }}*/
 
 
       visionEstimatorFront = new PhotonPoseEstimator(fieldLayout, 
@@ -52,14 +54,13 @@ public class VisionSubsystem extends SubsystemBase{
                   
     @Override
     public void periodic(){
-      SmartDashboard.putBoolean("rgn", getEstimatedGlobalPose().isPresent());
-      SmartDashboard.putBoolean("detect", frontCamera.targetDetected());
-      SmartDashboard.putNumber("previous", previous);
+      SmartDashboard.putBoolean("Updating Pose?", getEstimatedGlobalPose(visionEstimatorFront, frontCamera).isPresent());
+      SmartDashboard.putBoolean("Target Detected", frontCamera.targetDetected());
     }
 
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(/*PhotonPoseEstimator photonPose, PhotonVisionHelper camera*/) {
-      var visionEst = visionEstimatorFront.update();
-      double latest = frontCamera.getCamera().getLatestResult().getTimestampSeconds();
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(PhotonPoseEstimator photonPose, PhotonVisionHelper camera) {
+      var visionEst = photonPose.update();
+      double latest = camera.getCamera().getLatestResult().getTimestampSeconds();
       boolean newResult = Math.abs(latest - previous) > 1e-5;
       if (newResult) previous = latest;
       return visionEst;
