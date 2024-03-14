@@ -156,7 +156,6 @@ public final class Constants {
         Units.inchesToMeters(1), 
         Units.inchesToMeters(2)),
       new Rotation3d(Units.degreesToRadians(5), Units.degreesToRadians(7.5), Units.degreesToRadians(0)));
-
   }
 
   public static final class NeoMotorConstants {
@@ -197,6 +196,7 @@ public final class Constants {
     public static final double kMinAngleThreshold = 0;
     public static final Slot0Configs kPivotConfiguration = new Slot0Configs();
     public static double kPivotThreshold = 0;
+
   }
 
   public static final class FieldConstants {

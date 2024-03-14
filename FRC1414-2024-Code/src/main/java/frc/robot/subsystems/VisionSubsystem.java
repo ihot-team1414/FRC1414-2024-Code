@@ -66,6 +66,7 @@ public class VisionSubsystem extends SubsystemBase{
       return visionEst;
     }
 
+    // Get the standard deviations of the estimated pose
     public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) {
         var estStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(30));
         var targets = frontCamera.getCamera().getLatestResult().getTargets();

@@ -43,10 +43,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final SwerveDrivePoseEstimator poseEstimator;
   private double poseAngle;
   private double vectorDistance;
-  private int[] cardinalAngles;
-  
-  // The gyro sensor
+
   private final AHRS m_gyro = new AHRS();
+  private int[] cardinalAngles;
   
   // Rotation of chassis
   private double m_currentRotation;
@@ -79,21 +78,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
 
-
-/*
-  // Odometry class for tracking robot pose
-  SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
-      DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(-m_gyro.getAngle()),
-      new SwerveModulePosition[] {
-          m_frontLeft.getPosition(),
-          m_frontRight.getPosition(),
-          m_rearLeft.getPosition(),
-          m_rearRight.getPosition()
-      });
-
-  */
-
   /** Creates a new DriveSubsystem. */
   public DrivetrainSubsystem() {
       
@@ -123,6 +107,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             this // Reference to this subsystem to set requirements
     );
 
+    //PID Controller Initialization
     rotController = new PIDController(0.01, 0, 0);
     translateXController = new PIDController(1, 0, 0);
     translateYController = new PIDController(1, 0, 0);
@@ -131,7 +116,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
                             Rotation2d.fromDegrees(-m_gyro.getAngle()), 
                             getSwerveModulePositions(), 
-                            new Pose2d(), /* vs getPose()? */
+                            new Pose2d(),
                             VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(5)), // Tune | State estimation deviation
                             VecBuilder.fill(0.75, 0.75, Units.degreesToRadians(130))); // Tune | Vision estimation deviation
 
@@ -141,7 +126,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     vectorDistance = 0;
     poseAngle = 0;
     cardinalAngles = new int[]{0, 90, -90};
-
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds(){
@@ -166,12 +150,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
     };
   }
 
+  //Robot relative drive for path planner
   public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds){
       var states = DriveConstants.kDriveKinematics.toSwerveModuleStates(robotRelativeSpeeds);
       SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.kMaxSpeedMetersPerSecond);
       setModuleStates(states);
   }
 
+  //Robot field relative drive for path planner
   public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds){
       ChassisSpeeds robotRelative = ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getPose().getRotation());
       driveRobotRelative(robotRelative);
@@ -190,14 +176,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Vector Distance", vectorDistance);
     SmartDashboard.putBoolean("Target is Appropiate", visionSubsystem.getFrontCamera().targetAppropiate(7));
 
+    //Update odomotry
     poseEstimator.update(Rotation2d.fromDegrees(-m_gyro.getAngle()), getSwerveModulePositions());
 
     var visionEst = visionSubsystem.getEstimatedGlobalPose(visionSubsystem.getPoseEstimator(), visionSubsystem.getFrontCamera());
     visionEst.ifPresent(
         est -> {
-          var estPose = est.estimatedPose.toPose2d();
-          // Change our trust in the measurement based on the tags we can see
-          var estStdDevs = visionSubsystem.getEstimationStdDevs(estPose);
           poseEstimator.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds);
         }
 
@@ -234,8 +218,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * @param rot           Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the
    *                      field.
-   * @param rateLimit     Whether to enable rate limiting for smoother control.
    */
+
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     
     double xSpeedCommanded;
@@ -260,10 +244,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
-  }
-
-  public void drive(Translation2d translation, double rot){
-    drive(translation.getX(), translation.getY(), rot, true);
   }
 
   /**zero
@@ -344,12 +324,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                               true);
       }
     }
-
     else {
       rotateToPose(xSpeed, ySpeed, id);
     }
   }
 
+  //Drive to a specific pose from current pose
   public void driveToPose(Pose2d target){
 
     translateXController.setSetpoint(target.getX());
@@ -361,7 +341,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     double translateY = translateYController.calculate(poseEstimator.getEstimatedPosition().getY(), translateYController.getSetpoint());
     drive(translateX, translateY, rotationVal, true);
   }
-
+  
   public double poseToTagDistance(int id){
     Vector<N2> robotVector = translationToVector(getPose().getTranslation());
     Vector<N2> goalVector = translationToVector(FieldConstants.getTagTranslation(id));
@@ -373,7 +353,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public void rotateToPose(double xSpeed, double ySpeed, int id){
-
     Translation2d target = FieldConstants.getTagTranslation(id);
     double robotToTargetX = getPose().getX() - target.getX();   
     double robotToTargetY = getPose().getY() - target.getY();
@@ -397,14 +376,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
     else{ drive(xSpeed, ySpeed, rotationVal, true);}
   }
   
+  //Lock the robot to field-oriented N-E-S-W
   public void cardinalDirection(double xSpeed, double ySpeed, double goal){
-    
     rotController.setSetpoint(goal);
     double rotationVal = rotController.calculate(-(MathUtil.inputModulus(m_gyro.getYaw(), -180, 180)), rotController.getSetpoint());
     drive(xSpeed, ySpeed, rotationVal, true);
 
   }
   
+  //Move the robot with precision
   public void slowMode(double xSpeed, double ySpeed, double rot){
     drive(xSpeed * DriveConstants.kSlowMode, 
           ySpeed * DriveConstants.kSlowMode, 
