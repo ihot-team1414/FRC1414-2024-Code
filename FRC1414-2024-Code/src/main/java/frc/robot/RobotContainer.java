@@ -18,15 +18,17 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS5Controller;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.Drive;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import java.lang.reflect.Field;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.DriverStation;
 import java.util.Optional;
 import java.util.TreeMap;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -40,13 +42,13 @@ import com.pathplanner.lib.path.PathConstraints;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  
+
   private final DrivetrainSubsystem m_robotDrive = DrivetrainSubsystem.getInstance();
-  private final PS5Controller m_driverController = new PS5Controller(OIConstants.kDriverControllerPort);
+  PS5Controller m_driverController = new PS5Controller(OIConstants.kDriverControllerPort);
   private final Optional<Alliance> ds = DriverStation.getAlliance();
   private TreeMap<String, Pose2d> autoPoses = new TreeMap<>();
   private int[] targetID;
-  private PathConstraints constraints;
+  PathConstraints constraints;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -56,19 +58,19 @@ public class RobotContainer {
   private SendableChooser<Command> chooser = new SendableChooser<>();
 
   public RobotContainer() {
-    
-    if(ds.isPresent()){ 
+    targetID = new int[2];
+
+    if(ds.isPresent()){
       targetID[0] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedSpeakerID : FieldConstants.kBlueSpeakerID;
       targetID[1] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedAmpID : FieldConstants.kBlueAmpID;
     }
-    
-    autoPoses.put("Simple", new Pose2d(2, 7, Rotation2d.fromDegrees(180)));
+    autoPoses.put("Simple", new Pose2d(2, 7, Rotation2d.fromDegrees(180))); 
     constraints = new PathConstraints(
       3.0, 4.0, 
       Units.degreesToRadians(540), 
       Units.degreesToRadians(720));
 
-    chooser.setDefaultOption("Simple", findPoseToAuto("Simple"));
+    chooser.setDefaultOption("Simple", findPoseToAuto("Simple"));    
     SmartDashboard.putData("Auto Chooser", this.chooser);
 
     // Configure the button bindings
@@ -102,7 +104,8 @@ public class RobotContainer {
 
     //Zero the heading
     new JoystickButton(m_driverController, Button.kOptions.value).onTrue(new InstantCommand( () -> m_robotDrive.zeroHeading() ));
-    
+    new JoystickButton(m_driverController, Button.kL2.value).whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(getDriverLeftY(), getDriverLeftX(), targetID[1])));
+
     //Aim while moving
     new JoystickButton(m_driverController, Button.kR1.value)
                       .whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(

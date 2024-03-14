@@ -38,9 +38,10 @@ public class VisionSubsystem extends SubsystemBase{
       allianceColor = DriverStation.getAlliance();
       previous = 0;
       
+      /*
       if(allianceColor.isPresent()){ 
         if(allianceColor.get().equals(Alliance.Red)){ fieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide); }
-        else{ fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide); }}
+        else{ fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide); }}*/
 
 
       visionEstimatorFront = new PhotonPoseEstimator(fieldLayout, 

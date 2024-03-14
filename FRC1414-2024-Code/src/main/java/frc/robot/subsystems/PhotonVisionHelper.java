@@ -40,25 +40,15 @@ public class PhotonVisionHelper extends SubsystemBase {
         return 0.0;
     }
 
-    /*
-    public boolean targetAppropiate(){
+    public boolean targetAppropiate(int id){
         if(targetDetected() && allianceColor.isPresent()){
-            int id = result.getBestTarget().getFiducialId();
-            if(allianceColor.get().equals(Alliance.Red) && VisionConstants.kRedSpeakerID == id || 
-                allianceColor.get().equals(Alliance.Blue) && VisionConstants.kBlueSpeakerID == id){
+            int tag = result.getBestTarget().getFiducialId();
+             if(allianceColor.get().equals(Alliance.Red) && tag == (id) || 
+                allianceColor.get().equals(Alliance.Blue) && tag == (id)){
                 return true;
             }
         }
         return false;
-    }*/
-
-    public boolean targetAppropiate(int id){
-
-    if(targetDetected() && allianceColor.isPresent()){
-        if(id == result.getBestTarget().getFiducialId());
-            return true;
-        }
-    return false;
     }
 
     public boolean targetDetected(){

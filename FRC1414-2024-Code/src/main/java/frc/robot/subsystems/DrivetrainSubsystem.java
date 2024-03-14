@@ -43,6 +43,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final SwerveDrivePoseEstimator poseEstimator;
   private double poseAngle;
   private double vectorDistance;
+
   private final AHRS m_gyro = new AHRS();
   private int[] cardinalAngles;
   
@@ -121,8 +122,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     visionSubsystem = VisionSubsystem.getInstance();
     field = new Field2d();
-    m_currentRotation = 0;
+    m_currentRotation = 0.0;
     vectorDistance = 0;
+    poseAngle = 0;
     cardinalAngles = new int[]{0, 90, -90};
   }
 
@@ -168,9 +170,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Height of Tag", visionSubsystem.getFrontCamera().getHeightFromID());
     SmartDashboard.putNumber("X Est Pose", poseEstimator.getEstimatedPosition().getX());
     SmartDashboard.putNumber("Y Est Pose", poseEstimator.getEstimatedPosition().getY());
-    SmartDashboard.putNumber("Field Rot", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
+    SmartDashboard.putNumber("Est Rot", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
     SmartDashboard.putData("Field", field);
+    poseToTagDistance(11);
     SmartDashboard.putNumber("Vector Distance", vectorDistance);
+    SmartDashboard.putBoolean("Target is Appropiate", visionSubsystem.getFrontCamera().targetAppropiate(7));
 
     //Update odomotry
     poseEstimator.update(Rotation2d.fromDegrees(-m_gyro.getAngle()), getSwerveModulePositions());
@@ -337,8 +341,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     double translateY = translateYController.calculate(poseEstimator.getEstimatedPosition().getY(), translateYController.getSetpoint());
     drive(translateX, translateY, rotationVal, true);
   }
-
-  //Distance between the robot and a specific tag from the pose
+  
   public double poseToTagDistance(int id){
     Vector<N2> robotVector = translationToVector(getPose().getTranslation());
     Vector<N2> goalVector = translationToVector(FieldConstants.getTagTranslation(id));
@@ -349,9 +352,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     return vectorDistance;
   }
 
-  //Rotate to a specific pose from current pose
   public void rotateToPose(double xSpeed, double ySpeed, int id){
-    
     Translation2d target = FieldConstants.getTagTranslation(id);
     double robotToTargetX = getPose().getX() - target.getX();   
     double robotToTargetY = getPose().getY() - target.getY();
@@ -361,17 +362,18 @@ public class DrivetrainSubsystem extends SubsystemBase {
     
     rotController.setSetpoint(poseAngle);
     double rotationVal = rotController.calculate(-(MathUtil.inputModulus(m_gyro.getYaw(), -180, 180)), rotController.getSetpoint());
-    
-    if(poseToTagDistance(id) < 0.1){
-      if(id == FieldConstants.kRedSpeakerID || id == FieldConstants.kBlueSpeakerID){ 
+    if(poseToTagDistance(id) < FieldConstants.kDistanceThreshold) {
+      if(id == FieldConstants.kRedSpeakerID || id == FieldConstants.kBlueSpeakerID){
         cardinalDirection(xSpeed, ySpeed, cardinalAngles[0]);
-      } else if(FieldConstants.isRedTag(id)){
+      }
+      else if(FieldConstants.isRedTag(id)){
         cardinalDirection(xSpeed, ySpeed, cardinalAngles[1]);
-      } else {
+      }
+      else {
         cardinalDirection(xSpeed, ySpeed, cardinalAngles[2]);
       }
     }
-    else{ drive(xSpeed, ySpeed, rotationVal, true); }
+    else{ drive(xSpeed, ySpeed, rotationVal, true);}
   }
   
   //Lock the robot to field-oriented N-E-S-W

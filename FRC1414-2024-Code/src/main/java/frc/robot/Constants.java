@@ -195,7 +195,8 @@ public final class Constants {
     public static final double kMaxAngleThreshold = 0;
     public static final double kMinAngleThreshold = 0;
     public static final Slot0Configs kPivotConfiguration = new Slot0Configs();
-    public static double kPivotThreshold = 1;
+    public static double kPivotThreshold = 0;
+
   }
 
   public static final class FieldConstants {
@@ -230,37 +231,39 @@ public final class Constants {
     public static final double kBlueWingX = originToWing;
     public static final double kRedWingX = 16.48 - originToWing;
 
-    public static final double kStageHeight = 1.32; // IDS: 11 - 16
-    public static final double kAmpHeight = 1.36; // IDS: 1, 2, 5, 6, 9, 10
-    public static final double kSpeakerHeight = 1.45; // IDS: 3, 4, 7, 8
+    public static final double kStageHeight = 1.32;
+    public static final double kAmpHeight = 1.36;
+    public static final double kSpeakerHeight = 1.45;
 
     public static final int kRedSpeakerID = 3;
-    public static final int kBlueSpeakerID = 7;
+    public static final int kBlueSpeakerID = 7; //compare to arraylist
     public static final int kRedAmpID = 5;
     public static final int kBlueAmpID = 6;
 
-      public static boolean isRedTag(int id) {
-        return kRedAprilTagLayout.containsKey(id);
-      }
+    public static final double kDistanceThreshold = 1;
 
-      private static Translation2d getRedTagTranslation(int id) {
-        return kRedAprilTagLayout.get(id);
-      }
+    public static boolean isRedTag(int id) {
+      return kRedAprilTagLayout.containsKey(id);
+    }
 
-      private static Translation2d getBlueTagTranslation(int id) {
-        return kBlueAprilTagLayout.get(id);
-      }
+    private static Translation2d getRedTagTranslation(int id) {
+      return kRedAprilTagLayout.get(id);
+    }
 
-      public static Translation2d getTagTranslation(int id) {
-        if(kRedAprilTagLayout.containsKey(id)){
-          return getRedTagTranslation(id);
-        }
-        else if(kBlueAprilTagLayout.containsKey(id)){
-          return getBlueTagTranslation(id);
-        }
-        else{
-          return null;
-        }
+    private static Translation2d getBlueTagTranslation(int id) {
+      return kBlueAprilTagLayout.get(id);
+    }
+
+    public static Translation2d getTagTranslation(int id) {
+      if(kRedAprilTagLayout.containsKey(id)){
+        return getRedTagTranslation(id);
       }
+      else if(kBlueAprilTagLayout.containsKey(id)){
+        return getBlueTagTranslation(id);
+      }
+      else{
+        return null;
+      }
+    }
   }
 }
