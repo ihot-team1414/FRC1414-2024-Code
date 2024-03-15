@@ -7,15 +7,12 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
@@ -25,7 +22,6 @@ public class VisionSubsystem extends SubsystemBase{
     
     private static VisionSubsystem instance;
     private AprilTagFieldLayout fieldLayout;
-    private Optional<Alliance> allianceColor;
     private double previous;
 
     PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");    
@@ -35,14 +31,7 @@ public class VisionSubsystem extends SubsystemBase{
     private VisionSubsystem(){
 
       fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-      allianceColor = DriverStation.getAlliance();
       previous = 0;
-      
-      /*
-      if(allianceColor.isPresent()){ 
-        if(allianceColor.get().equals(Alliance.Red)){ fieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide); }
-        else{ fieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide); }}*/
-
 
       visionEstimatorFront = new PhotonPoseEstimator(fieldLayout, 
                                                     PoseStrategy.LOWEST_AMBIGUITY,

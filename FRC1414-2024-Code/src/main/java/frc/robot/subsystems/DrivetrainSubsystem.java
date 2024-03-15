@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import org.photonvision.PhotonPoseEstimator;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
@@ -22,6 +23,7 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -43,7 +45,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final SwerveDrivePoseEstimator poseEstimator;
   private double poseAngle;
   private double vectorDistance;
-
   private final AHRS m_gyro = new AHRS();
   private int[] cardinalAngles;
   
@@ -89,7 +90,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                     new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                    4.5, // Max module speed, in m/s fucking useless
+                    4.5, // Max module speed, in m/s
                     0.4, // Drive base radius in meters. Distance from robot center to furthest module.
                     new ReplanningConfig() // Default path replanning config. See the API for the options here
             ),
@@ -107,7 +108,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             this // Reference to this subsystem to set requirements
     );
 
-    //PID Controller Initialization
     rotController = new PIDController(0.01, 0, 0);
     translateXController = new PIDController(1, 0, 0);
     translateYController = new PIDController(1, 0, 0);
@@ -178,15 +178,21 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     //Update odomotry
     poseEstimator.update(Rotation2d.fromDegrees(-m_gyro.getAngle()), getSwerveModulePositions());
+    
+    //Copy and paste this, changing the vision pose estimator and camera
+    //The camera should correspond to the pose estimator as initialized in VisionSubsystem
+    addVisionMeasurement(visionSubsystem.getPoseEstimator(), visionSubsystem.getFrontCamera());
+    
+    field.setRobotPose(getPose());
+  }
 
-    var visionEst = visionSubsystem.getEstimatedGlobalPose(visionSubsystem.getPoseEstimator(), visionSubsystem.getFrontCamera());
+  public void addVisionMeasurement(PhotonPoseEstimator poseEstmiator, PhotonVisionHelper camera){
+    var visionEst = visionSubsystem.getEstimatedGlobalPose(poseEstmiator, camera);
     visionEst.ifPresent(
         est -> {
           poseEstimator.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds);
         }
-
     );
-    field.setRobotPose(getPose());
   }
 
   /**
@@ -340,19 +346,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
     double translateX = translateXController.calculate(poseEstimator.getEstimatedPosition().getX(), translateXController.getSetpoint());
     double translateY = translateYController.calculate(poseEstimator.getEstimatedPosition().getY(), translateYController.getSetpoint());
     drive(translateX, translateY, rotationVal, true);
+
   }
   
   public double poseToTagDistance(int id){
+
+    //Get vectors
     Vector<N2> robotVector = translationToVector(getPose().getTranslation());
     Vector<N2> goalVector = translationToVector(FieldConstants.getTagTranslation(id));
 
-    //Vector from goal to robot
+    //Distance from goal to robot
     goalVector = goalVector.minus(robotVector);
     vectorDistance = goalVector.norm();
     return vectorDistance;
+
   }
 
   public void rotateToPose(double xSpeed, double ySpeed, int id){
+    
+    //SOHCAHTOA Worked
     Translation2d target = FieldConstants.getTagTranslation(id);
     double robotToTargetX = getPose().getX() - target.getX();   
     double robotToTargetY = getPose().getY() - target.getY();
@@ -383,6 +395,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
     drive(xSpeed, ySpeed, rotationVal, true);
 
   }
+
+  public boolean inWing(){
+
+    //Checks if robot is in respective wing for alliance
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      if(poseEstimator.getEstimatedPosition().getX() < FieldConstants.kBlueWingX && alliance.get().equals(Alliance.Blue) ||
+          poseEstimator.getEstimatedPosition().getX() > FieldConstants.kRedWingX && alliance.get().equals(Alliance.Red)){
+        return true;
+      }
+      else { return false; }
+    }
+    return false;
+  }
   
   //Move the robot with precision
   public void slowMode(double xSpeed, double ySpeed, double rot){
@@ -392,6 +418,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
           true);
   }
 
+  //Get the translation as a vector
   public Vector<N2> translationToVector(Translation2d translation){
     return VecBuilder.fill(translation.getX(), translation.getY());
   }

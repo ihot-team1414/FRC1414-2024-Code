@@ -9,6 +9,8 @@ import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
+import frc.utils.ShooterData;
+import frc.robot.commands.StartShooter;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -17,6 +19,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final Follower follower;
     private final VelocityDutyCycle shooterVelocity;
     private final TalonFXConfiguration shooterMotorConfig;
+    private static ShooterSubsystem instance;
     private double speed;
 
     public ShooterSubsystem() {
@@ -49,6 +52,11 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor1.setControl(shooterVelocity.withVelocity(speed));
     }
 
+    public double getShooterSpeed(){
+        double distance = VisionSubsystem.getInstance().getFrontCamera().getDistance();
+        return ShooterData.getInstance().getShooterSpeed(distance);
+    }
+
     // Check whether the current velocity of the motor is within the threshold (before shooting)
     public boolean isWithinThreshold(){
         return Math.abs(shooterMotor1.getVelocity().getValueAsDouble() - speed) < ShooterConstants.kShooterThreshold;
@@ -56,18 +64,35 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // Outtake through the shooter motors
     public void outtake(){
+        speed = ShooterConstants.kOuttakeVelocity;
         shooterMotor1.setControl(shooterVelocity.withVelocity(ShooterConstants.kOuttakeVelocity));
     }
 
     // Stop motors on coast
     public void stop(){
+        speed = 0;
         shooterMotor1.stopMotor();
     }
-  
+
+    public void shoot(){
+        if(DrivetrainSubsystem.getInstance().inWing())
+        { new StartShooter(); }
+        else 
+        { PivotSubsystem.getInstance().home(); }
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
         SmartDashboard.putNumber("Shooter Motor 1 Velocity", shooterMotor1.getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("Shooter Motor 2 Velocity", shooterMotor2.getVelocity().getValueAsDouble());
     }
+
+    public static ShooterSubsystem getInstance() {
+        if (instance == null) {
+          instance = new ShooterSubsystem();
+        }
+    
+        return instance;
+      }
 }

@@ -3,8 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
-import java.util.ArrayList;
 import java.util.TreeMap;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -129,6 +127,7 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.075;
+    public static final int kOperatorControllerPort = 1;
   }
 
   public static final class AutoConstants {
@@ -167,21 +166,22 @@ public final class Constants {
     public static final int kIntakeMotor2CanId = 31;
     public static final boolean kIntakeMotorInverted = false;
     public static final int kIntakeMotorCurrentLimit = 40;
-    public static double kIntakeSpeed = 1;
-    public static int kIntakeSensorPort = 50;
+    public static final double kFunnelSpeed = 0.75;
+    public static double kIntakeSpeed = 0.25;
+    public static int kIntakeSensorPort = 60;
     public static double kIndexThreshold = 45;
   }
 
   public static final class ShooterConstants {
     public static final int kShooterMotor1CanId = 40;
     public static final int kShooterMotor2CanId = 41;
-    public static final boolean kShooterMotorInverted = false;
     public static final int kShooterMotorCurrentLimit = 40;
 
     //Fill
     public static final Slot0Configs kShooterConfiguration = new Slot0Configs();
     public static final double kOuttakeVelocity = 0;
     public static final double kShooterThreshold = 0;
+    public static final double kAmpSpeed = 0;
     static {
       kShooterConfiguration.kP = 1;
       kShooterConfiguration.kI = 0;
@@ -195,6 +195,7 @@ public final class Constants {
     public static final double kMaxAngleThreshold = 0;
     public static final double kMinAngleThreshold = 0;
     public static final Slot0Configs kPivotConfiguration = new Slot0Configs();
+    public static final double kAmpAngle = 0;
     public static double kPivotThreshold = 0;
 
   }

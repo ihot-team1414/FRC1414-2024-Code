@@ -9,6 +9,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PivotConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.utils.ShooterData;
 
 public class PivotSubsystem extends SubsystemBase {
@@ -18,9 +19,8 @@ public class PivotSubsystem extends SubsystemBase {
     private final Follower follower;
     private final PositionDutyCycle pivotPosition;
     private final TalonFXConfiguration pivotMotorConfig;
-    private double position;
-
     private static PivotSubsystem instance;
+    private double position;
 
     public PivotSubsystem() {
             
@@ -59,20 +59,32 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     // Angle will be filled by getPivotAngle()
-    public void setPivotAngle(double angle) {
+    public void setPivotAngle(double position) {
 
-        if(angle > PivotConstants.kMaxAngleThreshold){
-            angle = PivotConstants.kMaxAngleThreshold;
+        this.position = position;
+        
+        if(position > PivotConstants.kMaxAngleThreshold){
+            position = PivotConstants.kMaxAngleThreshold;
         }
-        else if(angle < PivotConstants.kMinAngleThreshold){
-            angle = PivotConstants.kMinAngleThreshold;
+        else if(position < PivotConstants.kMinAngleThreshold){
+            position = PivotConstants.kMinAngleThreshold;
         }
         //Set motors to angle
-        pivotMotor1.setControl(pivotPosition.withPosition(angle));
+        pivotMotor1.setControl(pivotPosition.withPosition(position));
     }
 
     public void home(){
+        position = 0;
         setPivotAngle(PivotConstants.kMinAngleThreshold);
+    }
+
+    public void getPosition(){
+        pivotMotor1.getPosition().getValueAsDouble();
+    }
+
+    // Check whether the current velocity of the motor is within the threshold (before shooting)
+    public boolean isWithinThreshold(){
+        return Math.abs(pivotMotor1.getPosition().getValueAsDouble() - position) < ShooterConstants.kShooterThreshold;
     }
 
     @Override

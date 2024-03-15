@@ -31,7 +31,7 @@ public class IntakeSubsystem extends SubsystemBase {
         
         intakeMotor1.setIdleMode(IdleMode.kBrake);
         intakeMotor2.setIdleMode(IdleMode.kBrake);
-        intakeSensor.setRangingMode(RangingMode.Short, 200);
+        intakeSensor.setRangingMode(RangingMode.Short, 32);
         
         intakeMotor1.setSmartCurrentLimit(IntakeConstants.kIntakeMotorCurrentLimit);
         intakeMotor2.setSmartCurrentLimit(IntakeConstants.kIntakeMotorCurrentLimit);
@@ -52,8 +52,14 @@ public class IntakeSubsystem extends SubsystemBase {
         return instance;
     }
 
+    //Use exclusively to intake
     public void intake(){
         intakeMotor1.set(IntakeConstants.kIntakeSpeed);
+    }
+
+    //Use exclusively to move from intake to shooter
+    public void funnel(){
+        intakeMotor1.set(IntakeConstants.kFunnelSpeed);
     }
 
     public void outtake(){
@@ -74,8 +80,13 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void index(){
-        if(isLoaded()){ stop(); }
-        else{ intake(); }
+        
+        //Will keep intaking until loaded
+        if(isLoaded())
+        { stop(); }
+        else 
+        { index(); }
+   
     }
 
     @Override
@@ -84,5 +95,4 @@ public class IntakeSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("IM2 Velocity", intakeMotor2.getEncoder().getVelocity());
         SmartDashboard.putBoolean("Filled", isLoaded());
     }
-
 }
