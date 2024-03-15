@@ -1,0 +1,129 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 2,
+      "y": 7.0
+    },
+    "rotation": 180.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Speaker Aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Speaker Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Cardinal Back"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Load and Amp"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Speaker Aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Speaker Score"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Top Ring"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Top Ring Shot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Speaker Aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Speaker Score"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Top to Center Ring"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Speaker Aim"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Speaker Score"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

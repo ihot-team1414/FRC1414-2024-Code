@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -31,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.Optional;
 import java.util.TreeMap;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
 
@@ -65,13 +65,30 @@ public class RobotContainer {
       targetID[0] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedSpeakerID : FieldConstants.kBlueSpeakerID;
       targetID[1] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedAmpID : FieldConstants.kBlueAmpID;
     }
+
+    NamedCommands.registerCommand("Intake", new Intake());
+    NamedCommands.registerCommand("Speaker Aim", new RunCommand(() -> m_robotDrive.aimToTarget(getDriverLeftY(), getDriverLeftX(), targetID[0])));
+    NamedCommands.registerCommand("Speaker Score", new Funnel());
+    NamedCommands.registerCommand("Amp Aim", new RunCommand(() -> m_robotDrive.aimToTarget(getDriverLeftY(), getDriverLeftX(), targetID[1])));
+    NamedCommands.registerCommand("Amp Score", new AmpScore());
+    NamedCommands.registerCommand("Cardinal Back", new RunCommand(() -> lockToCardinal(0)));
+
+
+    //Recursively call some commands until they have met a threshold? (while loop too)
+
     autoPoses.put("Simple", new Pose2d(2, 7, Rotation2d.fromDegrees(180))); 
+    autoPoses.put("4 Amp Side", new Pose2d(2, 7, Rotation2d.fromDegrees(180)));
+    autoPoses.put("5 Amp Side", new Pose2d(2, 7, Rotation2d.fromDegrees(180)));
+
     constraints = new PathConstraints(
-      3.0, 4.0, 
+      6.5, 7.0, 
       Units.degreesToRadians(540), 
       Units.degreesToRadians(720));
 
-    chooser.setDefaultOption("Simple", findPoseToAuto("Simple"));    
+    chooser.setDefaultOption("Simple", findPoseToAuto("Simple"));
+    chooser.setDefaultOption("4 Amp Side", findPoseToAuto("4 Amp Side"));   
+    chooser.setDefaultOption("5 Amp Side", findPoseToAuto("5 Amp Side")); 
+    
     SmartDashboard.putData("Auto Chooser", this.chooser);
 
     // Configure the button bindings
