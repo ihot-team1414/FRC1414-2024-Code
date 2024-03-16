@@ -29,6 +29,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
+import frc.utils.PhotonVisionHelper;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -321,8 +323,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   
   public void aimToTarget(double xSpeed, double ySpeed, int id){
 
-    if(visionSubsystem.getFrontCamera().targetDetected() && visionSubsystem.getFrontCamera().targetAppropiate(id)){
-      double yaw = visionSubsystem.getFrontCamera().getYaw();
+    if(visionSubsystem.getFrontCam().detectsTarget() && visionSubsystem.getFrontCam().targetValid(id)){
+      double yaw = visionSubsystem.getFrontCam().getDeltaX();
       if(!(yaw < 0 && yaw > -DriveConstants.kYawThreshold || yaw > 0 && yaw < DriveConstants.kYawThreshold)){
         drive(xSpeed, ySpeed, new ProfiledPIDController(0.015, 0, 0, new TrapezoidProfile.Constraints(1, 1))
                                               .calculate(yaw, 
@@ -362,6 +364,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   }
 
+    public double poseToPointDistance(Translation2d target){
+
+    //Get vectors
+    Vector<N2> robotVector = translationToVector(getPose().getTranslation());
+    Vector<N2> goalVector = translationToVector(target);
+
+    //Distance from goal to robot
+    goalVector = goalVector.minus(robotVector);
+    vectorDistance = goalVector.norm();
+    return vectorDistance;
+
+  }
+
   public void rotateToPose(double xSpeed, double ySpeed, int id){
     
     //SOHCAHTOA Worked
@@ -382,6 +397,28 @@ public class DrivetrainSubsystem extends SubsystemBase {
         cardinalDirection(xSpeed, ySpeed, cardinalAngles[1]);
       }
       else {
+        cardinalDirection(xSpeed, ySpeed, cardinalAngles[2]);
+      }
+    }
+    else{ drive(xSpeed, ySpeed, rotationVal, true);}
+  }
+
+    public void rotateToPose(double xSpeed, double ySpeed, Translation2d target){
+    
+    //SOHCAHTOA Worked
+    double robotToTargetX = getPose().getX() - target.getX();   
+    double robotToTargetY = getPose().getY() - target.getY();
+    double additive = 0;
+    if(robotToTargetX < 0) { additive = 180; } else { additive = 0; }
+    poseAngle = Math.toDegrees(Math.atan(robotToTargetY / robotToTargetX)) + additive;
+    
+    rotController.setSetpoint(poseAngle);
+    double rotationVal = rotController.calculate(-(MathUtil.inputModulus(m_gyro.getYaw(), -180, 180)), rotController.getSetpoint());
+    if(poseToPointDistance(target) < FieldConstants.kDistanceThreshold) {
+      if(target.equals(FieldConstants.kRedAmpSafe)){
+        cardinalDirection(xSpeed, ySpeed, cardinalAngles[1]);
+      }
+      else if(target.equals(FieldConstants.kBlueAmpSafe)){
         cardinalDirection(xSpeed, ySpeed, cardinalAngles[2]);
       }
     }

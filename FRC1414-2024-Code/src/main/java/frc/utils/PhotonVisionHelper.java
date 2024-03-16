@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.utils;
 
 import java.util.Optional;
 import org.photonvision.PhotonCamera;
@@ -6,27 +6,26 @@ import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.VisionConstants;
 
-public class PhotonVisionHelper extends SubsystemBase {
+public class PhotonVisionHelper {
     
     private PhotonCamera camera;
     private PhotonPipelineResult result;
     private Optional<Alliance> allianceColor;
+    private double[] configs;
 
-    public PhotonVisionHelper(String networkTable){
+    public PhotonVisionHelper(String networkTable, double[] configs){
         camera = new PhotonCamera(networkTable);
         allianceColor = DriverStation.getAlliance();
-        
+        this.configs = configs;
     }
 
     public double getDistance(){
         return Math.abs(PhotonUtils.calculateDistanceToTargetMeters(
-                        VisionConstants.kFrontCameraHeight, 
+                        configs[0], //Camera height
                         getHeightFromID(), 
-                        VisionConstants.kFrontCameraPitch, 
+                        configs[1], //Camera pitch
                         Math.toRadians(getPitch())));
     }
 
@@ -72,11 +71,6 @@ public class PhotonVisionHelper extends SubsystemBase {
 
     public PhotonCamera getCamera(){
         return camera;
-    }
-    
-    @Override
-    public void periodic(){
-        result = camera.getLatestResult();
     }
 
 }

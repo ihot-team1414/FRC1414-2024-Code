@@ -58,6 +58,11 @@ public class PivotSubsystem extends SubsystemBase {
         return ShooterData.getInstance().getShooterAngle(distance);
     }
 
+    public double getSafeAngle(){
+        double distance = VisionSubsystem.getInstance().getFrontCamera().getDistance();
+        return ShooterData.getInstance().getShooterAngle(distance);
+    }
+
     // Angle will be filled by getPivotAngle()
     public void setPivotAngle(double position) {
 

@@ -57,6 +57,11 @@ public class ShooterSubsystem extends SubsystemBase {
         return ShooterData.getInstance().getShooterSpeed(distance);
     }
 
+    public double getSafeSpeed(){
+        double distance = VisionSubsystem.getInstance().getFrontCamera().getDistance();
+        return ShooterData.getInstance().getSafeSpeed(distance);
+    }
+
     // Check whether the current velocity of the motor is within the threshold (before shooting)
     public boolean isWithinThreshold(){
         return Math.abs(shooterMotor1.getVelocity().getValueAsDouble() - speed) < ShooterConstants.kShooterThreshold;

@@ -155,6 +155,9 @@ public final class Constants {
         Units.inchesToMeters(1), 
         Units.inchesToMeters(2)),
       new Rotation3d(Units.degreesToRadians(5), Units.degreesToRadians(7.5), Units.degreesToRadians(0)));
+    
+    public static final double[] kFrontCamConfigs = new double[]{7.25, Math.toRadians(40)};
+    public static final double[] kLimelightCamConfigs = new double[]{0.0, Math.toRadians(0.0)};
   }
 
   public static final class NeoMotorConstants {
@@ -227,6 +230,9 @@ public final class Constants {
         put(16, new Translation2d(Units.inchesToMeters(182.73), Units.inchesToMeters(146.19)));
       }
     };
+
+    public static final Translation2d kBlueAmpSafe = new Translation2d(Units.inchesToMeters(72.5), Units.inchesToMeters(313.00));
+    public static final Translation2d kRedAmpSafe = new Translation2d(Units.inchesToMeters(587.77), Units.inchesToMeters(313.00));
 
     public static final double originToWing = Units.inchesToMeters(229.19);
     public static final double kBlueWingX = originToWing;

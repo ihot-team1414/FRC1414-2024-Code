@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -20,12 +21,14 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AmpScore;
 import frc.robot.commands.Funnel;
 import frc.robot.commands.Intake;
+import frc.robot.commands.ShootToSafe;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -42,28 +45,27 @@ import com.pathplanner.lib.path.PathConstraints;
  */
 public class RobotContainer {
 
+  
   private final DrivetrainSubsystem m_robotDrive = DrivetrainSubsystem.getInstance();
   private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
   PS5Controller m_driverController = new PS5Controller(OIConstants.kDriverControllerPort);
-  XboxController m_operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+  CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
   private final Optional<Alliance> ds = DriverStation.getAlliance();
   private TreeMap<String, Pose2d> autoPoses = new TreeMap<>();
   private int[] targetID;
-  PathConstraints constraints;
-
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  private Translation2d safeZone;
+  PathConstraints constraints;   
 
   // AUTO CHOOSER
   private SendableChooser<Command> chooser = new SendableChooser<>();
 
   public RobotContainer() {
-    targetID = new int[2];
+    targetID = new int[3];
 
     if(ds.isPresent()){
       targetID[0] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedSpeakerID : FieldConstants.kBlueSpeakerID;
       targetID[1] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedAmpID : FieldConstants.kBlueAmpID;
+      safeZone = ds.get().equals(Alliance.Red) ? FieldConstants.kRedAmpSafe : FieldConstants.kBlueAmpSafe;
     }
 
     NamedCommands.registerCommand("Intake", new Intake());
@@ -88,7 +90,7 @@ public class RobotContainer {
     chooser.setDefaultOption("Simple", findPoseToAuto("Simple"));
     chooser.setDefaultOption("4 Amp Side", findPoseToAuto("4 Amp Side"));   
     chooser.setDefaultOption("5 Amp Side", findPoseToAuto("5 Amp Side")); 
-    
+
     SmartDashboard.putData("Auto Chooser", this.chooser);
 
     // Configure the button bindings
@@ -112,7 +114,7 @@ public class RobotContainer {
     }
   
 
-  /**
+  /*
    * Use this method to define your button->command mappings. Buttons can be
    * created by
    * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
@@ -137,7 +139,7 @@ public class RobotContainer {
                         targetID[0])));
 
     //Slow mode while moving
-    new JoystickButton(m_driverController, Button.kR1.value).whileTrue(
+    new JoystickButton(m_driverController, Button.kL1.value).whileTrue(
                       new RunCommand(() -> m_robotDrive.slowMode(
                         getDriverLeftY(),
                         getDriverLeftX(),
@@ -149,12 +151,14 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kSquare.value).whileTrue(new RunCommand(() -> lockToCardinal(-90)));
     new JoystickButton(m_driverController, Button.kCross.value).whileTrue(new RunCommand(() -> lockToCardinal(0)));
 
-    //new JoystickButton(m_driverController, Button.kL2.value).whileTrue(new RunCommand(() -> m_robotDrive.driveToPose(new Pose2d(new Translation2d(2, 7), new Rotation2d(180)))));
+    //Lock to safe zone
+    new JoystickButton(m_driverController, Button.kR2.value).whileTrue(new RunCommand(() -> m_robotDrive.rotateToPose(getDriverLeftY(), getDriverLeftX(), safeZone)));
   
-    new JoystickButton(m_operatorController, XboxController.Button.kA.value).whileTrue(new Funnel());
-    new JoystickButton(m_operatorController, XboxController.Button.kB.value).whileTrue(new Intake());
-    new JoystickButton(m_operatorController, XboxController.Button.kX.value).whileTrue(new AmpScore());
-    new JoystickButton(m_operatorController, XboxController.Button.kY.value).whileTrue(new RunCommand(() -> ShooterSubsystem.getInstance().outtake()));
+    m_operatorController.b().whileTrue(new Intake());
+    m_operatorController.x().whileTrue(new AmpScore());
+    m_operatorController.y().whileTrue(new RunCommand(() -> ShooterSubsystem.getInstance().outtake()));
+    m_operatorController.rightBumper().whileTrue(new Funnel());
+    m_operatorController.rightTrigger().whileTrue(new ShootToSafe());
   }
 
   private void lockToCardinal(double goal){
@@ -164,7 +168,7 @@ public class RobotContainer {
                         goal);
   }
 
-  /**
+  /*
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
@@ -193,5 +197,5 @@ public class RobotContainer {
     return new SequentialCommandGroup(AutoBuilder.pathfindToPose(getStart(auto), constraints, 0), new PathPlannerAuto(auto));
 
   }
-
+  
 }   

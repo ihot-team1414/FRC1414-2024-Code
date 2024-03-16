@@ -16,6 +16,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
+import frc.utils.Limelight;
+import frc.utils.PhotonVisionHelper;
 
 
 public class VisionSubsystem extends SubsystemBase{
@@ -24,8 +26,8 @@ public class VisionSubsystem extends SubsystemBase{
     private AprilTagFieldLayout fieldLayout;
     private double previous;
 
-    PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera");    
-    PhotonVisionHelper backCamera = new PhotonVisionHelper("backCamera");
+    PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera", VisionConstants.kFrontCamConfigs);    
+    Limelight frontCam = new Limelight("limelight-b", VisionConstants.kLimelightCamConfigs);
     PhotonPoseEstimator visionEstimatorFront;
 
     private VisionSubsystem(){
@@ -89,9 +91,8 @@ public class VisionSubsystem extends SubsystemBase{
         return frontCamera;
     }
 
-    //Get back camera
-    public PhotonVisionHelper getBackCamera(){
-        return backCamera;
+    public Limelight getFrontCam(){
+      return frontCam;
     }
 
     //Get pose estimator
