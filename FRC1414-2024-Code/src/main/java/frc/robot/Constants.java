@@ -5,6 +5,7 @@
 package frc.robot;
 import java.util.TreeMap;
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.revrobotics.CANSparkBase.IdleMode;
 
@@ -40,9 +41,9 @@ public final class Constants {
     public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
 
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(26.5);
+    public static final double kTrackWidth = Units.inchesToMeters(25.5);
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(26.5);
+    public static final double kWheelBase = Units.inchesToMeters(20.5);
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kWheelBase / 2, kTrackWidth / 2),
@@ -57,15 +58,15 @@ public final class Constants {
     public static final double kBackRightChassisAngularOffset = Math.PI / 2; //
 
     // SPARK MAX CAN IDs
-    public static final int kFrontLeftDrivingCanId = 10;
-    public static final int kRearLeftDrivingCanId = 12;
-    public static final int kFrontRightDrivingCanId = 11;
-    public static final int kRearRightDrivingCanId = 13;
+    public static final int kFrontLeftDrivingCanId = 13;
+    public static final int kRearLeftDrivingCanId = 11;
+    public static final int kFrontRightDrivingCanId = 12;
+    public static final int kRearRightDrivingCanId = 10;
 
-    public static final int kFrontLeftTurningCanId = 20;
-    public static final int kRearLeftTurningCanId = 22;
-    public static final int kFrontRightTurningCanId = 21;
-    public static final int kRearRightTurningCanId = 23;
+    public static final int kFrontLeftTurningCanId = 23;
+    public static final int kRearLeftTurningCanId = 21;
+    public static final int kFrontRightTurningCanId = 22;
+    public static final int kRearRightTurningCanId = 20;
 
     public static final boolean kGyroReversed = false;
 
@@ -149,7 +150,7 @@ public final class Constants {
 
     public static final double kFrontCameraHeight = Units.inchesToMeters(7.25);
     public static final double kFrontCameraPitch = Math.toRadians(40);
-    public static final Transform3d kFrontCameraToRobot = new Transform3d(
+    public static final Transform3d kFrontPCameraToRobot = new Transform3d(
       new Translation3d(
         Units.inchesToMeters(-14.5), 
         Units.inchesToMeters(1), 
@@ -157,7 +158,7 @@ public final class Constants {
       new Rotation3d(Units.degreesToRadians(5), Units.degreesToRadians(7.5), Units.degreesToRadians(0)));
     
     public static final double[] kFrontCamConfigs = new double[]{7.25, Math.toRadians(40)};
-    public static final double[] kLimelightCamConfigs = new double[]{0.0, Math.toRadians(0.0)};
+    public static final double[] kLimelightCamConfigs = new double[]{10, 25};
   }
 
   public static final class NeoMotorConstants {
@@ -165,19 +166,25 @@ public final class Constants {
   }
 
   public static final class IntakeConstants {
-    public static final int kIntakeMotor1CanId = 30;
-    public static final int kIntakeMotor2CanId = 31;
+    public static final int kIntakeMotor1CanId = 35;
+    public static final int kIntakeMotor2CanId = 34;
     public static final boolean kIntakeMotorInverted = false;
     public static final int kIntakeMotorCurrentLimit = 40;
     public static final double kFunnelSpeed = 0.75;
-    public static double kIntakeSpeed = 0.25;
-    public static int kIntakeSensorPort = 60;
-    public static double kIndexThreshold = 45;
+    public static final Slot0Configs kIntakeConfiguration = new Slot0Configs();
+    static {
+      kIntakeConfiguration.kP = 1;
+      kIntakeConfiguration.kI = 0;
+      kIntakeConfiguration.kD = 0;
+    }
+    public static double kIntakeSpeed = 0.75;
+    public static int kIntakeSensorPort = 50;
+    public static double kIndexThreshold = 228;
   }
 
   public static final class ShooterConstants {
-    public static final int kShooterMotor1CanId = 40;
-    public static final int kShooterMotor2CanId = 41;
+    public static final int kShooterMotor1CanId = 32;
+    public static final int kShooterMotor2CanId = 33;
     public static final int kShooterMotorCurrentLimit = 40;
 
     //Fill
@@ -193,14 +200,27 @@ public final class Constants {
   }
 
   public static final class PivotConstants {
-    public static final int kPivotMotor1CanId = 50;
-    public static final int kPivotMotor2CanId = 51;
-    public static final double kMaxAngleThreshold = 0;
-    public static final double kMinAngleThreshold = 0;
+    public static final int kPivotMotor1CanId = 30;
+    public static final int kPivotMotor2CanId = 31;
+    public static final double kMaxAngleThreshold = 18;
+    public static final double kMinAngleThreshold = 1;
     public static final Slot0Configs kPivotConfiguration = new Slot0Configs();
-    public static final double kAmpAngle = 0;
-    public static double kPivotThreshold = 0;
 
+    static {
+      kPivotConfiguration.kP = 0.65;
+      kPivotConfiguration.kI = 0;
+      kPivotConfiguration.kD = 0.001;
+    }
+
+    public static final MotionMagicConfigs kPivotMotionMagic = new MotionMagicConfigs();
+
+    static {
+      kPivotMotionMagic.MotionMagicCruiseVelocity = 30;
+      kPivotMotionMagic.MotionMagicAcceleration = 30;
+    }
+
+    public static final double kAmpAngle = 0;
+    public static final double kPivotThreshold = 1;
   }
 
   public static final class FieldConstants {
@@ -215,7 +235,7 @@ public final class Constants {
         put(12, new Translation2d(Units.inchesToMeters(468.69), Units.inchesToMeters(177.10)));
         put(13, new Translation2d(Units.inchesToMeters(441.74), Units.inchesToMeters(161.62)));
       }
-     
+
     };
 
     public static final TreeMap<Integer, Translation2d> kBlueAprilTagLayout = new TreeMap<Integer, Translation2d>() {

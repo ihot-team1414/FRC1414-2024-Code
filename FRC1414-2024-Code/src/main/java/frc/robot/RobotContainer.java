@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,10 +18,15 @@ import edu.wpi.first.wpilibj.PS5Controller;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AmpScore;
+import frc.robot.commands.AssistedShooting;
 import frc.robot.commands.Funnel;
 import frc.robot.commands.Intake;
+import frc.robot.commands.Outtake;
+import frc.robot.commands.Pivot;
+import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootToSafe;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -47,6 +51,7 @@ public class RobotContainer {
 
   
   private final DrivetrainSubsystem m_robotDrive = DrivetrainSubsystem.getInstance();
+  private final IntakeSubsystem intakeSubsystem = IntakeSubsystem.getInstance();
   private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
   PS5Controller m_driverController = new PS5Controller(OIConstants.kDriverControllerPort);
   CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
@@ -68,13 +73,14 @@ public class RobotContainer {
       safeZone = ds.get().equals(Alliance.Red) ? FieldConstants.kRedAmpSafe : FieldConstants.kBlueAmpSafe;
     }
 
+    /*
     NamedCommands.registerCommand("Intake", new Intake());
     NamedCommands.registerCommand("Speaker Aim", new RunCommand(() -> m_robotDrive.aimToTarget(getDriverLeftY(), getDriverLeftX(), targetID[0])));
     NamedCommands.registerCommand("Speaker Score", new Funnel());
     NamedCommands.registerCommand("Amp Aim", new RunCommand(() -> m_robotDrive.aimToTarget(getDriverLeftY(), getDriverLeftX(), targetID[1])));
     NamedCommands.registerCommand("Amp Score", new AmpScore());
     NamedCommands.registerCommand("Cardinal Back", new RunCommand(() -> lockToCardinal(0)));
-
+    
 
     //Recursively call some commands until they have met a threshold? (while loop too)
 
@@ -92,7 +98,7 @@ public class RobotContainer {
     chooser.setDefaultOption("5 Amp Side", findPoseToAuto("5 Amp Side")); 
 
     SmartDashboard.putData("Auto Chooser", this.chooser);
-
+    */
     // Configure the button bindings
     configureButtonBindings();
   
@@ -108,9 +114,10 @@ public class RobotContainer {
                 true),
             m_robotDrive));
 
+    /*
     shooter.setDefaultCommand( 
       new RunCommand(() -> shooter.shoot(), 
-      shooter));
+      shooter)); */
     }
   
 
@@ -123,12 +130,26 @@ public class RobotContainer {
    * passing it to a
    * {@link JoystickButton}.
    */
+
   private void configureButtonBindings() {
 
     //DRIVER CONTROLS
-
+    
     //Zero the heading
     new JoystickButton(m_driverController, Button.kOptions.value).onTrue(new InstantCommand( () -> m_robotDrive.zeroHeading() ));
+    new JoystickButton(m_driverController, Button.kR1.value).whileTrue(new Intake());
+    new JoystickButton(m_driverController, Button.kL1.value).whileTrue(new Outtake());
+
+    new JoystickButton(m_driverController, Button.kL2.value).toggleOnTrue(new AssistedShooting());
+    new JoystickButton(m_driverController, Button.kCross.value).toggleOnTrue(new Pivot(3));
+    new JoystickButton(m_driverController, Button.kSquare.value).toggleOnTrue(new Pivot(17.9));
+    new JoystickButton(m_driverController, Button.kR2.value).whileTrue(new Shoot());
+
+    new JoystickButton(m_driverController, Button.kTriangle.value).whileTrue(new Funnel());
+    new JoystickButton(m_driverController, Button.kCircle.value).whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(getDriverLeftY(), getDriverLeftX(), targetID[1])));
+
+
+    /*
     new JoystickButton(m_driverController, Button.kL1.value).whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(getDriverLeftY(), getDriverLeftX(), targetID[1])));
 
     //Aim while moving
@@ -159,6 +180,7 @@ public class RobotContainer {
     m_operatorController.y().whileTrue(new RunCommand(() -> ShooterSubsystem.getInstance().outtake()));
     m_operatorController.rightBumper().whileTrue(new Funnel());
     m_operatorController.rightTrigger().whileTrue(new ShootToSafe());
+    */
   }
 
   private void lockToCardinal(double goal){
@@ -173,8 +195,11 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
+
   public Command getAutonomousCommand() {
-    return chooser.getSelected();
+    
+    return new PathPlannerAuto("Simple");
+    //return chooser.getSelected();
   }
 
   public double getDriverLeftY(){

@@ -17,46 +17,54 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.utils.Limelight;
+import frc.utils.LimelightHelpers;
 import frc.utils.PhotonVisionHelper;
-
 
 public class VisionSubsystem extends SubsystemBase{
     
     private static VisionSubsystem instance;
-    private AprilTagFieldLayout fieldLayout;
-    private double previous;
+    
+    //private AprilTagFieldLayout fieldLayout;
+    //private double previous;
 
-    PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera", VisionConstants.kFrontCamConfigs);    
-    Limelight frontCam = new Limelight("limelight-b", VisionConstants.kLimelightCamConfigs);
-    PhotonPoseEstimator visionEstimatorFront;
+    //PhotonVisionHelper frontCamera = new PhotonVisionHelper("frontCamera", VisionConstants.kFrontCamConfigs);    
+    Limelight frontCam = new Limelight("limelight-front", VisionConstants.kLimelightCamConfigs);
+    
+    //PhotonPoseEstimator visionEstimatorFront;
 
     private VisionSubsystem(){
 
-      fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-      previous = 0;
+      //fieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+      //previous = 0;
 
-      visionEstimatorFront = new PhotonPoseEstimator(fieldLayout, 
+      //PhotonVision
+      /*visionEstimatorFront = new PhotonPoseEstimator(fieldLayout, 
                                                     PoseStrategy.LOWEST_AMBIGUITY,
                                                     frontCamera.getCamera(),
-                                                    VisionConstants.kFrontCameraToRobot);
+                                                    VisionConstants.kFrontCameraToRobot);*/
 
-      visionEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      //visionEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
                   
     @Override
     public void periodic(){
-      SmartDashboard.putBoolean("Updating Pose?", getEstimatedGlobalPose(visionEstimatorFront, frontCamera).isPresent());
-      SmartDashboard.putBoolean("Target Detected", frontCamera.targetDetected());
+      //SmartDashboard.putBoolean("Updating Pose?", getEstimatedGlobalPose(visionEstimatorFront, frontCamera).isPresent());
+      //SmartDashboard.putBoolean("Target Detected", frontCam.detectsTarget());
+      SmartDashboard.putNumber("Vision Test", frontCam.getDistance());
+      SmartDashboard.putNumber("Height", frontCam.getTargetHeight());
+      SmartDashboard.putNumber("Tag", frontCam.getTagID());
     }
 
+    /*
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(PhotonPoseEstimator photonPose, PhotonVisionHelper camera) {
       var visionEst = photonPose.update();
       double latest = camera.getCamera().getLatestResult().getTimestampSeconds();
       boolean newResult = Math.abs(latest - previous) > 1e-5;
       if (newResult) previous = latest;
       return visionEst;
-    }
+    }*/
 
+    /*
     // Get the standard deviations of the estimated pose
     public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) {
         var estStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(30));
@@ -80,25 +88,23 @@ public class VisionSubsystem extends SubsystemBase{
         else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
 
         return estStdDevs;
-    }
+    } */
 
+    /*
     public PhotonPoseEstimator getVisionPoseEstimatorFront(){
       return visionEstimatorFront;
-    }
+    }*/
 
-    //Get front camera
+    /*
     public PhotonVisionHelper getFrontCamera(){
         return frontCamera;
-    }
+    }*/
 
+    
     public Limelight getFrontCam(){
       return frontCam;
     }
 
-    //Get pose estimator
-    public PhotonPoseEstimator getPoseEstimator(){
-        return visionEstimatorFront;
-    }
 
     public static VisionSubsystem getInstance() {
         if (instance == null) {

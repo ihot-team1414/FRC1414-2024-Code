@@ -19,9 +19,12 @@ public class Funnel extends Command {
 
     @Override
     public void execute(){
+        /* 
         if(drivetrainSubsystem.inWing() && shooterSubsystem.isWithinThreshold() && pivotSubsystem.isWithinThreshold()){
             intakeSubsystem.funnel();
-        }
+        }*/
+
+        intakeSubsystem.funnel();
     }
 
     @Override

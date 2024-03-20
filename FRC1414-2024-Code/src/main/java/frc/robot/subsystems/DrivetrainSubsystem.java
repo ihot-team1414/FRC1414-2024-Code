@@ -23,12 +23,15 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
+import frc.utils.Limelight;
+import frc.utils.LimelightHelpers;
 import frc.utils.PhotonVisionHelper;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -169,25 +172,32 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public void periodic() {
 
     SmartDashboard.putNumber("Distance from Tag", distanceFromTarget());
-    SmartDashboard.putNumber("Height of Tag", visionSubsystem.getFrontCamera().getHeightFromID());
+    //SmartDashboard.putNumber("Height of Tag", visionSubsystem.getFrontCamera().getHeightFromID());
     SmartDashboard.putNumber("X Est Pose", poseEstimator.getEstimatedPosition().getX());
     SmartDashboard.putNumber("Y Est Pose", poseEstimator.getEstimatedPosition().getY());
     SmartDashboard.putNumber("Est Rot", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
     SmartDashboard.putData("Field", field);
     poseToTagDistance(11);
     SmartDashboard.putNumber("Vector Distance", vectorDistance);
-    SmartDashboard.putBoolean("Target is Appropiate", visionSubsystem.getFrontCamera().targetAppropiate(7));
+    //SmartDashboard.putBoolean("Target is Appropiate", visionSubsystem.getFrontCamera().targetAppropiate(7));
 
     //Update odomotry
     poseEstimator.update(Rotation2d.fromDegrees(-m_gyro.getAngle()), getSwerveModulePositions());
     
     //Copy and paste this, changing the vision pose estimator and camera
     //The camera should correspond to the pose estimator as initialized in VisionSubsystem
-    addVisionMeasurement(visionSubsystem.getPoseEstimator(), visionSubsystem.getFrontCamera());
+    //addVisionMeasurement(visionSubsystem.getPoseEstimator(), visionSubsystem.getFrontCamera());
+    addVisionMeasurement("front");
     
     field.setRobotPose(getPose());
   }
 
+  public void addVisionMeasurement(String limelight){
+    var visionEst = LimelightHelpers.getBotPose2d_wpiBlue(limelight);
+    poseEstimator.addVisionMeasurement(visionEst, Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline(limelight) / 1000));
+  }
+
+  /*
   public void addVisionMeasurement(PhotonPoseEstimator poseEstmiator, PhotonVisionHelper camera){
     var visionEst = visionSubsystem.getEstimatedGlobalPose(poseEstmiator, camera);
     visionEst.ifPresent(
@@ -195,7 +205,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
           poseEstimator.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds);
         }
     );
-  }
+  }*/
 
   /**
    * Returns the currently-estimated pose of the robot.
@@ -265,7 +275,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public double distanceFromTarget(){
-    return visionSubsystem.getFrontCamera().getDistance();
+    return 0.0;
+    //return visionSubsystem.getFrontCamera().getDistance();
   }
 
   /**
@@ -323,18 +334,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
   
   public void aimToTarget(double xSpeed, double ySpeed, int id){
 
-    if(visionSubsystem.getFrontCam().detectsTarget() && visionSubsystem.getFrontCam().targetValid(id)){
-      double yaw = visionSubsystem.getFrontCam().getDeltaX();
+    
+    if(LimelightHelpers.getTV("limelight-front") /*&& visionSubsystem.getFrontCam().targetValid(id)*/){
+      double yaw = LimelightHelpers.getTX("limelight-front");
       if(!(yaw < 0 && yaw > -DriveConstants.kYawThreshold || yaw > 0 && yaw < DriveConstants.kYawThreshold)){
-        drive(xSpeed, ySpeed, new ProfiledPIDController(0.015, 0, 0, new TrapezoidProfile.Constraints(1, 1))
+        drive(xSpeed, ySpeed, new ProfiledPIDController(0.0075, 0, 0, new TrapezoidProfile.Constraints(2, 1))
                                               .calculate(yaw, 
                                               0), 
                                               true);
       }
     }
+    /*
     else {
       rotateToPose(xSpeed, ySpeed, id);
-    }
+    }*/
   }
 
   //Drive to a specific pose from current pose

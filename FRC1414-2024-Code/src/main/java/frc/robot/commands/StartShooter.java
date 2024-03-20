@@ -17,12 +17,12 @@ public class StartShooter extends Command {
 
     @Override
     public void execute(){
-        
+        /*
         pivot = pivotSubsystem.getPivotAngle();
         pivotSubsystem.setPivotAngle(pivot);
         
         speed = shooterSubsystem.getShooterSpeed();
-        shooterSubsystem.setShooterSpeed(speed);
+        shooterSubsystem.setShooterSpeed(speed)*/
     }
 
     @Override

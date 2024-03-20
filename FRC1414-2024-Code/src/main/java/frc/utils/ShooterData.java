@@ -12,8 +12,8 @@ public class ShooterData {
     private ShooterData(){
 
         // Add data to the TreeMap (current values are filler)
-        addSpeaker(0.0, 0.0, 0.0);
-        addSpeaker(1.0, 1.0, 1.0);
+        addSpeaker(43.65, 0.0, 10);
+        addSpeaker(80.0, 1.0, 8);
         addSpeaker(2.0, 2.0, 2.0);
         addSpeaker(3.0, 3.0, 3.0);
         addSpeaker(4.0, 4.0, 4.0);

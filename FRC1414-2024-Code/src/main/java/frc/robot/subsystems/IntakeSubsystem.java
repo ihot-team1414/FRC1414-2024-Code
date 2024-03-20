@@ -1,5 +1,10 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 import com.revrobotics.CANSparkMax;
@@ -11,38 +16,42 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.IntakeConstants;;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ShooterConstants;;
 
 public class IntakeSubsystem extends SubsystemBase {
     
-    private final CANSparkMax intakeMotor1;
-    private final CANSparkMax intakeMotor2;
-    private final RelativeEncoder intakeMotorEncoder;
-    private final SparkPIDController intakeMotorPID;
+    private final TalonFX intakeMotor1;
+    private final TalonFX intakeMotor2;
     private final TimeOfFlight intakeSensor;
+    private Follower followerI; 
+    private DutyCycleOut dutyCycleOut;
+    private TalonFXConfiguration intakeMotorConfiguration;
 
     private static IntakeSubsystem instance;
 
     public IntakeSubsystem(){
         
-        intakeMotor1 = new CANSparkMax(IntakeConstants.kIntakeMotor1CanId, MotorType.kBrushless);
-        intakeMotor2 = new CANSparkMax(IntakeConstants.kIntakeMotor2CanId, MotorType.kBrushless);
+        intakeMotor1 = new TalonFX(IntakeConstants.kIntakeMotor1CanId);
+        intakeMotor2 = new TalonFX(IntakeConstants.kIntakeMotor2CanId);
         intakeSensor = new TimeOfFlight(IntakeConstants.kIntakeSensorPort);
         
-        intakeMotor1.setIdleMode(IdleMode.kBrake);
-        intakeMotor2.setIdleMode(IdleMode.kBrake);
+        intakeMotor1.setNeutralMode(NeutralModeValue.Coast);
+        intakeMotor2.setNeutralMode(NeutralModeValue.Coast);
         intakeSensor.setRangingMode(RangingMode.Short, 32);
+
+        intakeMotorConfiguration = new TalonFXConfiguration();
+        intakeMotorConfiguration.withSlot0(IntakeConstants.kIntakeConfiguration);
+        intakeMotorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
+        intakeMotorConfiguration.CurrentLimits.SupplyCurrentLimit = 10;
         
-        intakeMotor1.setSmartCurrentLimit(IntakeConstants.kIntakeMotorCurrentLimit);
-        intakeMotor2.setSmartCurrentLimit(IntakeConstants.kIntakeMotorCurrentLimit);
+        intakeMotor1.getConfigurator().apply(intakeMotorConfiguration);
+        intakeMotor2.getConfigurator().apply(intakeMotorConfiguration);
 
-        intakeMotor2.follow(intakeMotor1, true);
-        intakeMotorEncoder = intakeMotor1.getEncoder();
-        intakeMotorPID = intakeMotor1.getPIDController();
-        intakeMotorPID.setFeedbackDevice(intakeMotorEncoder);
+        followerI = new Follower(intakeMotor1.getDeviceID(), true);
 
-        intakeMotor1.burnFlash();
-        intakeMotor2.burnFlash();
+        dutyCycleOut = new DutyCycleOut(0, true, false, false, false);
+        intakeMotor2.setControl(followerI);
     }
 
     public static synchronized IntakeSubsystem getInstance(){
@@ -54,24 +63,20 @@ public class IntakeSubsystem extends SubsystemBase {
 
     //Use exclusively to intake
     public void intake(){
-        intakeMotor1.set(IntakeConstants.kIntakeSpeed);
+        intakeMotor1.setControl(dutyCycleOut.withOutput(IntakeConstants.kIntakeSpeed));
     }
 
     //Use exclusively to move from intake to shooter
     public void funnel(){
-        intakeMotor1.set(IntakeConstants.kFunnelSpeed);
+        intakeMotor1.setControl(dutyCycleOut.withOutput(IntakeConstants.kFunnelSpeed));
     }
 
     public void outtake(){
-        intakeMotor1.set(-IntakeConstants.kIntakeSpeed);
+        intakeMotor1.setControl(dutyCycleOut.withOutput(-IntakeConstants.kIntakeSpeed));
     }
 
     public void stop(){
         intakeMotor1.stopMotor();
-    }
-
-    public void setSpeed(double speed){
-        intakeMotorPID.setReference(speed, ControlType.kVelocity);
     }
 
     public boolean isLoaded(){
@@ -80,19 +85,14 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void index(){
-        
         //Will keep intaking until loaded
         if(isLoaded())
         { stop(); }
-        else 
-        { index(); }
-   
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("IM1 Velocity", intakeMotor1.getEncoder().getVelocity());
-        SmartDashboard.putNumber("IM2 Velocity", intakeMotor2.getEncoder().getVelocity());
-        SmartDashboard.putBoolean("Filled", isLoaded());
+        SmartDashboard.putNumber("IM1 Velocity", intakeMotor1.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("IM2 Velocity", intakeMotor2.getVelocity().getValueAsDouble());
     }
 }

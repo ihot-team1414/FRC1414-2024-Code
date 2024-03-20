@@ -19,7 +19,7 @@ public class ShootToSafe extends Command {
 
     @Override
     public void execute(){
-        
+        /*
         pivot = pivotSubsystem.getSafeAngle();
         pivotSubsystem.setPivotAngle(pivot);
         
@@ -28,7 +28,7 @@ public class ShootToSafe extends Command {
 
         if(pivotSubsystem.isWithinThreshold() && shooterSubsystem.isWithinThreshold()){
             intakeSubsystem.funnel();
-        }
+        }*/
 
     }
 

@@ -34,13 +34,18 @@ public class ShooterSubsystem extends SubsystemBase {
 
         shooterMotorConfig = new TalonFXConfiguration();
         shooterMotorConfig.withSlot0(ShooterConstants.kShooterConfiguration);
+        shooterMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        shooterMotorConfig.CurrentLimits.SupplyCurrentLimit = 60;
         
         shooterMotor1.getConfigurator().apply(shooterMotorConfig);
+        shooterMotor2.getConfigurator().apply(shooterMotorConfig);
+
         follower = new Follower(shooterMotor1.getDeviceID(), true);
 
         shooterMotor2.setControl(follower);
 
         shooterMotor1.getConfigurator().refresh(ShooterConstants.kShooterConfiguration);
+        shooterMotor2.getConfigurator().refresh(ShooterConstants.kShooterConfiguration);
 
         //Refresh?
         //Configure PID, max output, voltage compensation
@@ -52,15 +57,16 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor1.setControl(shooterVelocity.withVelocity(speed));
     }
 
+    /*
     public double getShooterSpeed(){
-        double distance = VisionSubsystem.getInstance().getFrontCamera().getDistance();
+        double distance = VisionSubsystem.getInstance().getFrontCam().getDistance();
         return ShooterData.getInstance().getShooterSpeed(distance);
     }
 
     public double getSafeSpeed(){
-        double distance = VisionSubsystem.getInstance().getFrontCamera().getDistance();
+        double distance = VisionSubsystem.getInstance().getFrontCam().getDistance();
         return ShooterData.getInstance().getSafeSpeed(distance);
-    }
+    }*/
 
     // Check whether the current velocity of the motor is within the threshold (before shooting)
     public boolean isWithinThreshold(){
@@ -71,6 +77,10 @@ public class ShooterSubsystem extends SubsystemBase {
     public void outtake(){
         speed = ShooterConstants.kOuttakeVelocity;
         shooterMotor1.setControl(shooterVelocity.withVelocity(ShooterConstants.kOuttakeVelocity));
+    }
+
+    public void shootVolt(){
+        shooterMotor1.set(0.2);
     }
 
     // Stop motors on coast
@@ -89,8 +99,8 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        SmartDashboard.putNumber("Shooter Motor 1 Velocity", shooterMotor1.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Shooter Motor 2 Velocity", shooterMotor2.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter Motor 1 Velocity", shooterMotor1.getVelocity().getValueAsDouble() * 60);
+        SmartDashboard.putNumber("Shooter Motor 2 Velocity", shooterMotor2.getVelocity().getValueAsDouble() * 60);
     }
 
     public static ShooterSubsystem getInstance() {

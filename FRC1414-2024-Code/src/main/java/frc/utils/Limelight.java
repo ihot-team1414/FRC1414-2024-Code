@@ -12,6 +12,7 @@ import frc.robot.Constants.FieldConstants;
 
 public class Limelight {
 
+   
   private NetworkTableEntry ty = null;
   private NetworkTableEntry tx = null;
   private NetworkTableEntry tv = null;
@@ -19,12 +20,14 @@ public class Limelight {
   private NetworkTable table;
   private double[] configs;
   private Optional<Alliance> allianceColor;
+  private String networkTable;
 
   public Limelight(String networkTable, double[] configs) {
 
     this.configs = configs;
-    NetworkTable table = NetworkTableInstance.getDefault().getTable(networkTable);
+    table = NetworkTableInstance.getDefault().getTable(networkTable);
     allianceColor = DriverStation.getAlliance();
+    this.networkTable = networkTable;
     id = 0;
 
     ty = table.getEntry("ty");
@@ -42,7 +45,7 @@ public class Limelight {
 
   public double getDistance(){
     
-    ty = table.getEntry("ty");
+    //ty = table.getEntry("ty");
 
     // how many degrees back is your limelight rotated from perfectly vertical?
     double limelightMountAngleDegrees = configs[1]; 
@@ -52,16 +55,16 @@ public class Limelight {
 
     // distance from the target to the floor
     double goalHeightInches = getTargetHeight(); 
-
-    double angleToGoalRadians = Units.degreesToRadians(limelightMountAngleDegrees);
+    double angleToGoalRadians = Units.degreesToRadians(limelightMountAngleDegrees + LimelightHelpers.getTY(networkTable));
 
     //calculate distance
-    return (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+    return (Units.metersToInches(goalHeightInches) - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
   }
 
+  //Meters
   public double getTargetHeight(){
     if(detectsTarget()){    
-      id = tv.getNumber(0).intValue();
+      id = ((int)getTagID());
         if(id >= 11) { return FieldConstants.kStageHeight; }
         else if (id == 3 || id == 4 || id == 7 || id == 8) { return FieldConstants.kSpeakerHeight; }
         else { return FieldConstants.kAmpHeight; } 
@@ -78,6 +81,12 @@ public class Limelight {
           }
       }
       return false;
+  }
+
+  public double getTagID(){
+    if(tv != null){
+      return table.getEntry("tid").getDouble(0);
+    } else { return 100; }
   }
 
   public boolean detectsTarget() {
