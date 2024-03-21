@@ -18,7 +18,7 @@ public class Routines {
     public static Command scoreAmp() {
         return ShooterPrimitives.rev(Constants.ShooterConstants.kAmpDutyCycle)
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition))
-                .andThen(IntakePrimitives.ampFeed().withTimeout(1)).finallyDo(() -> {
+                .alongWith(IntakePrimitives.ampFeed().withTimeout(2)).finallyDo(() -> {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
