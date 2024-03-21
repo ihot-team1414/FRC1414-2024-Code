@@ -27,6 +27,6 @@ public class ShooterPrimitives {
     public static Command warmUp(){
         Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-front");
         double distance = tagPose.getTranslation().getNorm();
-        return new RunCommand(() -> shooter.setDutyCycleDifferential(ShooterData.getInstance().getShooterDutyCycle(distance))).finallyDo(() -> shooter.stop());
+        return new RunCommand(() -> shooter.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(distance))).finallyDo(() -> shooter.stop());
     }
 }
