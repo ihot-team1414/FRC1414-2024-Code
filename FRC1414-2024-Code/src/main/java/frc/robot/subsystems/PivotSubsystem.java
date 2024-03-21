@@ -6,6 +6,7 @@ import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PivotConstants;
 
@@ -74,7 +75,13 @@ public class PivotSubsystem extends SubsystemBase {
                 - motionMagicControl.Position) < PivotConstants.kPivotErrorMargin;
     }
 
+    public boolean isBeyondPosition(double position){
+        return Math.abs(pivotMotor1.getPosition().getValueAsDouble()) >= position;
+    }
+
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Pivot Position", pivotMotor1.getPosition().getValueAsDouble());
+        SmartDashboard.putBoolean("is beyond", isBeyondPosition(5));
     }
 }

@@ -6,16 +6,30 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.compound.Diff_MotionMagicDutyCycle_Velocity;
+import com.ctre.phoenix6.controls.compound.Diff_VoltageOut_Velocity;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static edu.wpi.first.units.Units.Volts;
+
+import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.utils.LimelightHelpers;
+import frc.utils.ShooterData;
 
 public class ShooterSubsystem extends SubsystemBase {
     private static ShooterSubsystem instance;
+    private final PivotSubsystem pivot;
+    private final IntakeSubsystem intake;
 
     private final TalonFX shooterMotor1;
     private final TalonFX shooterMotor2;
@@ -55,7 +69,9 @@ public class ShooterSubsystem extends SubsystemBase {
         dutyCycleOutControl = new DutyCycleOut(0, true, false, false, false);
         followerControl = new Follower(shooterMotor1.getDeviceID(), true);
 
-        shooterMotor2.setControl(followerControl);
+        //shooterMotor2.setControl(followerControl);
+        pivot = PivotSubsystem.getInstance();
+        intake = IntakeSubsystem.getInstance();
     }
 
     public static ShooterSubsystem getInstance() {
@@ -86,8 +102,43 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor1.setControl(dutyCycleOutControl.withOutput(dutyCycle));
     }
 
+    public void setDutyCycleDifferential(double dutyCycle) {
+        shooterMotor1.setControl(dutyCycleOutControl.withOutput(dutyCycle));
+        shooterMotor2.setControl(dutyCycleOutControl.withOutput(-dutyCycle + 0.1));
+    }
+
     public void stop() {
         shooterMotor1.stopMotor();
+        shooterMotor2.stopMotor();
+    }
+
+    public void turnToTarget(){
+        Rotation2d rotation = Rotation2d.fromRadians(0);
+
+        if (LimelightHelpers.getTV("limelight-front")) {
+            double yawError = LimelightHelpers.getTX("limelight-front");
+
+            if (Math.abs(yawError) > Constants.DriveConstants.kAutoAimErrorMargin) {
+                rotation = Rotation2d.fromDegrees(-yawError * Constants.DriveConstants.kAutoAimP);
+            }
+
+            Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-front");
+            double distance = tagPose.getTranslation().getNorm();
+
+            pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
+            instance.setDutyCycleDifferential(ShooterData.getInstance().getShooterDutyCycle(distance));
+
+            if (yawError < Constants.DriveConstants.kAutoAimErrorMargin
+                    && pivot.isAtPositionSetpoint()
+                    && instance.isWithinVelocitylerance(ShooterData.getInstance().getMinShotVelocity(distance))) {
+                intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
+            } else {
+                intake.stop();
+            }
+        }
+        DrivetrainSubsystem.getInstance().drive(new Transform2d(new Translation2d(0, 0),
+                        rotation),
+                        true);
     }
 
     /*

@@ -6,10 +6,12 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 
 public class IntakePrimitives {
     private static IntakeSubsystem intake = IntakeSubsystem.getInstance();
     private static LEDSubsystem led = LEDSubsystem.getInstance();
+    private static PivotSubsystem pivot = PivotSubsystem.getInstance();
 
     public static Command intake() {
         return new InstantCommand(() -> led.setColor(0.03), led)
@@ -27,5 +29,15 @@ public class IntakePrimitives {
 
     public static Command ampFeed() {
         return new RunCommand(() -> intake.setDutyCycle(Constants.IntakeConstants.kAmpFeedDutyCycle), intake);
+    }
+
+    public static Command ampFeedAtPivot(){
+        return new RunCommand(() -> feedBeyondPosition(), intake);
+    }
+
+    private static void feedBeyondPosition(){
+        if(pivot.isBeyondPosition(Constants.PivotConstants.kAmpBeyondThreshold)){
+            intake.setDutyCycle(Constants.IntakeConstants.kAmpFeedDutyCycle);
+        } 
     }
 }

@@ -52,7 +52,7 @@ public final class Constants {
     public static final int kRearRightTurningCanId = 23;
 
     public static final double kAutoAimErrorMargin = 2.5;
-    public static final double kAutoAimP = 4.5;
+    public static final double kAutoAimP = 2.5;
     public static final double kSlowMode = 0.1;
   }
 
@@ -147,7 +147,7 @@ public final class Constants {
     public static final boolean kIntakeMotorInverted = false;
     public static final int kIntakeMotorCurrentLimit = 40;
     public static final double kSpeakerFeedDutyCycle = 0.75;
-    public static final double kAmpFeedDutyCycle = 0.5;
+    public static final double kAmpFeedDutyCycle = 0.6;
     public static final Slot0Configs kIntakeConfiguration = new Slot0Configs();
     static {
       kIntakeConfiguration.kP = 1;
@@ -175,7 +175,7 @@ public final class Constants {
       kShooterConfiguration.kV = 0.1685;
     }
 
-    public static final double kAmpDutyCycle = 0.000001;
+    public static final double kAmpDutyCycle = 0.225;
     public static final double kEjectDutyCycle = 0.3;
     public static final double kShooterErrorMargin = 10;
   }
@@ -201,11 +201,12 @@ public final class Constants {
     }
 
     public static final double kIntakePosition = 2;
-    public static final double kAmpPrimePosition = 16.5;
+    public static final double kAmpPrimePosition = 6;
     public static final double kAmpScoringPosition = 17.5;
     public static final double kStowPosition = 0.4;
     public static final double kEjectPosition = 6;
     public static final double kPivotErrorMargin = 0.5;
+    public static final double kAmpBeyondThreshold = 7.4;
   }
 
   public static final class FieldConstants {
