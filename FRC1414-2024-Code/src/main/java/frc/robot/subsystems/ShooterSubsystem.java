@@ -99,10 +99,12 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setDutyCycle(double dutyCycle) {
+        shooterMotor2.setControl(followerControl.withMasterID(32));
         shooterMotor1.setControl(dutyCycleOutControl.withOutput(dutyCycle));
     }
 
     public void setDutyCycleDifferential(double dutyCycle) {
+        shooterMotor2.setControl(followerControl.withMasterID(33));
         shooterMotor1.setControl(dutyCycleOutControl.withOutput(dutyCycle));
         shooterMotor2.setControl(dutyCycleOutControl.withOutput(-dutyCycle + 0.1));
     }
@@ -126,7 +128,7 @@ public class ShooterSubsystem extends SubsystemBase {
             double distance = tagPose.getTranslation().getNorm();
 
             pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
-            instance.setDutyCycleDifferential(ShooterData.getInstance().getShooterDutyCycle(distance));
+            instance.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(distance));
 
             if (yawError < Constants.DriveConstants.kAutoAimErrorMargin
                     && pivot.isAtPositionSetpoint()
@@ -151,5 +153,6 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter Velocity", shooterMotor1.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Following", followerControl.MasterID);
     }
 }

@@ -8,22 +8,36 @@ public class ShooterData {
     private static ShooterData instance;
 
     private ShooterData() {
-        addSpeaker(2, 0.6, 9, 20);
-        addSpeaker(2.1, 0.6, 8.75, 20);
+        addSpeaker(1.75, 0.6, 10, 20);
+        addSpeaker(2, 0.6, 9.5, 20);
+        addSpeaker(2.1, 0.6, 9, 20);
         addSpeaker(2.25, 0.6, 8.5, 20);
         addSpeaker(2.35, 0.6, 8.25, 20);
-        addSpeaker(2.55, 0.6, 8.0, 20);
+        addSpeaker(2.55, 0.6, 8.15, 20);
         addSpeaker(2.65, 0.6, 7.75, 20);
-
         addSpeaker(2.75, 0.6, 7.6, 20);
+        addSpeaker(2.8, 0.6, 7.75, 20);
         addSpeaker(2.9, 0.6, 7.45, 20);
-        addSpeaker(3, 0.7, 7.25, 20);
-        addSpeaker(3.15, 0.7, 7.175, 20);
-        addSpeaker(3.25, 0.75, 7.125, 20);
-        addSpeaker(3.35, 0.75, 7, 20);
-        addSpeaker(3.5, 0.8, 6.85, 20);
 
-        addSpeaker(6, 0.9, 5.4, 45);
+
+        addSpeaker(3, 0.7, 7.0, 20);
+        addSpeaker(3.15, 0.7, 6.825, 20);
+        addSpeaker(3.2, 0.7, 6.75, 20);
+        addSpeaker(3.25, 0.75, 6.70, 20);
+        addSpeaker(3.3, 0.8, 6.6, 20);
+        addSpeaker(3.35, 0.75, 6.50, 20);
+        addSpeaker(3.4, 0.8, 6.40, 20);
+        addSpeaker(3.5, 0.8, 6.25, 20);
+        addSpeaker(3.6, 0.8, 6.10, 20);
+        addSpeaker(3.65, 0.8, 5.98, 20);
+        addSpeaker(3.7, 0.8, 5.95, 20);
+        addSpeaker(3.8, 0.8, 5.9, 20);
+        addSpeaker(3.9, 0.8, 5.85, 20);
+        addSpeaker(3.95, 0.8, 5.85, 20);
+        addSpeaker(4, 0.8, 5.8, 20);
+
+
+        addSpeaker(6, 0.9, 5.375, 45);
 
     }
 

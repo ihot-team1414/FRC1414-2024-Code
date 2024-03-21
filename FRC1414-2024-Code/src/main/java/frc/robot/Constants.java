@@ -175,7 +175,7 @@ public final class Constants {
       kShooterConfiguration.kV = 0.1685;
     }
 
-    public static final double kAmpDutyCycle = 0.225;
+    public static final double kAmpDutyCycle = 0.2225;
     public static final double kEjectDutyCycle = 0.3;
     public static final double kShooterErrorMargin = 10;
   }
@@ -188,7 +188,7 @@ public final class Constants {
     public static final Slot0Configs kPivotConfiguration = new Slot0Configs();
 
     static {
-      kPivotConfiguration.kP = 0.65;
+      kPivotConfiguration.kP = 0.75;
       kPivotConfiguration.kI = 0;
       kPivotConfiguration.kD = 0.001;
     }
@@ -196,7 +196,7 @@ public final class Constants {
     public static final MotionMagicConfigs kPivotMotionMagic = new MotionMagicConfigs();
 
     static {
-      kPivotMotionMagic.MotionMagicCruiseVelocity = 30;
+      kPivotMotionMagic.MotionMagicCruiseVelocity = 40;
       kPivotMotionMagic.MotionMagicAcceleration = 30;
     }
 
@@ -205,8 +205,8 @@ public final class Constants {
     public static final double kAmpScoringPosition = 17.5;
     public static final double kStowPosition = 0.4;
     public static final double kEjectPosition = 6;
-    public static final double kPivotErrorMargin = 0.5;
-    public static final double kAmpBeyondThreshold = 7.4;
+    public static final double kPivotErrorMargin = 0.2;
+    public static final double kAmpBeyondThreshold = 9; //7.4
   }
 
   public static final class FieldConstants {

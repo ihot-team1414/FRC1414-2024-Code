@@ -111,6 +111,7 @@ public class RobotContainer {
         chooser.setDefaultOption("Simple (4)", AutoBuilder.buildAuto("Simple (4)"));
         chooser.addOption("Center", AutoBuilder.buildAuto("Center"));
         chooser.addOption("Top Clear", AutoBuilder.buildAuto("Top Clear"));
+        chooser.addOption("Simple (3)", AutoBuilder.buildAuto("Simple (3)"));
         SmartDashboard.putData("Auto Chooser", this.chooser);
     }
     
