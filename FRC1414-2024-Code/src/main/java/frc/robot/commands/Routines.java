@@ -28,14 +28,6 @@ public class Routines {
                 });
     }
 
-    public static Command scoreSpeaker() {
-        return ShooterPrimitives.aim().withTimeout(2.5).finallyDo(() -> {
-            intake.stop();
-            pivot.setPosition(Constants.PivotConstants.kStowPosition);
-            shooter.stop();
-        });
-    }
-
     public static Command intake() {
         return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kIntakePosition)
                 .andThen(IntakePrimitives.intake()).andThen(PivotPrimitives.stow())

@@ -19,10 +19,6 @@ public class ShooterPrimitives {
         return new InstantCommand(() -> shooter.setDutyCycle(dutyCycleLeft, dutyCycleRight), shooter);
     }
 
-    public static Command aim() {
-        return new RunCommand(() -> shooter.turnToTarget(), shooter);
-    }
-
     public static Command warmUp() {
         Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-front");
         double distance = tagPose.getTranslation().getNorm();

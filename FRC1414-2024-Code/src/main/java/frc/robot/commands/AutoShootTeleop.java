@@ -18,14 +18,22 @@ import frc.utils.ShooterData;
 
 import java.util.function.DoubleSupplier;
 
-public class AutoShoot extends Command {
+public class AutoShootTeleop extends Command {
     private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
     private final PivotSubsystem pivot = PivotSubsystem.getInstance();
     private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
     private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
+    private final DoubleSupplier translationXSupplier;
+    private final DoubleSupplier translationYSupplier;
     private final DoubleSupplier limitingFactorSupplier;
 
-    public AutoShoot(DoubleSupplier limitingFactorSupplier) {
+    public AutoShootTeleop(
+            DoubleSupplier translationXSupplier,
+            DoubleSupplier translationYSupplier,
+            DoubleSupplier limitingFactorSupplier) {
+
+        this.translationXSupplier = translationXSupplier;
+        this.translationYSupplier = translationYSupplier;
         this.limitingFactorSupplier = limitingFactorSupplier;
 
         addRequirements(drivetrain, intake, pivot, shooter);
@@ -33,6 +41,10 @@ public class AutoShoot extends Command {
 
     @Override
     public void execute() {
+        double translationX = translationXSupplier.getAsDouble() * limitingFactorSupplier.getAsDouble()
+                * DriveConstants.kMaxSpeedMetersPerSecond;
+        double translationY = translationYSupplier.getAsDouble() * limitingFactorSupplier.getAsDouble()
+                * DriveConstants.kMaxSpeedMetersPerSecond;
 
         Rotation2d rotation = Rotation2d.fromRadians(0);
 
@@ -61,7 +73,7 @@ public class AutoShoot extends Command {
         }
 
         drivetrain
-                .drive(new Transform2d(new Translation2d(0, 0),
+                .drive(new Transform2d(new Translation2d(translationX, translationY),
                         rotation),
                         true);
 

@@ -15,6 +15,7 @@ import frc.robot.commands.Routines;
 import frc.robot.commands.ShooterPrimitives;
 import frc.robot.commands.Drive;
 import frc.robot.commands.AutoShoot;
+import frc.robot.commands.AutoShootTeleop;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -53,9 +54,12 @@ public class RobotContainer {
          */
         DrivetrainSubsystem.getInstance().resetHeading();
         drivetrain.setDefaultCommand(
-                new Drive(() -> MathUtil.applyDeadband(-driver.getLeftY(), Constants.OIConstants.kJoystickDeadband),
-                        () -> MathUtil.applyDeadband(-driver.getLeftX(), Constants.OIConstants.kJoystickDeadband),
-                        () -> MathUtil.applyDeadband(-driver.getRightX(), Constants.OIConstants.kJoystickDeadband),
+                new Drive(() -> MathUtil.applyDeadband(-driver.getLeftY(),
+                        Constants.OIConstants.kJoystickDeadband),
+                        () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                Constants.OIConstants.kJoystickDeadband),
+                        () -> MathUtil.applyDeadband(-driver.getRightX(),
+                                Constants.OIConstants.kJoystickDeadband),
                         () -> 0.9));
     }
 
@@ -64,7 +68,8 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(() -> {
                     DrivetrainSubsystem.getInstance().resetHeading();
                     DrivetrainSubsystem.getInstance()
-                            .resetOdometry(new Pose2d(0, 0, DrivetrainSubsystem.getInstance().getHeading()));
+                            .resetOdometry(new Pose2d(0, 0, DrivetrainSubsystem
+                                    .getInstance().getHeading()));
                 }));
         new JoystickButton(driver,
                 Button.kTriangle.value).whileTrue(Routines.scoreAmp());
@@ -72,7 +77,7 @@ public class RobotContainer {
                 Button.kSquare.value).whileTrue(Routines.primeAmp());
         new JoystickButton(driver, Button.kR1.value).whileTrue(Routines.intake());
         new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());
-        new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShoot(
+        new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShootTeleop(
                 () -> MathUtil.applyDeadband(-driver.getLeftY(),
                         Constants.OIConstants.kJoystickDeadband),
                 () -> MathUtil.applyDeadband(-driver.getLeftX(),
@@ -87,7 +92,7 @@ public class RobotContainer {
 
     public void configureAuto() {
         NamedCommands.registerCommand("Intake", Routines.intake());
-        NamedCommands.registerCommand("Speaker", Routines.scoreSpeaker());
+        NamedCommands.registerCommand("Auto Shoot", new AutoShoot(() -> 0.9));
         NamedCommands.registerCommand("Warm Up", ShooterPrimitives.warmUp());
 
         chooser.setDefaultOption("Simple (4)", AutoBuilder.buildAuto("Simple (4)"));
