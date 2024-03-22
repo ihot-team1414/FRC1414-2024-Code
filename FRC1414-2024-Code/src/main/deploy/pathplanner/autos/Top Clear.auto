@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Speaker"
+            "name": "Auto Shoot"
           }
         },
         {
@@ -39,7 +39,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Speaker"
+            "name": "Auto Shoot"
           }
         },
         {
@@ -70,7 +70,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Speaker"
+            "name": "Auto Shoot"
           }
         },
         {
@@ -101,7 +101,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Speaker"
+            "name": "Auto Shoot"
           }
         }
       ]

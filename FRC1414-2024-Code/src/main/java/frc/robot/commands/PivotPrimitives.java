@@ -9,7 +9,8 @@ public class PivotPrimitives {
     private static PivotSubsystem pivot = PivotSubsystem.getInstance();
 
     public static Command pivotToPosition(double position) {
-        return new RunCommand(() -> pivot.setPosition(position), pivot).until(() -> pivot.isAtPositionSetpoint());
+        return new RunCommand(() -> pivot.setPosition(position), pivot)
+                .until(() -> pivot.isAtPositionSetpoint(position));
     }
 
     public static Command stow() {

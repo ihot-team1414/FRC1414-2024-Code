@@ -28,6 +28,18 @@ public class Routines {
                 });
     }
 
+    public static Command speakerShot() {
+        return ShooterPrimitives
+                .rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
+                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition))
+                .andThen(IntakePrimitives.speakerFeed().onlyIf(() -> shooter.isWithinVelocitylerance(20)).repeatedly())
+                .finallyDo(() -> {
+                    intake.stop();
+                    shooter.stop();
+                    pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                });
+    }
+
     public static Command intake() {
         return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kIntakePosition)
                 .andThen(IntakePrimitives.intake()).andThen(PivotPrimitives.stow())

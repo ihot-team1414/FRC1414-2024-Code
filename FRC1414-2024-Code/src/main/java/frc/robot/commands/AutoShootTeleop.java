@@ -62,7 +62,7 @@ public class AutoShootTeleop extends Command {
             shooter.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(distance));
 
             if (yawError < Constants.DriveConstants.kAutoAimErrorMargin
-                    && pivot.isAtPositionSetpoint()
+                    && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
                     && shooter.isWithinVelocitylerance(ShooterData.getInstance().getMinShotVelocity(distance))) {
                 intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
             } else {

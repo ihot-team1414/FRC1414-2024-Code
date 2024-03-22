@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -16,18 +15,13 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.utils.LimelightHelpers;
 import frc.utils.ShooterData;
 
-import java.util.function.DoubleSupplier;
-
 public class AutoShoot extends Command {
     private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
     private final PivotSubsystem pivot = PivotSubsystem.getInstance();
     private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
     private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
-    private final DoubleSupplier limitingFactorSupplier;
 
-    public AutoShoot(DoubleSupplier limitingFactorSupplier) {
-        this.limitingFactorSupplier = limitingFactorSupplier;
-
+    public AutoShoot() {
         addRequirements(drivetrain, intake, pivot, shooter);
     }
 
@@ -50,7 +44,7 @@ public class AutoShoot extends Command {
             shooter.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(distance));
 
             if (yawError < Constants.DriveConstants.kAutoAimErrorMargin
-                    && pivot.isAtPositionSetpoint()
+                    && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
                     && shooter.isWithinVelocitylerance(ShooterData.getInstance().getMinShotVelocity(distance))) {
                 intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
             } else {

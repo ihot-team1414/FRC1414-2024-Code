@@ -84,7 +84,7 @@ public class RobotContainer {
                         Constants.OIConstants.kJoystickDeadband),
                 () -> 0.9));
 
-        new JoystickButton(driver, Button.kL2.value).whileTrue(ShooterPrimitives.warmUp());
+        new JoystickButton(driver, Button.kL2.value).whileTrue(Routines.speakerShot());
     }
 
     private void configureOperator() {
@@ -92,13 +92,10 @@ public class RobotContainer {
 
     public void configureAuto() {
         NamedCommands.registerCommand("Intake", Routines.intake());
-        NamedCommands.registerCommand("Auto Shoot", new AutoShoot(() -> 0.9));
+        NamedCommands.registerCommand("Auto Shoot", new AutoShoot().withTimeout(2));
         NamedCommands.registerCommand("Warm Up", ShooterPrimitives.warmUp());
 
-        chooser.setDefaultOption("Simple (4)", AutoBuilder.buildAuto("Simple (4)"));
-        chooser.addOption("Center", AutoBuilder.buildAuto("Center"));
         chooser.addOption("Top Clear", AutoBuilder.buildAuto("Top Clear"));
-        chooser.addOption("Simple (3)", AutoBuilder.buildAuto("Simple (3)"));
         SmartDashboard.putData("Auto Chooser", this.chooser);
     }
 

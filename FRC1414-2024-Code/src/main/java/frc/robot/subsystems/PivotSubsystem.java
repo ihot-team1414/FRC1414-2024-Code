@@ -70,9 +70,9 @@ public class PivotSubsystem extends SubsystemBase {
     /*
      * Sensor Methods
      */
-    public boolean isAtPositionSetpoint() {
+    public boolean isAtPositionSetpoint(double position) {
         return Math.abs(pivotMotor1.getPosition().getValueAsDouble()
-                - motionMagicControl.Position) < PivotConstants.kPivotErrorMargin;
+                - position) < PivotConstants.kPivotErrorMargin;
     }
 
     public double getPosition() {
