@@ -51,7 +51,7 @@ public class AutoShootTeleop extends Command {
         if (LimelightHelpers.getTV("limelight-front")) {
             double yawError = LimelightHelpers.getTX("limelight-front");
 
-            if (Math.abs(yawError) > Constants.DriveConstants.kAutoAimErrorMargin) {
+            if (Math.abs(yawError) > Constants.DriveConstants.kAutoAimTeleopErrorMargin) {
                 rotation = Rotation2d.fromDegrees(-yawError * Constants.DriveConstants.kAutoAimP);
             }
 
@@ -61,7 +61,7 @@ public class AutoShootTeleop extends Command {
             pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
             shooter.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(distance));
 
-            if (yawError < Constants.DriveConstants.kAutoAimErrorMargin
+            if (yawError < Constants.DriveConstants.kAutoAimTeleopErrorMargin
                     && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
                     && shooter.isWithinVelocitylerance(ShooterData.getInstance().getMinShotVelocity(distance))) {
                 intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);

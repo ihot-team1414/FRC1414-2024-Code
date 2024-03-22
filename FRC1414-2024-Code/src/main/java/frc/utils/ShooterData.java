@@ -32,10 +32,10 @@ public class ShooterData {
         addSpeaker(3.9, 0.8, 5.85, 20);
         addSpeaker(3.95, 0.8, 5.85, 20);
         addSpeaker(4, 0.8, 5.6, 20);
-        addSpeaker(5, 0.8, 5.2, 40);
-
+        addSpeaker(4.3, 0.8, 5.55, 20);
+        addSpeaker(4.4, 0.8, 5.45, 20);
+        addSpeaker(4.8, 0.8, 5.1, 30);
         addSpeaker(6, 0.9, 5.375, 45);
-
     }
 
     public static synchronized ShooterData getInstance() {

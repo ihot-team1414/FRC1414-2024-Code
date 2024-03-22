@@ -51,8 +51,9 @@ public final class Constants {
     public static final int kFrontRightTurningCanId = 21;
     public static final int kRearRightTurningCanId = 23;
 
-    public static final double kAutoAimErrorMargin = 3.5;
-    public static final double kAutoAimP = 4;
+    public static final double kAutoAimTeleopErrorMargin = 3.5;
+    public static final double kAutoAimAutoErrorMargin = 1;
+    public static final double kAutoAimP = 5;
     public static final double kSlowMode = 0.1;
   }
 

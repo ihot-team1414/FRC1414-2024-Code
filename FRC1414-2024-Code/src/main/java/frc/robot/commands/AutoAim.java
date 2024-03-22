@@ -28,7 +28,7 @@ public class AutoAim extends Command {
         if (LimelightHelpers.getTV("limelight-front")) {
             double yawError = LimelightHelpers.getTX("limelight-front");
 
-            if (Math.abs(yawError) > Constants.DriveConstants.kAutoAimErrorMargin) {
+            if (Math.abs(yawError) > Constants.DriveConstants.kAutoAimAutoErrorMargin) {
                 rotation = Rotation2d.fromDegrees(-yawError * Constants.DriveConstants.kAutoAimP);
             }
 
@@ -37,7 +37,7 @@ public class AutoAim extends Command {
 
             pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
 
-            if (yawError < Constants.DriveConstants.kAutoAimErrorMargin
+            if (yawError < Constants.DriveConstants.kAutoAimAutoErrorMargin
                     && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))) {
             }
 
