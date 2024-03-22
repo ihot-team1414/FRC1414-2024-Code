@@ -3,36 +3,36 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.55,
-        "y": 7.0
+        "x": 2.9473926753692252,
+        "y": 6.956830418526454
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.55,
-        "y": 7.0
+        "x": 3.9473926753692252,
+        "y": 6.956830418526454
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "C1END"
     },
     {
       "anchor": {
-        "x": 8.036262343308536,
-        "y": 7.439065519461206
+        "x": 8.359781629520887,
+        "y": 7.42834699034511
       },
       "prevControl": {
-        "x": 7.036262343308536,
-        "y": 7.439065519461206
+        "x": 7.110245754319127,
+        "y": 7.779652440676522
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "C2END"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Intake",
-      "minWaypointRelativePos": 0.6,
+      "minWaypointRelativePos": 0.75,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 1.5,

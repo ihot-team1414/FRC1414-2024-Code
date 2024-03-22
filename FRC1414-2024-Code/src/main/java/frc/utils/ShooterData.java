@@ -20,9 +20,7 @@ public class ShooterData {
         addSpeaker(2.9, 0.6, 7.45, 20);
 
         addSpeaker(3, 0.7, 6.75, 20);
-        addSpeaker(3.15, 0.7, 6.75, 20);
-        addSpeaker(3.2, 0.7, 6.75, 20);
-        addSpeaker(3.25, 0.75, 6.70, 20);
+        addSpeaker(3.25, 0.75, 6.67, 20);
         addSpeaker(3.3, 0.8, 6.6, 20);
         addSpeaker(3.35, 0.75, 6.50, 20);
         addSpeaker(3.4, 0.8, 6.40, 20);

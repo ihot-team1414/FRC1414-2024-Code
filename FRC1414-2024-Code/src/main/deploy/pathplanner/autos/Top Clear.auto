@@ -12,9 +12,28 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Auto Shoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Delayed Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Aim"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Rev"
+                }
+              }
+            ]
           }
         },
         {
@@ -32,14 +51,39 @@
                 "data": {
                   "name": "Intake"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Rev"
+                }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Auto Shoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Delayed Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Aim"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Rev"
+                }
+              }
+            ]
           }
         },
         {
@@ -62,15 +106,47 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "TopC3"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TopC3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Rev"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Auto Shoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Delayed Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Aim"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Rev"
+                }
+              }
+            ]
           }
         },
         {
@@ -93,15 +169,47 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "TopC5"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TopC5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Rev"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Auto Shoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Delayed Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Aim"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Rev"
+                }
+              }
+            ]
           }
         }
       ]
