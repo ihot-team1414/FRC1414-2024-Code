@@ -16,10 +16,12 @@ public class Routines {
     }
 
     public static Command scoreAmp() {
-        return ShooterPrimitives.differentialRev(Constants.ShooterConstants.kAmpDutyCycle)
+        return ShooterPrimitives
+                .rev(Constants.ShooterConstants.kAmpDutyCycleLeft, Constants.ShooterConstants.kAmpDutyCycleRight)
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition))
-                .andThen(IntakePrimitives.ampFeedAtPivot().withTimeout(5
-                )).finallyDo(() -> {
+                .andThen(IntakePrimitives.ampFeed()
+                        .onlyIf(() -> pivot.getPosition() > Constants.PivotConstants.kAmpFeedPosition).repeatedly())
+                .finallyDo(() -> {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
@@ -28,11 +30,10 @@ public class Routines {
 
     public static Command scoreSpeaker() {
         return ShooterPrimitives.aim().withTimeout(2.5).finallyDo(() -> {
-                                                            intake.stop(); 
-                                                            pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                                                            shooter.stop();
-                                                        }
-                                                    );
+            intake.stop();
+            pivot.setPosition(Constants.PivotConstants.kStowPosition);
+            shooter.stop();
+        });
     }
 
     public static Command intake() {
@@ -55,4 +56,3 @@ public class Routines {
     }
 
 }
- 
