@@ -108,10 +108,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("Speaker", Routines.scoreSpeaker());
         NamedCommands.registerCommand("Warm Up", ShooterPrimitives.warmUp());
 
-        chooser.setDefaultOption("Simple (4)", AutoBuilder.buildAuto("Simple (4)"));
-        chooser.addOption("Center", AutoBuilder.buildAuto("Center"));
-        chooser.addOption("Top Clear", AutoBuilder.buildAuto("Top Clear"));
-        chooser.addOption("Simple (3)", AutoBuilder.buildAuto("Simple (3)"));
+        chooser.setDefaultOption("Base 4", AutoBuilder.buildAuto("Base 4"));
+        chooser.addOption("Center 3", AutoBuilder.buildAuto("Center 3"));
+        chooser.addOption("Top 3", AutoBuilder.buildAuto("Top 3"));
+        chooser.addOption("Base 4", AutoBuilder.buildAuto("Base 3"));
         SmartDashboard.putData("Auto Chooser", this.chooser);
     }
     
