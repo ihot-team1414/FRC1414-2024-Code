@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.172655029102431,
-        "y": 7.202344051580758
+        "x": 2.0,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.6546070239033135,
-        "y": 7.018502775529562
+        "x": 1.9664035223197567,
+        "y": 6.445396191463287
       },
       "isLocked": false,
-      "linkedName": "FN4END"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.6948948050438477,
-        "y": 6.368601734378609
+        "x": 2.0,
+        "y": 5.15385304958463
       },
       "prevControl": {
-        "x": 5.143814110015226,
-        "y": 6.542267630792323
+        "x": 1.9875299831814355,
+        "y": 6.641283656861099
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,18 +32,18 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 3.0,
     "maxAcceleration": 7.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 27.906186283206246,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Five Note",
+  "folder": null,
   "previewStartingState": null,
   "useDefaultConstraints": false
 }

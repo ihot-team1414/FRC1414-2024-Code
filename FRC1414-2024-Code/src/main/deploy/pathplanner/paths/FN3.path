@@ -3,59 +3,65 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4899108343414427,
-        "y": 5.339793282870464
+        "x": 2.9358023581866375,
+        "y": 5.443007223408514
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8364506917926267,
-        "y": 4.845443224608201
+        "x": 2.2823422156378217,
+        "y": 4.94865716514625
       },
       "isLocked": false,
       "linkedName": "FN2END"
     },
     {
       "anchor": {
-        "x": 1.4987923540465726,
-        "y": 5.826888249821698
+        "x": 1.5956637933756095,
+        "y": 5.55708098616056
       },
       "prevControl": {
-        "x": 1.5064124813984092,
-        "y": 5.130353854457709
+        "x": 1.6994533426576721,
+        "y": 5.060107325417156
       },
       "nextControl": {
-        "x": 1.4946807475568347,
-        "y": 6.202718627461511
+        "x": 1.5271282767141807,
+        "y": 5.885248386845643
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.604760298680202,
-        "y": 6.893979856109429
+        "x": 2.9161360414881847,
+        "y": 6.9626978907912624
       },
       "prevControl": {
-        "x": 1.4857879450928393,
-        "y": 6.4014549780511985
+        "x": 1.980046744344901,
+        "y": 6.2562618928203975
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "FN3END"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.6,
+      "rotationDegrees": 38.38252998666691,
+      "rotateFast": true
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.5,
+    "maxVelocity": 3.5,
     "maxAcceleration": 7.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 22.704942664491092,
+    "rotation": 35.71285445108501,
     "rotateFast": false
   },
   "reversed": false,

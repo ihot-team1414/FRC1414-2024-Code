@@ -22,7 +22,6 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class RobotContainer {
@@ -35,8 +34,7 @@ public class RobotContainer {
         /*
          * Controllers
          */
-        PS5Controller driver = new PS5Controller(OIConstants.kDriverControllerPort);
-        CommandXboxController operator = new CommandXboxController(OIConstants.kOperatorControllerPort);
+        PS5Controller operator = new PS5Controller(OIConstants.kDriverControllerPort);
 
         /*
          * Auto Chooser
@@ -57,37 +55,37 @@ public class RobotContainer {
                  */
                 DrivetrainSubsystem.getInstance().resetHeading();
                 drivetrain.setDefaultCommand(
-                                new Drive(() -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                new Drive(() -> MathUtil.applyDeadband(-operator.getLeftY(),
                                                 Constants.OIConstants.kJoystickDeadband),
-                                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                                () -> MathUtil.applyDeadband(-operator.getLeftX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
-                                                () -> MathUtil.applyDeadband(-driver.getRightX(),
+                                                () -> MathUtil.applyDeadband(-operator.getRightX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> 0.9));
         }
 
         private void configureDriver() {
-                new JoystickButton(driver, Button.kOptions.value)
+                new JoystickButton(operator, Button.kOptions.value)
                                 .onTrue(new InstantCommand(() -> {
                                         DrivetrainSubsystem.getInstance().resetHeading();
                                         DrivetrainSubsystem.getInstance()
                                                         .resetOdometry(new Pose2d(0, 0, DrivetrainSubsystem
                                                                         .getInstance().getHeading()));
                                 }));
-                new JoystickButton(driver,
+                new JoystickButton(operator,
                                 Button.kTriangle.value).whileTrue(Routines.scoreAmp());
-                new JoystickButton(driver,
+                new JoystickButton(operator,
                                 Button.kSquare.value).whileTrue(Routines.primeAmp());
-                new JoystickButton(driver, Button.kR1.value).whileTrue(Routines.intake());
-                new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());
-                new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShootTeleop(
-                                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                new JoystickButton(operator, Button.kR1.value).whileTrue(Routines.intake());
+                new JoystickButton(operator, Button.kR2.value).whileTrue(Routines.eject());
+                new JoystickButton(operator, Button.kL1.value).whileTrue(new AutoShootTeleop(
+                                () -> MathUtil.applyDeadband(-operator.getLeftY(),
                                                 Constants.OIConstants.kJoystickDeadband),
-                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                () -> MathUtil.applyDeadband(-operator.getLeftX(),
                                                 Constants.OIConstants.kJoystickDeadband),
                                 () -> 0.9));
 
-                new JoystickButton(driver, Button.kL2.value).whileTrue(Routines.speakerShot());
+                new JoystickButton(operator, Button.kL2.value).whileTrue(Routines.speakerShot());
         }
 
         private void configureOperator() {
@@ -99,10 +97,13 @@ public class RobotContainer {
                 NamedCommands.registerCommand("Auto Rev", new AutoRev().repeatedly());
                 NamedCommands.registerCommand("Delayed Feed",
                                 new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
+                NamedCommands.registerCommand("Delayed Feed 5 Note",
+                                new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
                 NamedCommands.registerCommand("Warm Up", ShooterPrimitives.warmUp());
 
                 chooser.addOption("Four Note", AutoBuilder.buildAuto("Top Clear"));
                 chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note"));
+                chooser.addOption("Test", AutoBuilder.buildAuto("Test"));
                 SmartDashboard.putData("Auto Chooser", this.chooser);
         }
 
