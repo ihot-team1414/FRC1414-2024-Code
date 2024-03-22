@@ -51,12 +51,6 @@
                 "data": {
                   "name": "Intake"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Auto Rev"
-                }
               }
             ]
           }
@@ -118,7 +112,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Rev"
+                  "name": "Intake"
                 }
               }
             ]
@@ -181,7 +175,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Rev"
+                  "name": "Intake"
                 }
               }
             ]

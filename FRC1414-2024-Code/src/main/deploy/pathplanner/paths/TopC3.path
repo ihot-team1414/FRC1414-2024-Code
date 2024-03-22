@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.359781629520887,
-        "y": 7.42834699034511
+        "x": 8.020254215902316,
+        "y": 7.4049782981401
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.6045715361078265,
-        "y": 7.27091589477033
+        "x": 7.201025041531085,
+        "y": 7.24377919446293
       },
       "isLocked": false,
       "linkedName": "C2END"
     },
     {
       "anchor": {
-        "x": 4.2613569888863605,
-        "y": 6.418921225238187
+        "x": 4.488185445323625,
+        "y": 6.404489953326523
       },
       "prevControl": {
-        "x": 4.904833625721786,
-        "y": 6.506723338914781
+        "x": 5.0553164672131015,
+        "y": 6.657186913771418
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "Top Clear",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 26.20550868559731,
     "velocity": 0
   },
   "useDefaultConstraints": true
