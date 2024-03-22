@@ -76,26 +76,26 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private Field2d field = new Field2d();
 
     public DrivetrainSubsystem() {
-        
+
         AutoBuilder.configureHolonomic(
-            this::getCurrentPose, 
-            this::resetOdometry, 
-            this::getRobotRelativeSpeeds, 
-            this::driveRobotRelative, 
-            new HolonomicPathFollowerConfig(
-                new PIDConstants(5, 0, 0),
-                new PIDConstants(6.5, 0, 0),
-                4.5,
-                0.4,
-                new ReplanningConfig()
-            ), () -> {
-                var alliance = DriverStation.getAlliance();
-                if(alliance.isPresent()){
-                    return alliance.get().equals(DriverStation.Alliance.Red);
-                }
-                return false;
-            },
-            this);
+                this::getCurrentPose,
+                this::resetOdometry,
+                this::getRobotRelativeSpeeds,
+                this::driveRobotRelative,
+                new HolonomicPathFollowerConfig(
+                        new PIDConstants(5, 0, 0),
+                        new PIDConstants(6.5, 0, 0),
+                        4.5,
+                        0.4,
+                        new ReplanningConfig()),
+                () -> {
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get().equals(DriverStation.Alliance.Red);
+                    }
+                    return false;
+                },
+                this);
     };
 
     public static synchronized DrivetrainSubsystem getInstance() {
@@ -105,16 +105,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return instance;
     }
 
-    //Robot relative drive for path planner
-    public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds){
+    // Robot relative drive for path planner
+    public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
         var states = DriveConstants.kDriveKinematics.toSwerveModuleStates(robotRelativeSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.kMaxSpeedMetersPerSecond);
         setModuleStates(states);
     }
 
-    //Robot field relative drive for path planner
-    public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds){
-        ChassisSpeeds robotRelative = ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds, getCurrentPose().getRotation());
+    // Robot field relative drive for path planner
+    public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
+        ChassisSpeeds robotRelative = ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds,
+                getCurrentPose().getRotation());
         driveRobotRelative(robotRelative);
     }
 
@@ -179,12 +180,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 pose);
     }
 
-    public SwerveModulePosition[] getSwerveModulePositions(){
+    public SwerveModulePosition[] getSwerveModulePositions() {
         return new SwerveModulePosition[] {
-                        frontLeftSwerve.getPosition(),
-                        frontRightSwerve.getPosition(),
-                        rearLeftSwerve.getPosition(),
-                        rearRightSwerve.getPosition()
+                frontLeftSwerve.getPosition(),
+                frontRightSwerve.getPosition(),
+                rearLeftSwerve.getPosition(),
+                rearRightSwerve.getPosition()
         };
     }
 
@@ -212,15 +213,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SmartDashboard.putData("Field", field);
 
         odometry.update(getHeading(), getSwerveModulePositions());
-        //addVisionMeasurement();
-        
+        // addVisionMeasurement();
+
         field.setRobotPose(odometry.getEstimatedPosition());
     }
 
-    public void addVisionMeasurement(){
-        if(LimelightHelpers.getTV("limelight-front")){
-        odometry.addVisionMeasurement(LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front").pose, 
-                                     LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front").timestampSeconds);
-    }
+    public void addVisionMeasurement() {
+        if (LimelightHelpers.getTV("limelight-front")) {
+            odometry.addVisionMeasurement(LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front").pose,
+                    LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front").timestampSeconds);
+        }
     }
 }

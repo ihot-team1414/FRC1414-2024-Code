@@ -75,13 +75,12 @@ public class PivotSubsystem extends SubsystemBase {
                 - motionMagicControl.Position) < PivotConstants.kPivotErrorMargin;
     }
 
-    public boolean isBeyondPosition(double position){
-        return Math.abs(pivotMotor1.getPosition().getValueAsDouble()) >= position;
+    public double getPosition(){
+        return pivotMotor1.getPosition().getValueAsDouble();
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Pivot Position", pivotMotor1.getPosition().getValueAsDouble());
-        SmartDashboard.putBoolean("is beyond", isBeyondPosition(5));
     }
 }

@@ -12,8 +12,8 @@ public class ShooterPrimitives {
     private static ShooterSubsystem shooter = ShooterSubsystem.getInstance();
 
 
-    public static Command differentialRev(double dutyCycle) {
-        return new InstantCommand(() -> shooter.setDutyCycleDifferential(dutyCycle), shooter);
+    public static Command rev(double dutyCycleLeft, double dutyCycleRight) {
+        return new InstantCommand(() -> shooter.setDutyCycle(dutyCycleLeft, dutyCycleRight), shooter);
     }
 
     public static Command rev(double dutyCycle) {

@@ -87,7 +87,7 @@ public class RobotContainer {
         new JoystickButton(driver,
                 Button.kSquare.value).whileTrue(Routines.primeAmp());
         new JoystickButton(driver, Button.kR1.value).whileTrue(Routines.intake());
-        new JoystickButton(driver, Button.kR2.value).onTrue(Routines.eject());
+        new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());
         new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShoot(
                 () -> MathUtil.applyDeadband(-driver.getLeftY(),
                         Constants.OIConstants.kJoystickDeadband),
@@ -111,7 +111,7 @@ public class RobotContainer {
         chooser.setDefaultOption("Base 4", AutoBuilder.buildAuto("Base 4"));
         chooser.addOption("Center 3", AutoBuilder.buildAuto("Center 3"));
         chooser.addOption("Top 3", AutoBuilder.buildAuto("Top 3"));
-        chooser.addOption("Base 4", AutoBuilder.buildAuto("Base 3"));
+        chooser.addOption("Base 4", AutoBuilder.buildAuto("Base 4"));
         SmartDashboard.putData("Auto Chooser", this.chooser);
     }
     
