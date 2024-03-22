@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.996068844362266,
+        "y": 7.333026954189502
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.478020839163148,
+        "y": 7.149185678138306
+      },
+      "isLocked": false,
+      "linkedName": "FN4END"
+    },
+    {
+      "anchor": {
+        "x": 3.6948948050438477,
+        "y": 6.368601734378609
+      },
+      "prevControl": {
+        "x": 5.11607137091393,
+        "y": 6.922863332838248
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 27.906186283206246,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Five Note",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

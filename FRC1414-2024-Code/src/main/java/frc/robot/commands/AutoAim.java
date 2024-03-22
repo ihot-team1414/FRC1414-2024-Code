@@ -37,11 +37,9 @@ public class AutoAim extends Command {
 
             pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
 
-            if (yawError < Constants.DriveConstants.kAutoAimAutoErrorMargin
-                    && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))) {
-            }
-
             SmartDashboard.putNumber("Tag Distance", tagPose.getTranslation().getNorm());
+        } else {
+            pivot.setPosition(ShooterData.getInstance().getShooterPosition(0));
         }
 
         drivetrain

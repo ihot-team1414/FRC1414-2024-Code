@@ -101,7 +101,8 @@ public class RobotContainer {
                                 new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
                 NamedCommands.registerCommand("Warm Up", ShooterPrimitives.warmUp());
 
-                chooser.addOption("Top Clear", AutoBuilder.buildAuto("Top Clear"));
+                chooser.addOption("Four Note", AutoBuilder.buildAuto("Top Clear"));
+                chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note"));
                 SmartDashboard.putData("Auto Chooser", this.chooser);
         }
 

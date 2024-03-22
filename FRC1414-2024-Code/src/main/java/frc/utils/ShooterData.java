@@ -8,6 +8,7 @@ public class ShooterData {
     private static ShooterData instance;
 
     private ShooterData() {
+        addSpeaker(0, 0.6, 6, 10);
         addSpeaker(1.75, 0.6, 10, 20);
         addSpeaker(2, 0.6, 9.5, 20);
         addSpeaker(2.1, 0.6, 9, 20);
