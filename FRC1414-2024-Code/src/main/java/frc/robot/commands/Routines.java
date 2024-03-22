@@ -27,7 +27,7 @@ public class Routines {
     }
 
     public static Command scoreSpeaker() {
-        return ShooterPrimitives.aim().withTimeout(3.5).finallyDo(() -> {
+        return ShooterPrimitives.aim().withTimeout(2.5).finallyDo(() -> {
                                                             intake.stop(); 
                                                             pivot.setPosition(Constants.PivotConstants.kStowPosition);
                                                             shooter.stop();

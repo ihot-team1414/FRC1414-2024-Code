@@ -84,7 +84,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             this::driveRobotRelative, 
             new HolonomicPathFollowerConfig(
                 new PIDConstants(5, 0, 0),
-                new PIDConstants(5, 0, 0),
+                new PIDConstants(6.5, 0, 0),
                 4.5,
                 0.4,
                 new ReplanningConfig()

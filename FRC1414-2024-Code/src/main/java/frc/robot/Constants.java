@@ -51,7 +51,7 @@ public final class Constants {
     public static final int kFrontRightTurningCanId = 21;
     public static final int kRearRightTurningCanId = 23;
 
-    public static final double kAutoAimErrorMargin = 2.5;
+    public static final double kAutoAimErrorMargin = 3.5;
     public static final double kAutoAimP = 2.5;
     public static final double kSlowMode = 0.1;
   }
@@ -62,7 +62,7 @@ public final class Constants {
     // This changes the drive speed of the module (a pinion gear with more teeth
     // will result in a
     // robot that drives faster).
-    public static final int kDrivingMotorPinionTeeth = 14;
+    public static final int kDrivingMotorPinionTeeth = 15;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
     // direction of
@@ -75,7 +75,7 @@ public final class Constants {
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
     // teeth on the bevel pinion
-    public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
+    public static final double kDrivingMotorReduction = (45.0 * 20) / (kDrivingMotorPinionTeeth * 15);
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
 
@@ -138,7 +138,7 @@ public final class Constants {
   }
 
   public static final class NeoMotorConstants {
-    public static final double kFreeSpeedRpm = 5676;
+    public static final double kFreeSpeedRpm = 6784;
   }
 
   public static final class IntakeConstants {
