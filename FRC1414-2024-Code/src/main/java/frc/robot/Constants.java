@@ -178,7 +178,7 @@ public final class Constants {
 
     public static final double kAmpDutyCycleLeft = 0.2225;
     public static final double kAmpDutyCycleRight = 0.1225;
-    public static final double kEjectDutyCycle = 0.3;
+    public static final double kEjectDutyCycle = 0.4;
     public static final double kShooterErrorMargin = 10;
     public static final double kSpeakerShotDutyCycle = 0.7;
   }
@@ -210,7 +210,7 @@ public final class Constants {
     public static final double kStowPosition = 0.4;
     public static final double kEjectPosition = 6;
     public static final double kPivotErrorMargin = 0.2;
-    public static final double kAmpFeedPosition = 9; // 7.4
+    public static final double kAmpFeedPosition = 7.4; // 7.4
   }
 
   public static final class FieldConstants {
