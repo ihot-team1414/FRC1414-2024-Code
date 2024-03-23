@@ -76,12 +76,6 @@
                 "data": {
                   "name": "Prepare"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
               }
             ]
           }
@@ -139,11 +133,24 @@
                 "data": {
                   "name": "Prepare"
                 }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake"
+                  "name": "Stop Rev"
                 }
               }
             ]

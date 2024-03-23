@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS5Controller;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Routines;
@@ -21,6 +22,7 @@ import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoRev;
 import frc.robot.commands.AutoShootTeleop;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -38,7 +40,8 @@ public class RobotContainer {
         /*
          * Controllers
          */
-        PS5Controller operator = new PS5Controller(OIConstants.kDriverControllerPort);
+        PS5Controller driver = new PS5Controller(OIConstants.kDriverControllerPort);
+        XboxController operator = new XboxController(OIConstants.kOperatorControllerPort);
 
         /*
          * Auto Chooser
@@ -59,40 +62,53 @@ public class RobotContainer {
                  */
                 DrivetrainSubsystem.getInstance().resetHeading();
                 drivetrain.setDefaultCommand(
-                                new Drive(() -> MathUtil.applyDeadband(-operator.getLeftY(),
+                                new Drive(() -> MathUtil.applyDeadband(-driver.getLeftY(),
                                                 Constants.OIConstants.kJoystickDeadband),
-                                                () -> MathUtil.applyDeadband(-operator.getLeftX(),
+                                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
-                                                () -> MathUtil.applyDeadband(-operator.getRightX(),
+                                                () -> MathUtil.applyDeadband(-driver.getRightX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> 0.9));
         }
 
         private void configureDriver() {
-                new JoystickButton(operator, Button.kOptions.value)
+                new JoystickButton(driver, Button.kOptions.value)
                                 .onTrue(new InstantCommand(() -> {
                                         DrivetrainSubsystem.getInstance().resetHeading();
                                         DrivetrainSubsystem.getInstance()
                                                         .resetOdometry(new Pose2d(0, 0, DrivetrainSubsystem
                                                                         .getInstance().getHeading()));
                                 }));
-                new JoystickButton(operator,
+                new JoystickButton(driver,
                                 Button.kTriangle.value).whileTrue(Routines.scoreAmp());
-                new JoystickButton(operator,
+                new JoystickButton(driver,
                                 Button.kSquare.value).whileTrue(Routines.primeAmp());
-                new JoystickButton(operator, Button.kR1.value).whileTrue(Routines.intake());
-                new JoystickButton(operator, Button.kR2.value).whileTrue(Routines.eject());
-                new JoystickButton(operator, Button.kL1.value).whileTrue(new AutoShootTeleop(
-                                () -> MathUtil.applyDeadband(-operator.getLeftY(),
+                new JoystickButton(driver, Button.kR1.value).whileTrue(Routines.intake());
+                new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());
+                new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShootTeleop(
+                                () -> MathUtil.applyDeadband(-driver.getLeftY(),
                                                 Constants.OIConstants.kJoystickDeadband),
-                                () -> MathUtil.applyDeadband(-operator.getLeftX(),
+                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
                                                 Constants.OIConstants.kJoystickDeadband),
                                 () -> 0.9));
 
-                new JoystickButton(operator, Button.kL2.value).whileTrue(Routines.speakerShot());
+                new JoystickButton(driver, Button.kL2.value).whileTrue(Routines.speakerShot());
         }
 
         private void configureOperator() {
+                new JoystickButton(operator, XboxController.Button.kLeftBumper.value)
+                                .whileTrue(ShooterPrimitives.rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
+                                                .alongWith(PivotPrimitives.pivotToPosition(
+                                                                Constants.PivotConstants.kSpeakerShotPosition)));
+
+                new JoystickButton(operator, XboxController.Button.kRightBumper.value)
+                                .whileTrue(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kStowPosition)
+                                                .alongWith(new InstantCommand(
+                                                                () -> ShooterSubsystem.getInstance().stop())));
+
+                new JoystickButton(operator, XboxController.Button.kX.value).whileTrue(
+                                IntakePrimitives.speakerFeed().withTimeout(1)
+                                                .finallyDo(() -> IntakeSubsystem.getInstance().stop()));
         }
 
         public void configureAuto() {

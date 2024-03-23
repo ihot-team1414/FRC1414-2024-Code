@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.279291182523043,
-        "y": 0.7713216026714546
+        "x": 2.809086415893629,
+        "y": 4.128036518181299
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.8302187552468325,
-        "y": 1.602782444618562
+        "x": 1.1784324098522105,
+        "y": 3.740185025355198
       },
       "isLocked": false,
       "linkedName": "W1END"
@@ -29,7 +29,19 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Shoot",
+      "minWaypointRelativePos": 0.85,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 7.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
@@ -45,7 +57,7 @@
   "reversed": false,
   "folder": "Walton",
   "previewStartingState": {
-    "rotation": -15.0,
+    "rotation": -3.2156025922410163,
     "velocity": 0
   },
   "useDefaultConstraints": false
