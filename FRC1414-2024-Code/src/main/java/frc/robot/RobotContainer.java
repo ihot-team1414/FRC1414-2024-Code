@@ -15,10 +15,12 @@ import frc.robot.commands.Routines;
 import frc.robot.commands.ShooterPrimitives;
 import frc.robot.commands.Drive;
 import frc.robot.commands.IntakePrimitives;
+import frc.robot.commands.PivotPrimitives;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoRev;
 import frc.robot.commands.AutoShootTeleop;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -92,7 +94,6 @@ public class RobotContainer {
         }
 
         public void configureAuto() {
-                NamedCommands.registerCommand("Intake", Routines.intake());
                 NamedCommands.registerCommand("Auto Aim", new AutoAim().repeatedly());
                 NamedCommands.registerCommand("Auto Rev", new AutoRev().repeatedly());
                 NamedCommands.registerCommand("Delayed Feed",
@@ -101,8 +102,21 @@ public class RobotContainer {
                                 new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
                 NamedCommands.registerCommand("Warm Up", ShooterPrimitives.warmUp());
 
+                NamedCommands.registerCommand("Intake", Routines.intake());
+
+                NamedCommands.registerCommand("Prepare",
+                                ShooterPrimitives.rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
+                                                .alongWith(PivotPrimitives.pivotToPosition(
+                                                                Constants.PivotConstants.kSpeakerShotPosition)));
+
+                NamedCommands.registerCommand("Stop Rev", new InstantCommand(
+                                () -> ShooterSubsystem.getInstance().stop(), ShooterSubsystem.getInstance()));
+
+                NamedCommands.registerCommand("Feed", IntakePrimitives.speakerFeed().withTimeout(0.75));
+
                 chooser.addOption("Four Note", AutoBuilder.buildAuto("Top Clear"));
                 chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note"));
+                chooser.addOption("Walton 3 Note", AutoBuilder.buildAuto("Walton"));
                 chooser.addOption("Test", AutoBuilder.buildAuto("Test"));
                 SmartDashboard.putData("Auto Chooser", this.chooser);
         }
