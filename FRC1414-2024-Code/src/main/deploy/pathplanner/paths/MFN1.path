@@ -1,0 +1,60 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.3452946988874204,
+        "y": 5.545719239390457
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.26576810930908,
+        "y": 5.545719239390457
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.8806362865197483,
+        "y": 5.545719239390457
+      },
+      "prevControl": {
+        "x": 2.0322744172629252,
+        "y": 5.545719239390457
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "MFN1END"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": []
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "MFN",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

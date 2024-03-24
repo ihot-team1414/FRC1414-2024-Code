@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.209387553034365,
+        "y": 7.44686038909115
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.082390826818691,
+        "y": 7.362118881645171
+      },
+      "isLocked": false,
+      "linkedName": "NFN5END"
+    },
+    {
+      "anchor": {
+        "x": 1.3453254499101592,
+        "y": 5.493292505103529
+      },
+      "prevControl": {
+        "x": 2.05517161497286,
+        "y": 5.481626708623788
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "NFN-SHOOT"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 6.0,
+    "maxAcceleration": 10.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "NFN",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}
