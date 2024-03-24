@@ -49,6 +49,15 @@ public class Routines {
                 });
     }
 
+    public static Command outtake() {
+        return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kIntakePosition).andThen(
+                IntakePrimitives.outtake())
+                .finallyDo(() -> {
+                    intake.stop();
+                    pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                });
+    }
+
     public static Command eject() {
         return ShooterPrimitives.rev(Constants.ShooterConstants.kEjectDutyCycle)
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kEjectPosition))

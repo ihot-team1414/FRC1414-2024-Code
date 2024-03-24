@@ -109,6 +109,8 @@ public class RobotContainer {
                 new JoystickButton(operator, XboxController.Button.kX.value).whileTrue(
                                 IntakePrimitives.speakerFeed().withTimeout(1)
                                                 .finallyDo(() -> IntakeSubsystem.getInstance().stop()));
+
+                new JoystickButton(operator, XboxController.Button.kA.value).whileTrue(Routines.outtake());
         }
 
         public void configureAuto() {
