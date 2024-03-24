@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.35,
-      "y": 5.55
+      "x": 0.72,
+      "y": 4.44
     },
-    "rotation": 0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -49,7 +49,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "MFN1"
+                  "pathName": "W4N1"
                 }
               },
               {
@@ -68,7 +68,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "MFN Fallback 2"
+                  "name": "W4N Fallback 2"
                 }
               }
             ]
@@ -81,39 +81,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "MFN2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "MFN Fallback 3"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "MFN3"
+                  "pathName": "W4N2"
                 }
               },
               {
@@ -132,7 +100,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "MFN4"
+                  "pathName": "W4N3"
                 }
               }
             ]
@@ -145,7 +113,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "MFN Fallback 4 & 6"
+                  "name": "W4N Fallback 3 & 4"
                 }
               }
             ]
@@ -158,7 +126,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "MFN5"
+                  "pathName": "W4N4"
                 }
               },
               {
@@ -177,7 +145,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "MFN6"
+                  "pathName": "W4N5"
                 }
               }
             ]
@@ -190,7 +158,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "MFN Fallback 4 & 6"
+                  "name": "W4N Fallback 3 & 4"
                 }
               }
             ]

@@ -135,9 +135,12 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("Feed", IntakePrimitives.speakerFeed().withTimeout(0.75));
 
-                NamedCommands.registerCommand("Fallback 2", new AutoShoot(0).repeatedly());
-                NamedCommands.registerCommand("Fallback 3", new AutoShoot(0).repeatedly());
-                NamedCommands.registerCommand("Fallback 4 & 6", new AutoShoot(0).repeatedly());
+                NamedCommands.registerCommand("MFN Fallback 2", new AutoShoot(0).repeatedly());
+                NamedCommands.registerCommand("MFN Fallback 3", new AutoShoot(0).repeatedly());
+                NamedCommands.registerCommand("MFN Fallback 4 & 6", new AutoShoot(0).repeatedly());
+
+                NamedCommands.registerCommand("W4N Fallback 2", new AutoShoot(0).repeatedly());
+                NamedCommands.registerCommand("W4N Fallback 3 & 4", new AutoShoot(0).repeatedly());
 
                 chooser.addOption("Four Note", AutoBuilder.buildAuto("Top Clear"));
                 chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note"));
