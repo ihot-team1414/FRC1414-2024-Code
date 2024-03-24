@@ -28,6 +28,22 @@ public class Routines {
                 });
     }
 
+    public static Command ampPrimeTest() {
+        return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpTestScoringPosition);
+    }
+
+    public static Command ampTest() {
+        return ShooterPrimitives
+                .rev(Constants.ShooterConstants.kAmpDutyCycle)
+                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpTestScoringPosition))
+                .andThen(IntakePrimitives.ampFeed().onlyIf(() -> shooter.isWithinVelocitylerance(20)).repeatedly())
+                .finallyDo(() -> {
+                    intake.stop();
+                    shooter.stop();
+                    pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                });
+    }
+
     public static Command speakerShot() {
         return ShooterPrimitives
                 .rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
@@ -42,7 +58,7 @@ public class Routines {
 
     public static Command intake() {
         return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kIntakePosition)
-                .andThen(IntakePrimitives.intake()).andThen(PivotPrimitives.stow())
+                .alongWith(IntakePrimitives.intake()).andThen(PivotPrimitives.stow())
                 .finallyDo(() -> {
                     intake.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);

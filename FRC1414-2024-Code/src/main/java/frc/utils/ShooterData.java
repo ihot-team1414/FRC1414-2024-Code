@@ -14,11 +14,12 @@ public class ShooterData {
         addSpeaker(2.1, 0.6, 9, 20);
         addSpeaker(2.25, 0.6, 8.5, 20);
         addSpeaker(2.35, 0.6, 8.25, 20);
-        addSpeaker(2.55, 0.6, 8, 20);
-        addSpeaker(2.65, 0.6, 7.75, 20);
-        addSpeaker(2.75, 0.6, 7.6, 20);
-        addSpeaker(2.8, 0.6, 7.75, 20);
-        addSpeaker(2.9, 0.6, 7.45, 20);
+        addSpeaker(2.45, 0.7, 8.25, 20);
+        addSpeaker(2.55, 0.7, 8, 20);
+        addSpeaker(2.65, 0.7, 7.75, 20);
+        addSpeaker(2.75, 0.7, 7.6, 20);
+        addSpeaker(2.8, 0.7, 7.75, 20);
+        addSpeaker(2.9, 0.7, 7.45, 20);
 
         addSpeaker(3, 0.7, 6.75, 20);
         addSpeaker(3.25, 0.75, 6.67, 20);

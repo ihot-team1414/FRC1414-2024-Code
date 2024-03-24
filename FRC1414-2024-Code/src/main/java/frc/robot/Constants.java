@@ -53,7 +53,11 @@ public final class Constants {
 
     public static final double kAutoAimTeleopErrorMargin = 3.5;
     public static final double kAutoAimAutoErrorMargin = 1;
+
     public static final double kAutoAimP = 5;
+    public static final double kAutoAimI = 0;
+    public static final double kAutoAimD = 0;
+
     public static final double kSlowMode = 0.1;
   }
 
@@ -174,13 +178,15 @@ public final class Constants {
 
       kShooterConfiguration.kA = 0.037221;
       kShooterConfiguration.kV = 0.1685;
+
     }
 
-    public static final double kAmpDutyCycleLeft = 0.2225;
-    public static final double kAmpDutyCycleRight = 0.1225;
+    public static final double kAmpDutyCycleLeft = 0.3;
+    public static final double kAmpDutyCycleRight = 0.3;
     public static final double kEjectDutyCycle = 0.4;
     public static final double kShooterErrorMargin = 10;
     public static final double kSpeakerShotDutyCycle = 0.7;
+    public static final double kAmpDutyCycle = 0.7;
   }
 
   public static final class PivotConstants {
@@ -199,18 +205,19 @@ public final class Constants {
     public static final MotionMagicConfigs kPivotMotionMagic = new MotionMagicConfigs();
 
     static {
-      kPivotMotionMagic.MotionMagicCruiseVelocity = 40;
-      kPivotMotionMagic.MotionMagicAcceleration = 30;
+      kPivotMotionMagic.MotionMagicCruiseVelocity = 200;
+      kPivotMotionMagic.MotionMagicAcceleration = 200;
     }
 
     public static final double kIntakePosition = 2;
     public static final double kAmpPrimePosition = 6;
-    public static final double kAmpScoringPosition = 17.5;
+    public static final double kAmpScoringPosition = 18;
+    public static final double kAmpTestScoringPosition = 8.25;
     public static final double kSpeakerShotPosition = 10;
     public static final double kStowPosition = 0.4;
     public static final double kEjectPosition = 6;
     public static final double kPivotErrorMargin = 0.2;
-    public static final double kAmpFeedPosition = 7.4; // 7.4
+    public static final double kAmpFeedPosition = 3; // 7.4
   }
 
   public static final class FieldConstants {

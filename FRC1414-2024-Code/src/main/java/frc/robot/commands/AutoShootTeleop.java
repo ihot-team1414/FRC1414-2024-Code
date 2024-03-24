@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -26,6 +27,8 @@ public class AutoShootTeleop extends Command {
     private final DoubleSupplier translationXSupplier;
     private final DoubleSupplier translationYSupplier;
     private final DoubleSupplier limitingFactorSupplier;
+    private final PIDController drivetrainController = new PIDController(DriveConstants.kAutoAimP,
+            DriveConstants.kAutoAimI, DriveConstants.kAutoAimD);
 
     public AutoShootTeleop(
             DoubleSupplier translationXSupplier,
@@ -52,7 +55,7 @@ public class AutoShootTeleop extends Command {
             double yawError = LimelightHelpers.getTX("limelight-front");
 
             if (Math.abs(yawError) > Constants.DriveConstants.kAutoAimTeleopErrorMargin) {
-                rotation = Rotation2d.fromDegrees(-yawError * Constants.DriveConstants.kAutoAimP);
+                rotation = Rotation2d.fromDegrees(-drivetrainController.calculate(-yawError));
             }
 
             Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-front");

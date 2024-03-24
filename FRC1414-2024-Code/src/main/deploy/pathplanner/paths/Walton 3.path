@@ -8,46 +8,28 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7878140640344364,
-        "y": 2.3124220075535256
+        "x": 2.107437149347233,
+        "y": 0.15202400775171893
       },
       "isLocked": false,
       "linkedName": "WSHOOT"
     },
     {
       "anchor": {
-        "x": 8.176703304973561,
-        "y": 0.8419791198556761
+        "x": 8.38719808493748,
+        "y": 0.6665668032190769
       },
       "prevControl": {
-        "x": 5.311635466575776,
-        "y": 0.7601200387585969
+        "x": 5.568906864309456,
+        "y": 1.0407797453771552
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "W3END"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": -5.439999999999998,
-      "rotateFast": true
-    }
-  ],
-  "constraintZones": [
-    {
-      "name": "Intake",
-      "minWaypointRelativePos": 0.85,
-      "maxWaypointRelativePos": 0.95,
-      "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
-      }
-    }
-  ],
+  "rotationTargets": [],
+  "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.2,
@@ -57,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -5.440332031005324,
+    "rotation": 5.856013585429053,
     "rotateFast": true
   },
   "reversed": false,

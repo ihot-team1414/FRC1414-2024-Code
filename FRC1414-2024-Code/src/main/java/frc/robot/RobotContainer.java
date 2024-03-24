@@ -62,11 +62,11 @@ public class RobotContainer {
                  */
                 DrivetrainSubsystem.getInstance().resetHeading();
                 drivetrain.setDefaultCommand(
-                                new Drive(() -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                new Drive(() -> MathUtil.applyDeadband(-driver.getRightY(),
                                                 Constants.OIConstants.kJoystickDeadband),
-                                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
-                                                                Constants.OIConstants.kJoystickDeadband),
                                                 () -> MathUtil.applyDeadband(-driver.getRightX(),
+                                                                Constants.OIConstants.kJoystickDeadband),
+                                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> 0.9));
         }
@@ -83,7 +83,7 @@ public class RobotContainer {
                                 Button.kTriangle.value).whileTrue(Routines.scoreAmp());
                 new JoystickButton(driver,
                                 Button.kSquare.value).whileTrue(Routines.primeAmp());
-                new JoystickButton(driver, Button.kR1.value).whileTrue(Routines.intake());
+                new JoystickButton(driver, Button.kR1.value).onTrue(Routines.intake());
                 new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());
                 new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShootTeleop(
                                 () -> MathUtil.applyDeadband(-driver.getLeftY(),
@@ -111,6 +111,12 @@ public class RobotContainer {
                                                 .finallyDo(() -> IntakeSubsystem.getInstance().stop()));
 
                 new JoystickButton(operator, XboxController.Button.kA.value).whileTrue(Routines.outtake());
+
+                new JoystickButton(operator, XboxController.Button.kY.value)
+                                .whileTrue(Routines.ampTest());
+
+                new JoystickButton(operator, XboxController.Button.kB.value).whileTrue(
+                                Routines.ampPrimeTest());
         }
 
         public void configureAuto() {

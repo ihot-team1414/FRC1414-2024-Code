@@ -32,6 +32,10 @@ public class PivotSubsystem extends SubsystemBase {
         pivotMotorConfig = new TalonFXConfiguration();
         pivotMotorConfig.withSlot0(PivotConstants.kPivotConfiguration);
         pivotMotorConfig.withMotionMagic(PivotConstants.kPivotMotionMagic);
+
+        pivotMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        pivotMotorConfig.CurrentLimits.SupplyCurrentLimit = 30;
+
         pivotMotor1.getConfigurator().apply(pivotMotorConfig);
         pivotMotor2.getConfigurator().apply(pivotMotorConfig);
 

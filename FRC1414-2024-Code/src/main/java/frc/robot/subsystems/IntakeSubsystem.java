@@ -35,6 +35,7 @@ public class IntakeSubsystem extends SubsystemBase {
          */
         intakeMotorConfiguration = new TalonFXConfiguration();
         intakeMotorConfiguration.withSlot0(IntakeConstants.kIntakeConfiguration);
+
         intakeMotorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
         intakeMotorConfiguration.CurrentLimits.SupplyCurrentLimit = 10;
 
