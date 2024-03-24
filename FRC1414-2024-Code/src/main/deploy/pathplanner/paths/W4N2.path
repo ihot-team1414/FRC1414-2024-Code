@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.763779123956553,
-        "y": 4.114823588933901
+        "x": 1.7537508422874513,
+        "y": 4.2487921141419625
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6641080510268367,
-        "y": 1.17710479153303
+        "x": -0.514915119545897,
+        "y": 4.202015496372203
       },
       "isLocked": false,
       "linkedName": "W4N1END"
     },
     {
       "anchor": {
-        "x": 8.0816697959314,
-        "y": 0.8052699544664632
+        "x": 8.07205867135046,
+        "y": 0.6812304692147508
       },
       "prevControl": {
-        "x": 7.392573009898845,
-        "y": 0.8507169415468775
+        "x": 3.197076542355646,
+        "y": 0.5776097812946844
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,11 +29,23 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Intake",
+      "minWaypointRelativePos": 0.95,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 7.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
-    "maxAcceleration": 10.0,
+    "maxAcceleration": 9.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

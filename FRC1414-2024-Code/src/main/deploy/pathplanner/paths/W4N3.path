@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.0816697959314,
-        "y": 0.8052699544664632
+        "x": 8.07205867135046,
+        "y": 0.6812304692147508
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.224063247561523,
-        "y": 0.7841891231098854
+        "x": 5.606072357498274,
+        "y": 0.6594688623917647
       },
       "isLocked": false,
       "linkedName": "W4N2END"
@@ -20,8 +20,8 @@
         "y": 3.61449606550343
       },
       "prevControl": {
-        "x": 2.003135273925915,
-        "y": 2.5174258743644606
+        "x": 3.545818145767345,
+        "y": 0.5379311043522382
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,7 +29,19 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Shoot",
+      "minWaypointRelativePos": 0.9,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 10.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
@@ -40,7 +52,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": -60.569629837680964,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "W4N",

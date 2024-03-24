@@ -145,6 +145,7 @@ public class RobotContainer {
                 chooser.addOption("Four Note", AutoBuilder.buildAuto("Top Clear"));
                 chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note"));
                 chooser.addOption("Walton 3 Note", AutoBuilder.buildAuto("Walton"));
+                chooser.addOption("Four Note Weak Side", AutoBuilder.buildAuto("Weak Side 4 Note"));
                 chooser.addOption("Test", AutoBuilder.buildAuto("Test"));
                 SmartDashboard.putData("Auto Chooser", this.chooser);
 
