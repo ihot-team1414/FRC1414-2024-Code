@@ -199,15 +199,15 @@ public final class Constants {
     public static final MotionMagicConfigs kPivotMotionMagic = new MotionMagicConfigs();
 
     static {
-      kPivotMotionMagic.MotionMagicCruiseVelocity = 40;
-      kPivotMotionMagic.MotionMagicAcceleration = 30;
+      kPivotMotionMagic.MotionMagicCruiseVelocity = 200;
+      kPivotMotionMagic.MotionMagicAcceleration = 200;
     }
 
     public static final double kIntakePosition = 2;
     public static final double kAmpPrimePosition = 6;
     public static final double kAmpScoringPosition = 17.5;
     public static final double kSpeakerShotPosition = 10;
-    public static final double kStowPosition = 0.4;
+    public static final double kStowPosition = 0.5;
     public static final double kEjectPosition = 6;
     public static final double kPivotErrorMargin = 0.2;
     public static final double kAmpFeedPosition = 7.4; // 7.4
