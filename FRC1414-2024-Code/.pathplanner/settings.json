@@ -1,0 +1,26 @@
+{
+  "robotWidth": 0.91,
+  "robotLength": 0.91,
+  "holonomicMode": true,
+  "pathFolders": [
+    "Arjan",
+    "Center Simple",
+    "Five Note",
+    "Walton 2",
+    "Weak Side",
+    "No Amp",
+    "Top Clear",
+    "Top Simple",
+    "WIP",
+    "Walton"
+  ],
+  "autoFolders": [
+    "Arjan",
+    "WIP"
+  ],
+  "defaultMaxVel": 3.0,
+  "defaultMaxAccel": 7.0,
+  "defaultMaxAngVel": 540.0,
+  "defaultMaxAngAccel": 720.0,
+  "maxModuleSpeed": 3.0
+}

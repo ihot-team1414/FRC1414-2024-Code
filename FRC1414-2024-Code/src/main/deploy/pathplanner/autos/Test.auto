@@ -5,7 +5,7 @@
       "x": 2,
       "y": 7.0
     },
-    "rotation": 180.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,19 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SimplePath"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Forward"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Lock"
+            "pathName": "Test"
           }
         }
       ]

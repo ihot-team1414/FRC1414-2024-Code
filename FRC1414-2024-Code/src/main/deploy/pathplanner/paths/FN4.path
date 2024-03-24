@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.9161360414881847,
+        "y": 6.9626978907912624
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.7958891336214915,
+        "y": 6.9747897096429785
+      },
+      "isLocked": false,
+      "linkedName": "FN3END"
+    },
+    {
+      "anchor": {
+        "x": 8.172655029102431,
+        "y": 7.202344051580758
+      },
+      "prevControl": {
+        "x": 5.856866386225711,
+        "y": 7.163102677194055
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "FN4END"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Intake",
+      "minWaypointRelativePos": 0.95,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.5,
+        "maxAcceleration": 7.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.3699300265135723,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Five Note",
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

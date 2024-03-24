@@ -1,0 +1,64 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.7128818239117962,
+        "y": 4.403411015155364
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.0294544296700021,
+        "y": 3.63442496150529
+      },
+      "isLocked": false,
+      "linkedName": "WSHOOT"
+    },
+    {
+      "anchor": {
+        "x": 2.809086415893629,
+        "y": 4.128036518181299
+      },
+      "prevControl": {
+        "x": 1.9502466030532468,
+        "y": 4.091009658628395
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "W1END"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Intake",
+      "minWaypointRelativePos": 0.6,
+      "maxWaypointRelativePos": 0.75,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 7.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 5.678091143384881,
+    "rotateFast": true
+  },
+  "reversed": false,
+  "folder": "Walton",
+  "previewStartingState": {
+    "rotation": -60.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

@@ -3,71 +3,108 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static edu.wpi.first.units.Units.Volts;
+
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
+    private static ShooterSubsystem instance;
 
     private final TalonFX shooterMotor1;
     private final TalonFX shooterMotor2;
-    private final Follower follower;
-    private final VelocityDutyCycle shooterVelocity;
+    private final Follower followerControl;
+    private final VelocityDutyCycle velocityControl;
+    private final DutyCycleOut dutyCycleOutControl;
     private final TalonFXConfiguration shooterMotorConfig;
-    private double speed;
 
     public ShooterSubsystem() {
-
+        /*
+         * Initialize CAN IDs.
+         */
         shooterMotor1 = new TalonFX(ShooterConstants.kShooterMotor1CanId);
         shooterMotor2 = new TalonFX(ShooterConstants.kShooterMotor2CanId);
-        shooterVelocity = new VelocityDutyCycle(0);
-        speed = 0;
 
-        shooterMotor1.setNeutralMode(NeutralModeValue.Coast);
-        shooterMotor2.setNeutralMode(NeutralModeValue.Coast);
-
+        /*
+         * Configure motor current limit.
+         */
         shooterMotorConfig = new TalonFXConfiguration();
         shooterMotorConfig.withSlot0(ShooterConstants.kShooterConfiguration);
-        
+
+        shooterMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        shooterMotorConfig.CurrentLimits.SupplyCurrentLimit = 50;
+
         shooterMotor1.getConfigurator().apply(shooterMotorConfig);
-        follower = new Follower(shooterMotor1.getDeviceID(), true);
+        shooterMotor2.getConfigurator().apply(shooterMotorConfig);
 
-        shooterMotor2.setControl(follower);
+        /*
+         * Configure motor neutral modes.
+         */
+        setDesiredNeutralMode();
 
-        shooterMotor1.getConfigurator().refresh(ShooterConstants.kShooterConfiguration);
-
-        //Refresh?
-        //Configure PID, max output, voltage compensation
+        /*
+         * Set default controls.
+         */
+        velocityControl = new VelocityDutyCycle(0, 0, false, 0, 0, false, false, false);
+        dutyCycleOutControl = new DutyCycleOut(0, true, false, false, false);
+        followerControl = new Follower(shooterMotor1.getDeviceID(), true);
     }
 
-    // Set the speed of the shooter motors to the given velocity from the shooter data
-    public void setShooterSpeed(double speed) {
-        this.speed = speed;
-        shooterMotor1.setControl(shooterVelocity.withVelocity(speed));
+    public static ShooterSubsystem getInstance() {
+        if (instance == null) {
+            instance = new ShooterSubsystem();
+        }
+
+        return instance;
     }
 
-    // Check whether the current velocity of the motor is within the threshold (before shooting)
-    public boolean isWithinThreshold(){
-        return Math.abs(shooterMotor1.getVelocity().getValueAsDouble() - speed) < ShooterConstants.kShooterThreshold;
+    /*
+     * Control Methods
+     */
+    public void setDesiredNeutralMode() {
+        shooterMotor1.setNeutralMode(NeutralModeValue.Coast);
+        shooterMotor2.setNeutralMode(NeutralModeValue.Coast);
     }
 
-    // Outtake through the shooter motors
-    public void outtake(){
-        shooterMotor1.setControl(shooterVelocity.withVelocity(ShooterConstants.kOuttakeVelocity));
+    public void setVoltage(Measure<Voltage> voltage) {
+        shooterMotor1.set(voltage.in(Volts));
     }
 
-    // Stop motors on coast
-    public void stop(){
+    public void setVelocity(double velocity) {
+        shooterMotor1.setControl(velocityControl.withVelocity(velocity));
+    }
+
+    public void setDutyCycle(double dutyCycle) {
+        shooterMotor2.setControl(followerControl.withMasterID(32));
+        shooterMotor1.setControl(dutyCycleOutControl.withOutput(dutyCycle));
+    }
+
+    public void setDutyCycle(double dutyCycleLeft, double dutyCycleRight) {
+        shooterMotor1.setControl(dutyCycleOutControl.withOutput(dutyCycleLeft));
+        shooterMotor2.setControl(dutyCycleOutControl.withOutput(-dutyCycleRight));
+    }
+
+    public void stop() {
         shooterMotor1.stopMotor();
+        shooterMotor2.stopMotor();
     }
-  
+
+    /*
+     * Sensor Methods
+     */
+    public boolean isWithinVelocitylerance(double target) {
+        return shooterMotor1.getVelocity().getValueAsDouble() >= target;
+    }
+
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
-        SmartDashboard.putNumber("Shooter Motor 1 Velocity", shooterMotor1.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Shooter Motor 2 Velocity", shooterMotor2.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter Velocity", shooterMotor1.getVelocity().getValueAsDouble());
     }
 }

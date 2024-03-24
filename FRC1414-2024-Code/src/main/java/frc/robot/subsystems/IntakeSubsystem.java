@@ -1,88 +1,96 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.IntakeConstants;;
+import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
-    
-    private final CANSparkMax intakeMotor1;
-    private final CANSparkMax intakeMotor2;
-    private final RelativeEncoder intakeMotorEncoder;
-    private final SparkPIDController intakeMotorPID;
-    private final TimeOfFlight intakeSensor;
-
     private static IntakeSubsystem instance;
 
-    public IntakeSubsystem(){
-        
-        intakeMotor1 = new CANSparkMax(IntakeConstants.kIntakeMotor1CanId, MotorType.kBrushless);
-        intakeMotor2 = new CANSparkMax(IntakeConstants.kIntakeMotor2CanId, MotorType.kBrushless);
-        intakeSensor = new TimeOfFlight(IntakeConstants.kIntakeSensorPort);
-        
-        intakeMotor1.setIdleMode(IdleMode.kBrake);
-        intakeMotor2.setIdleMode(IdleMode.kBrake);
-        intakeSensor.setRangingMode(RangingMode.Short, 200);
-        
-        intakeMotor1.setSmartCurrentLimit(IntakeConstants.kIntakeMotorCurrentLimit);
-        intakeMotor2.setSmartCurrentLimit(IntakeConstants.kIntakeMotorCurrentLimit);
+    private final TalonFX intakeMotor1;
+    private final TalonFX intakeMotor2;
+    private final TimeOfFlight intakeSensor;
+    private Follower followerControl;
+    private DutyCycleOut dutyCycleOutControl;
+    private TalonFXConfiguration intakeMotorConfiguration;
 
-        intakeMotor2.follow(intakeMotor1, true);
-        intakeMotorEncoder = intakeMotor1.getEncoder();
-        intakeMotorPID = intakeMotor1.getPIDController();
-        intakeMotorPID.setFeedbackDevice(intakeMotorEncoder);
+    public IntakeSubsystem() {
+        /*
+         * Initialize CAN IDs.
+         */
 
-        intakeMotor1.burnFlash();
-        intakeMotor2.burnFlash();
+        intakeMotor1 = new TalonFX(IntakeConstants.kIntakeMotor1CanId);
+        intakeMotor2 = new TalonFX(IntakeConstants.kIntakeMotor2CanId);
+        intakeSensor = new TimeOfFlight(IntakeConstants.kIntakeSensorCandId);
+
+        /*
+         * Configure motor current limit.
+         */
+        intakeMotorConfiguration = new TalonFXConfiguration();
+        intakeMotorConfiguration.withSlot0(IntakeConstants.kIntakeConfiguration);
+        intakeMotorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
+        intakeMotorConfiguration.CurrentLimits.SupplyCurrentLimit = 10;
+
+        intakeMotor1.getConfigurator().apply(intakeMotorConfiguration);
+        intakeMotor2.getConfigurator().apply(intakeMotorConfiguration);
+
+        /*
+         * Configure motor neutral modes.
+         */
+        setDesiredNeutralMode();
+
+        /*
+         * Configure sensor.
+         */
+        intakeSensor.setRangingMode(RangingMode.Short, 24);
+
+        /*
+         * Set default controls.
+         */
+        dutyCycleOutControl = new DutyCycleOut(0, true, false, false, false);
+        followerControl = new Follower(intakeMotor1.getDeviceID(), true);
+        intakeMotor2.setControl(followerControl);
     }
 
-    public static synchronized IntakeSubsystem getInstance(){
+    public static synchronized IntakeSubsystem getInstance() {
         if (instance == null) {
             instance = new IntakeSubsystem();
         }
         return instance;
     }
 
-    public void intake(){
-        intakeMotor1.set(IntakeConstants.kIntakeSpeed);
+    /*
+     * Control Methods
+     */
+    public void setDesiredNeutralMode() {
+        intakeMotor1.setNeutralMode(NeutralModeValue.Brake);
+        intakeMotor2.setNeutralMode(NeutralModeValue.Brake);
     }
 
-    public void outtake(){
-        intakeMotor1.set(-IntakeConstants.kIntakeSpeed);
+    public void setDutyCycle(double dutyCycle) {
+        intakeMotor1.setControl(dutyCycleOutControl.withOutput(dutyCycle));
     }
 
-    public void stop(){
+    public void stop() {
         intakeMotor1.stopMotor();
     }
 
-    public void setSpeed(double speed){
-        intakeMotorPID.setReference(speed, ControlType.kVelocity);
-    }
-
-    public boolean isLoaded(){
+    /*
+     * Sensor Methods
+     */
+    public boolean isLoaded() {
         double distance = intakeSensor.getRange();
         return intakeSensor.isRangeValid() ? distance < IntakeConstants.kIndexThreshold : false;
     }
 
-    public void index(){
-        if(isLoaded()){ stop(); }
-        else{ intake(); }
-    }
-
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("IM1 Velocity", intakeMotor1.getEncoder().getVelocity());
-        SmartDashboard.putNumber("IM2 Velocity", intakeMotor2.getEncoder().getVelocity());
-        SmartDashboard.putBoolean("Filled", isLoaded());
     }
-
 }

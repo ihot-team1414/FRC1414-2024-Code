@@ -1,169 +1,151 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
+
+import java.util.TreeMap;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.PS5Controller.Button;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS5Controller;
-import frc.robot.Constants.FieldConstants;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PS5Controller.Button;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.Routines;
+import frc.robot.commands.ShooterPrimitives;
 import frc.robot.commands.Drive;
+import frc.robot.commands.IntakePrimitives;
+import frc.robot.commands.PivotPrimitives;
+import frc.robot.commands.AutoAim;
+import frc.robot.commands.AutoRev;
+import frc.robot.commands.AutoShootTeleop;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.DriverStation;
-import java.util.Optional;
-import java.util.TreeMap;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathConstraints;
-
-/*
- * This class is where the bulk of the robot should be declared.  Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls).  Instead, the structure of the robot
- * (including subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
 
-  private final DrivetrainSubsystem m_robotDrive = DrivetrainSubsystem.getInstance();
-  PS5Controller m_driverController = new PS5Controller(OIConstants.kDriverControllerPort);
-  private final Optional<Alliance> ds = DriverStation.getAlliance();
-  private TreeMap<String, Pose2d> autoPoses = new TreeMap<>();
-  private int[] targetID;
-  PathConstraints constraints;
+        /*
+         * Subsystems
+         */
+        private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+        /*
+         * Controllers
+         */
+        PS5Controller driver = new PS5Controller(OIConstants.kDriverControllerPort);
+        XboxController operator = new XboxController(OIConstants.kOperatorControllerPort);
 
-  // AUTO CHOOSER
-  private SendableChooser<Command> chooser = new SendableChooser<>();
+        /*
+         * Auto Chooser
+         */
+        private TreeMap<String, Pose2d> autoPoses = new TreeMap<>();
+        private SendableChooser<Command> chooser = new SendableChooser<>();
 
-  public RobotContainer() {
-    targetID = new int[2];
+        public RobotContainer() {
 
-    if(ds.isPresent()){
-      targetID[0] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedSpeakerID : FieldConstants.kBlueSpeakerID;
-      targetID[1] = ds.get().equals(Alliance.Red) ? FieldConstants.kRedAmpID : FieldConstants.kBlueAmpID;
-    }
-    autoPoses.put("Simple", new Pose2d(2, 7, Rotation2d.fromDegrees(180))); 
-    constraints = new PathConstraints(
-      3.0, 4.0, 
-      Units.degreesToRadians(540), 
-      Units.degreesToRadians(720));
+                configureAuto();
+                configureDriver();
+                configureOperator();
 
-    chooser.setDefaultOption("Simple", findPoseToAuto("Simple"));    
-    SmartDashboard.putData("Auto Chooser", this.chooser);
+                /*
+                 * We invert the controller axes to match the field coordinate system.
+                 * https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-
+                 * system.html
+                 */
+                DrivetrainSubsystem.getInstance().resetHeading();
+                drivetrain.setDefaultCommand(
+                                new Drive(() -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                                                Constants.OIConstants.kJoystickDeadband),
+                                                () -> MathUtil.applyDeadband(-driver.getRightX(),
+                                                                Constants.OIConstants.kJoystickDeadband),
+                                                () -> 0.9));
+        }
 
-    // Configure the button bindings
-    configureButtonBindings();
-  
-    // Configure default commands
-    m_robotDrive.setDefaultCommand(
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the X axis of the right stick.
-        new RunCommand(
-            () -> m_robotDrive.drive(
-                getDriverLeftY(),
-                getDriverLeftX(),
-                getDriverRightX(),
-                true),
-            m_robotDrive));
-  }
+        private void configureDriver() {
+                new JoystickButton(driver, Button.kOptions.value)
+                                .onTrue(new InstantCommand(() -> {
+                                        DrivetrainSubsystem.getInstance().resetHeading();
+                                        DrivetrainSubsystem.getInstance()
+                                                        .resetOdometry(new Pose2d(0, 0, DrivetrainSubsystem
+                                                                        .getInstance().getHeading()));
+                                }));
+                new JoystickButton(driver,
+                                Button.kTriangle.value).whileTrue(Routines.scoreAmp());
+                new JoystickButton(driver,
+                                Button.kSquare.value).whileTrue(Routines.primeAmp());
+                new JoystickButton(driver, Button.kR1.value).whileTrue(Routines.intake());
+                new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());
+                new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShootTeleop(
+                                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> 0.9));
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-   * subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-   * passing it to a
-   * {@link JoystickButton}.
-   */
-  private void configureButtonBindings() {
+                new JoystickButton(driver, Button.kL2.value).whileTrue(Routines.speakerShot());
+        }
 
-    //DRIVER CONTROLS
+        private void configureOperator() {
+                new JoystickButton(operator, XboxController.Button.kLeftBumper.value)
+                                .whileTrue(ShooterPrimitives.rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
+                                                .alongWith(PivotPrimitives.pivotToPosition(
+                                                                Constants.PivotConstants.kSpeakerShotPosition)));
 
-    //Zero the heading
-    new JoystickButton(m_driverController, Button.kOptions.value).onTrue(new InstantCommand( () -> m_robotDrive.zeroHeading() ));
-    new JoystickButton(m_driverController, Button.kL2.value).whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(getDriverLeftY(), getDriverLeftX(), targetID[1])));
+                new JoystickButton(operator, XboxController.Button.kRightBumper.value)
+                                .whileTrue(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kStowPosition)
+                                                .alongWith(new InstantCommand(
+                                                                () -> ShooterSubsystem.getInstance().stop())));
 
-    //Aim while moving
-    new JoystickButton(m_driverController, Button.kR1.value)
-                      .whileTrue(new RunCommand(() -> m_robotDrive.aimToTarget(
-                        getDriverLeftY(),
-                        getDriverLeftX(),
-                        targetID[0])));
+                new JoystickButton(operator, XboxController.Button.kX.value).whileTrue(
+                                IntakePrimitives.speakerFeed().withTimeout(1)
+                                                .finallyDo(() -> IntakeSubsystem.getInstance().stop()));
 
-    //Slow mode while moving
-    new JoystickButton(m_driverController, Button.kL1.value).whileTrue(
-                      new RunCommand(() -> m_robotDrive.slowMode(
-                        getDriverLeftY(),
-                        getDriverLeftX(),
-                        getDriverRightX())));
-                        
-    //Cardinal directions
-    new JoystickButton(m_driverController, Button.kCircle.value).whileTrue(new RunCommand(() -> lockToCardinal(90)));
-    new JoystickButton(m_driverController, Button.kTriangle.value).whileTrue(new RunCommand(() -> lockToCardinal(180)));
-    new JoystickButton(m_driverController, Button.kSquare.value).whileTrue(new RunCommand(() -> lockToCardinal(-90)));
-    new JoystickButton(m_driverController, Button.kCross.value).whileTrue(new RunCommand(() -> lockToCardinal(0)));
+                new JoystickButton(operator, XboxController.Button.kA.value).whileTrue(Routines.outtake());
+        }
 
-    new JoystickButton(m_driverController, Button.kR2.value).whileTrue(new RunCommand(() -> m_robotDrive.driveToPose(new Pose2d(new Translation2d(2, 7), new Rotation2d(180)))));
-  }
+        public void configureAuto() {
+                NamedCommands.registerCommand("Auto Aim", new AutoAim().repeatedly());
+                NamedCommands.registerCommand("Auto Rev", new AutoRev().repeatedly());
+                NamedCommands.registerCommand("Delayed Feed",
+                                new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
+                NamedCommands.registerCommand("Delayed Feed 5 Note",
+                                new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
+                NamedCommands.registerCommand("Warm Up", ShooterPrimitives.warmUp());
 
-  private void lockToCardinal(double goal){
-    m_robotDrive.cardinalDirection(
-                        getDriverLeftY(),
-                        getDriverLeftX(),
-                        goal);
-  }
+                NamedCommands.registerCommand("Intake", Routines.intake());
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return chooser.getSelected();
-  }
+                NamedCommands.registerCommand("Prepare",
+                                ShooterPrimitives.rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
+                                                .alongWith(PivotPrimitives.pivotToPosition(
+                                                                Constants.PivotConstants.kSpeakerShotPosition)));
 
-  public double getDriverLeftY(){
-    return MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband);
-  }
+                NamedCommands.registerCommand("Stop Rev", new InstantCommand(
+                                () -> ShooterSubsystem.getInstance().stop(), ShooterSubsystem.getInstance()));
 
-  public double getDriverLeftX(){
-    return MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband);
-  }
+                NamedCommands.registerCommand("Feed", IntakePrimitives.speakerFeed().withTimeout(0.75));
 
-  public double getDriverRightX(){
-    return -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
-  }
+                chooser.addOption("Four Note", AutoBuilder.buildAuto("Top Clear"));
+                chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note"));
+                chooser.addOption("Walton 3 Note", AutoBuilder.buildAuto("Walton"));
+                chooser.addOption("Test", AutoBuilder.buildAuto("Test"));
+                SmartDashboard.putData("Auto Chooser", this.chooser);
+        }
 
-  public Pose2d getStart(String auto){
-    return autoPoses.get(auto);
-  }
+        public Pose2d getStart(String auto) {
+                return autoPoses.get(auto);
+        }
 
-  public SequentialCommandGroup findPoseToAuto(String auto){
-    return new SequentialCommandGroup(AutoBuilder.pathfindToPose(getStart(auto), constraints, 0), new PathPlannerAuto(auto));
-
-  }
-
-}   
+        public Command getAutonomousCommand() {
+                return chooser.getSelected();
+        }
+}
