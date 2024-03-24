@@ -83,7 +83,7 @@ public class RobotContainer {
                                 Button.kTriangle.value).whileTrue(Routines.scoreAmp());
                 new JoystickButton(driver,
                                 Button.kSquare.value).whileTrue(Routines.primeAmp());
-                new JoystickButton(driver, Button.kR1.value).whileTrue(Routines.intake());
+                new JoystickButton(driver, Button.kR1.value).onTrue(Routines.intake());
                 new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());
                 new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShootTeleop(
                                 () -> MathUtil.applyDeadband(-driver.getLeftY(),
