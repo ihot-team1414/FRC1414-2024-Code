@@ -3,50 +3,62 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.44,
-        "y": 0.79
+        "x": 0.7489875257528296,
+        "y": 4.414931584492799
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.889733173988063,
-        "y": 1.332075947878218
+        "x": 3.360059243266636,
+        "y": 1.1515818587192732
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "NA2END"
     },
     {
       "anchor": {
-        "x": 1.9426634577734727,
-        "y": 3.773156429923312
+        "x": 8.103980282034637,
+        "y": 2.3288177687466494
       },
       "prevControl": {
-        "x": 2.8981397630253705,
-        "y": 2.8274298828882696
+        "x": 6.0649582780647044,
+        "y": 1.2939262128524265
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "NA3END"
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Intake",
+      "minWaypointRelativePos": 0.95,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 7.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 7.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 8.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -39.207203504967886,
+    "rotation": 24.360012359941756,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "No Amp",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -59.22685805555304,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

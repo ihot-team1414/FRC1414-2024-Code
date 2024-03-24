@@ -2,19 +2,44 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.36,
-      "y": 4.11
+      "x": 0.73,
+      "y": 4.4
     },
-    "rotation": 0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "Speaker"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Prepare"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.25
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Rev"
+                }
+              }
+            ]
           }
         },
         {
@@ -37,12 +62,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Speaker"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -55,6 +74,44 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "Prepare"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Rev"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "NA3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "Intake"
                 }
               }
@@ -62,15 +119,41 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "NA3"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "NA4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Prepare"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "Speaker"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Rev"
+                }
+              }
+            ]
           }
         }
       ]

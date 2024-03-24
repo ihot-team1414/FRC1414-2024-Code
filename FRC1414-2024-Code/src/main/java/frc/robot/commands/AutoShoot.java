@@ -20,9 +20,12 @@ public class AutoShoot extends Command {
     private final PivotSubsystem pivot = PivotSubsystem.getInstance();
     private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
     private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
+    private double fbDistance;
 
-    public AutoShoot() {
+    public AutoShoot(double fbDistance) {
         addRequirements(drivetrain, intake, pivot, shooter);
+        this.fbDistance = fbDistance;
+
     }
 
     @Override
@@ -52,6 +55,19 @@ public class AutoShoot extends Command {
             }
 
             SmartDashboard.putNumber("Tag Distance", tagPose.getTranslation().getNorm());
+        }
+
+        else {
+            pivot.setPosition(ShooterData.getInstance().getShooterPosition(fbDistance));
+            shooter.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(fbDistance));
+
+            // Check if rotation is correct?
+            if (pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(fbDistance))
+                    && shooter.isWithinVelocitylerance(ShooterData.getInstance().getMinShotVelocity(fbDistance))) {
+                intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
+            } else {
+                intake.stop();
+            }
         }
 
         drivetrain

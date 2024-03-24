@@ -20,6 +20,7 @@ import frc.robot.commands.IntakePrimitives;
 import frc.robot.commands.PivotPrimitives;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoRev;
+import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutoShootTeleop;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -134,11 +135,16 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("Feed", IntakePrimitives.speakerFeed().withTimeout(0.75));
 
+                NamedCommands.registerCommand("Fallback 2", new AutoShoot(0).repeatedly());
+                NamedCommands.registerCommand("Fallback 3", new AutoShoot(0).repeatedly());
+                NamedCommands.registerCommand("Fallback 4 & 6", new AutoShoot(0).repeatedly());
+
                 chooser.addOption("Four Note", AutoBuilder.buildAuto("Top Clear"));
                 chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note"));
                 chooser.addOption("Walton 3 Note", AutoBuilder.buildAuto("Walton"));
                 chooser.addOption("Test", AutoBuilder.buildAuto("Test"));
                 SmartDashboard.putData("Auto Chooser", this.chooser);
+
         }
 
         public Pose2d getStart(String auto) {
