@@ -285,12 +285,20 @@ public final class Constants {
   }
 
   public static final class LEDConstants {
+
     public static final int kPWMPort = 9;
+
     public static final double kLEDRed = 0.61;
-    public static final double kLEDBlue = 0.87;
     public static final double kLEDGold = 0.67;
+    public static final double kLEDBlue = 0.87;
     public static final double kLEDGreen = 0.77;
-    public static final double kLEDOrange = 0.65;
     public static final double kLEDBlack = 0.99;
+    public static final double kLEDOrange = 0.65;
+
+    public static final double kLEDRedBreath = -0.17;
+
+    public static final double kLEDHeartbeatMediumColor1 = 0.05;
+    public static final double kLEDHeartbeatMediumColor2 = 0.25;
+
   }
 }

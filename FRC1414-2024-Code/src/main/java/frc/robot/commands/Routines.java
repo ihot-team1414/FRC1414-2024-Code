@@ -3,13 +3,16 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class Routines {
+
     private static IntakeSubsystem intake = IntakeSubsystem.getInstance();
     private static PivotSubsystem pivot = PivotSubsystem.getInstance();
     private static ShooterSubsystem shooter = ShooterSubsystem.getInstance();
+    private static LEDSubsystem LED = LEDSubsystem.getInstance();
 
     public static Command primeAmp() {
         return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpPrimePosition);
@@ -25,6 +28,7 @@ public class Routines {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                    LEDPrimitives.LEDOn(Constants.LEDConstants.kLEDBlue);
                 });
     }
 
@@ -32,18 +36,23 @@ public class Routines {
         return ShooterPrimitives
                 .rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition))
+                .andThen(LEDPrimitives.LEDOn(Constants.LEDConstants.kLEDGreen))
                 .andThen(IntakePrimitives.speakerFeed().onlyIf(() -> shooter.isWithinVelocitylerance(20)).repeatedly())
                 .finallyDo(() -> {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                    LEDPrimitives.LEDOn(Constants.LEDConstants.kLEDBlue);
                 });
     }
 
     public static Command intake() {
         return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kIntakePosition)
                 .andThen(IntakePrimitives.intake()).andThen(PivotPrimitives.stow())
-                .finallyDo(() -> {
+                .finallyDo((interrupted) -> {
+                    if (!interrupted) {
+                        LED.SetLED(Constants.LEDConstants.kLEDOrange);
+                    }
                     intake.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
                 });
@@ -55,6 +64,7 @@ public class Routines {
                 .finallyDo(() -> {
                     intake.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                    LEDPrimitives.LEDOn(Constants.LEDConstants.kLEDBlue);
                 });
     }
 
@@ -65,6 +75,7 @@ public class Routines {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                    LEDPrimitives.LEDOn(Constants.LEDConstants.kLEDBlue);
                 });
     }
 

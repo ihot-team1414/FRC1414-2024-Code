@@ -30,4 +30,5 @@ public class IntakePrimitives {
         return new InstantCommand(() -> intake.setDutyCycle(-Constants.IntakeConstants.kIntakeDutyCycle),
                 intake).repeatedly().finallyDo(() -> intake.stop());
     }
+
 }
