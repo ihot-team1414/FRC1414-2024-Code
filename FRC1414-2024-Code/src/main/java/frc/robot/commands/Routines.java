@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
@@ -28,7 +29,9 @@ public class Routines {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                    LEDPrimitives.LEDOn(Constants.LEDConstants.kLEDBlue);
+                    new InstantCommand(() -> {
+                        LED.SetLED(Constants.LEDConstants.kLEDBlue);
+                    });
                 });
     }
 
@@ -36,13 +39,17 @@ public class Routines {
         return ShooterPrimitives
                 .rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition))
-                .andThen(LEDPrimitives.LEDOn(Constants.LEDConstants.kLEDGreen))
+                .andThen(new InstantCommand(() -> {
+                    LED.SetLED(Constants.LEDConstants.kLEDGreen);
+                }))
                 .andThen(IntakePrimitives.speakerFeed().onlyIf(() -> shooter.isWithinVelocitylerance(20)).repeatedly())
                 .finallyDo(() -> {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                    LEDPrimitives.LEDOn(Constants.LEDConstants.kLEDBlue);
+                    new InstantCommand(() -> {
+                        LED.SetLED(Constants.LEDConstants.kLEDBlue);
+                    });
                 });
     }
 
@@ -64,7 +71,9 @@ public class Routines {
                 .finallyDo(() -> {
                     intake.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                    LEDPrimitives.LEDOn(Constants.LEDConstants.kLEDBlue);
+                    new InstantCommand(() -> {
+                        LED.SetLED(Constants.LEDConstants.kLEDBlue);
+                    });
                 });
     }
 
@@ -75,7 +84,9 @@ public class Routines {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                    LEDPrimitives.LEDOn(Constants.LEDConstants.kLEDBlue);
+                    new InstantCommand(() -> {
+                        LED.SetLED(Constants.LEDConstants.kLEDBlue);
+                    });
                 });
     }
 
