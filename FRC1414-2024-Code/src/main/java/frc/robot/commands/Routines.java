@@ -42,7 +42,7 @@ public class Routines {
 
     public static Command speakerShot() {
         return ShooterPrimitives
-                .rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
+                .shoot()
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition))
                 .andThen(new InstantCommand(() -> {
                     LED.setColor(Constants.LEDConstants.kLEDGreen);

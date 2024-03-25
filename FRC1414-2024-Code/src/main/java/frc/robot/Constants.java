@@ -189,6 +189,8 @@ public final class Constants {
     public static final double kEjectDutyCycle = 0.4;
     public static final double kShooterErrorMargin = 10;
     public static final double kSpeakerShotDutyCycle = 0.7;
+    public static final double kShooterRestSpeed = 0;
+    public static final double kShotSpeed = 0;
   }
 
   public static final class PivotConstants {

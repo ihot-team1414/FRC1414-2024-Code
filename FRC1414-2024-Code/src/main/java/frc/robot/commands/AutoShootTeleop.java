@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
@@ -74,11 +75,11 @@ public class AutoShootTeleop extends Command {
         Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
 
         pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
-        shooter.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(distance));
+        shooter.setVelocity(ShooterConstants.kShotSpeed);
 
         if (alignmentController.atSetpoint()
                 && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
-                && shooter.isWithinVelocityTolerance(ShooterData.getInstance().getShooterDutyCycle(distance))) {
+                && shooter.isWithinVelocityTolerance(ShooterConstants.kShotSpeed)) {
             intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
         } else {
             intake.stop();

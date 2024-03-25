@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Routines;
 import frc.robot.commands.ShooterPrimitives;
 import frc.robot.commands.Drive;
@@ -38,6 +39,7 @@ public class RobotContainer {
          * Subsystems
          */
         private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
+        private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
 
         /*
          * Controllers
@@ -71,6 +73,8 @@ public class RobotContainer {
                                                 () -> MathUtil.applyDeadband(-driver.getRightX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> 0.9));
+
+                shooter.setDefaultCommand(ShooterPrimitives.rev(ShooterConstants.kShooterRestSpeed));
         }
 
         private void configureDriver() {
@@ -122,7 +126,7 @@ public class RobotContainer {
                                 new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
                 NamedCommands.registerCommand("Delayed Feed 5 Note",
                                 new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
-                NamedCommands.registerCommand("Warm Up", ShooterPrimitives.warmUp());
+                NamedCommands.registerCommand("Warm Up", ShooterPrimitives.shoot());
 
                 NamedCommands.registerCommand("Intake", Routines.intake());
 
