@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
@@ -21,7 +22,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX shooterMotor1;
     private final TalonFX shooterMotor2;
     private final Follower followerControl;
-    private final VelocityDutyCycle velocityControl;
+    private final VelocityVoltage velocityControl;
     private final DutyCycleOut dutyCycleOutControl;
     private final TalonFXConfiguration shooterMotorConfig;
 
@@ -52,7 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
         /*
          * Set default controls.
          */
-        velocityControl = new VelocityDutyCycle(0, 0, false, 0, 0, false, false, false);
+        velocityControl = new VelocityVoltage(0, 0, false, 0, 0, false, false, false);
         dutyCycleOutControl = new DutyCycleOut(0, true, false, false, false);
         followerControl = new Follower(shooterMotor1.getDeviceID(), true);
     }

@@ -21,6 +21,7 @@ import frc.robot.commands.IntakePrimitives;
 import frc.robot.commands.PivotPrimitives;
 import frc.robot.commands.Align;
 import frc.robot.commands.AutoAim;
+import frc.robot.commands.AutoAimTeleop;
 import frc.robot.commands.AutoRev;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutoShootTeleop;
@@ -98,16 +99,21 @@ public class RobotContainer {
                                                 Constants.OIConstants.kJoystickDeadband),
                                 () -> 0.9));
 
-                new JoystickButton(driver, Button.kL2.value).whileTrue(Routines.speakerShot());
+                new JoystickButton(driver, Button.kL2.value).whileTrue(new AutoAimTeleop(
+                                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> 0.9));
         }
 
         private void configureOperator() {
                 new JoystickButton(operator, XboxController.Button.kLeftBumper.value)
-                                .whileTrue(ShooterPrimitives.rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
+                                .whileTrue(ShooterPrimitives.shoot()
                                                 .alongWith(PivotPrimitives.pivotToPosition(
                                                                 Constants.PivotConstants.kSpeakerShotPosition)));
 
-                new JoystickButton(operator, XboxController.Button.kRightBumper.value)
+                new JoystickButton(operator, XboxController.Button.kB.value)
                                 .whileTrue(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kStowPosition)
                                                 .alongWith(new InstantCommand(
                                                                 () -> ShooterSubsystem.getInstance().stop())));
@@ -115,6 +121,13 @@ public class RobotContainer {
                 new JoystickButton(operator, XboxController.Button.kX.value).whileTrue(
                                 IntakePrimitives.speakerFeed().withTimeout(1)
                                                 .finallyDo(() -> IntakeSubsystem.getInstance().stop()));
+
+                new JoystickButton(operator, XboxController.Button.kRightBumper.value).whileTrue(new AutoAimTeleop(
+                                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> 0.9));
 
                 new JoystickButton(operator, XboxController.Button.kA.value).whileTrue(Routines.outtake());
         }

@@ -189,8 +189,9 @@ public final class Constants {
     public static final double kEjectDutyCycle = 0.4;
     public static final double kShooterErrorMargin = 10;
     public static final double kSpeakerShotDutyCycle = 0.7;
-    public static final double kShooterRestSpeed = 0;
-    public static final double kShotSpeed = 0;
+
+    public static final double kShooterRestSpeed = 500; // TODO
+    public static final double kShotSpeed = 1000; // TODO
   }
 
   public static final class PivotConstants {
@@ -209,7 +210,7 @@ public final class Constants {
     public static final MotionMagicConfigs kPivotMotionMagic = new MotionMagicConfigs();
 
     static {
-      kPivotMotionMagic.MotionMagicCruiseVelocity = 200;
+      kPivotMotionMagic.MotionMagicCruiseVelocity = 300;
       kPivotMotionMagic.MotionMagicAcceleration = 200;
     }
 
