@@ -11,6 +11,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.utils.LimelightHelpers;
@@ -23,6 +24,7 @@ public class AutoShootTeleop extends Command {
     private final PivotSubsystem pivot = PivotSubsystem.getInstance();
     private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
     private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
+    private final LEDSubsystem LED = LEDSubsystem.getInstance();
     private final DoubleSupplier translationXSupplier;
     private final DoubleSupplier translationYSupplier;
     private final DoubleSupplier limitingFactorSupplier;
@@ -59,6 +61,8 @@ public class AutoShootTeleop extends Command {
             double distance = tagPose.getTranslation().getNorm();
 
             pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
+            LED.SetLED(Constants.LEDConstants.kLEDGreen);
+
             shooter.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(distance));
 
             if (yawError < Constants.DriveConstants.kAutoAimTeleopErrorMargin
