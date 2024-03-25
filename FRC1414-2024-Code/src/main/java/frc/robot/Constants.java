@@ -53,8 +53,11 @@ public final class Constants {
 
     public static final double kAutoAimTeleopErrorMargin = 3.5;
     public static final double kAutoAimAutoErrorMargin = 1;
-    public static final double kAutoAimP = 5;
     public static final double kSlowMode = 0.1;
+
+    public static final double kAutoAimP = 5;
+    public static final double kAutoAimI = 0;
+    public static final double kAutoAimD = 0;
   }
 
   public static final class ModuleConstants {
@@ -134,8 +137,13 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final double kLimelightAngle = 25; // From vertical
-    public static final double kLimelightHeight = 10; // Inches
+    public static final double kLimelightAngle = 25; // from vertical
+    public static final double kLimelightHeight = 10; // inches
+
+    public static final double kCacheTimeout = 2; // seconds
+
+    public static final double kRightLimelightOffset = -30;
+    public static final double kLeftLimelightOffset = 30;
   }
 
   public static final class NeoMotorConstants {

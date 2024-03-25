@@ -1,17 +1,25 @@
 package frc.robot.commands;
 
+import java.util.Optional;
+
+import javax.sound.sampled.TargetDataLine;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.utils.LimelightHelpers;
 import frc.utils.ShooterData;
 
@@ -20,12 +28,23 @@ public class AutoShoot extends Command {
     private final PivotSubsystem pivot = PivotSubsystem.getInstance();
     private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
     private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
-    private double fbDistance;
+    private double fallbackDistance;
+    private double target;
+
+    private final PIDController alignmentController = new PIDController(DriveConstants.kAutoAimP,
+            DriveConstants.kAutoAimI, DriveConstants.kAutoAimD);
 
     public AutoShoot(double fbDistance) {
         addRequirements(drivetrain, intake, pivot, shooter);
-        this.fbDistance = fbDistance;
+        this.fallbackDistance = fallbackDistance;
+    }
 
+    @Override
+    public void initialize() {
+        double yawError = VisionSubsystem.getInstance().getTX().orElse(0.0);
+        double currentAngle = drivetrain.getHeading().getDegrees();
+
+        target = yawError + currentAngle;
     }
 
     @Override
@@ -33,37 +52,35 @@ public class AutoShoot extends Command {
 
         Rotation2d rotation = Rotation2d.fromRadians(0);
 
-        if (LimelightHelpers.getTV("limelight-front")) {
-            double yawError = LimelightHelpers.getTX("limelight-front");
+        double currentAngle = drivetrain.getHeading().getDegrees();
 
-            if (Math.abs(yawError) > Constants.DriveConstants.kAutoAimTeleopErrorMargin) {
-                rotation = Rotation2d.fromDegrees(-yawError * Constants.DriveConstants.kAutoAimP);
-            }
+        rotation = Rotation2d
+                .fromDegrees(alignmentController.calculate(drivetrain.getInstance().getHeading().getDegrees(), target));
 
-            Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-front");
-            double distance = tagPose.getTranslation().getNorm();
+        if (VisionSubsystem.getInstance().getDistance().isPresent()) {
+            Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
 
             pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
             shooter.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(distance));
 
-            if (yawError < Constants.DriveConstants.kAutoAimTeleopErrorMargin
+            if (Math.abs(currentAngle - target) < Constants.DriveConstants.kAutoAimAutoErrorMargin
                     && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
-                    && shooter.isWithinVelocitylerance(ShooterData.getInstance().getMinShotVelocity(distance))) {
+                    && shooter.isWithinVelocityTolerance(ShooterData.getInstance().getShooterDutyCycle(distance))) {
                 intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
             } else {
                 intake.stop();
             }
-
-            SmartDashboard.putNumber("Tag Distance", tagPose.getTranslation().getNorm());
         }
 
         else {
-            pivot.setPosition(ShooterData.getInstance().getShooterPosition(fbDistance));
-            shooter.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(fbDistance));
+            pivot.setPosition(ShooterData.getInstance().getShooterPosition(fallbackDistance));
+            shooter.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(fallbackDistance));
 
             // Check if rotation is correct?
-            if (pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(fbDistance))
-                    && shooter.isWithinVelocitylerance(ShooterData.getInstance().getMinShotVelocity(fbDistance))) {
+            if (pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(fallbackDistance))
+                    && shooter
+                            .isWithinVelocityTolerance(
+                                    ShooterData.getInstance().getShooterDutyCycle(fallbackDistance))) {
                 intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
             } else {
                 intake.stop();
@@ -81,7 +98,6 @@ public class AutoShoot extends Command {
     public void end(boolean interrupted) {
         drivetrain.lock();
         intake.stop();
-        shooter.stop();
         pivot.setPosition(Constants.PivotConstants.kStowPosition);
     }
 }

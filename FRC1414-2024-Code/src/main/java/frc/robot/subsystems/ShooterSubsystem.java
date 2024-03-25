@@ -99,7 +99,7 @@ public class ShooterSubsystem extends SubsystemBase {
     /*
      * Sensor Methods
      */
-    public boolean isWithinVelocitylerance(double target) {
+    public boolean isWithinVelocityTolerance(double target) {
         return shooterMotor1.getVelocity().getValueAsDouble() >= target;
     }
 

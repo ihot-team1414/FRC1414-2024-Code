@@ -14,7 +14,7 @@ public class LEDSubsystem extends SubsystemBase {
         this.color = Constants.LEDConstants.kLEDBlue;
     }
 
-    public void SetLED(double colorChange) {
+    public void setColor(double colorChange) {
         this.color = colorChange;
     }
 

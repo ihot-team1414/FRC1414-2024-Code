@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.util.Optional;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
@@ -7,6 +9,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+import frc.utils.ShooterData;
 
 public class Routines {
 
@@ -14,6 +18,7 @@ public class Routines {
     private static PivotSubsystem pivot = PivotSubsystem.getInstance();
     private static ShooterSubsystem shooter = ShooterSubsystem.getInstance();
     private static LEDSubsystem LED = LEDSubsystem.getInstance();
+    private static VisionSubsystem vision = VisionSubsystem.getInstance();
 
     public static Command primeAmp() {
         return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpPrimePosition);
@@ -30,7 +35,7 @@ public class Routines {
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
                     new InstantCommand(() -> {
-                        LED.SetLED(Constants.LEDConstants.kLEDBlue);
+                        LED.setColor(Constants.LEDConstants.kLEDBlue);
                     });
                 });
     }
@@ -40,15 +45,16 @@ public class Routines {
                 .rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition))
                 .andThen(new InstantCommand(() -> {
-                    LED.SetLED(Constants.LEDConstants.kLEDGreen);
+                    LED.setColor(Constants.LEDConstants.kLEDGreen);
                 }))
-                .andThen(IntakePrimitives.speakerFeed().onlyIf(() -> shooter.isWithinVelocitylerance(20)).repeatedly())
+                .andThen(
+                        IntakePrimitives.speakerFeed().onlyIf(() -> shooter.isWithinVelocityTolerance(20)).repeatedly())
                 .finallyDo(() -> {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
                     new InstantCommand(() -> {
-                        LED.SetLED(Constants.LEDConstants.kLEDBlue);
+                        LED.setColor(Constants.LEDConstants.kLEDBlue);
                     });
                 });
     }
@@ -58,7 +64,7 @@ public class Routines {
                 .andThen(IntakePrimitives.intake()).andThen(PivotPrimitives.stow())
                 .finallyDo((interrupted) -> {
                     if (!interrupted) {
-                        LED.SetLED(Constants.LEDConstants.kLEDOrange);
+                        LED.setColor(Constants.LEDConstants.kLEDOrange);
                     }
                     intake.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
@@ -72,7 +78,7 @@ public class Routines {
                     intake.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
                     new InstantCommand(() -> {
-                        LED.SetLED(Constants.LEDConstants.kLEDBlue);
+                        LED.setColor(Constants.LEDConstants.kLEDBlue);
                     });
                 });
     }
@@ -85,7 +91,7 @@ public class Routines {
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
                     new InstantCommand(() -> {
-                        LED.SetLED(Constants.LEDConstants.kLEDBlue);
+                        LED.setColor(Constants.LEDConstants.kLEDBlue);
                     });
                 });
     }

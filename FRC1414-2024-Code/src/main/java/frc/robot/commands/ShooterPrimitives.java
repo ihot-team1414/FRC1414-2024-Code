@@ -1,10 +1,13 @@
 package frc.robot.commands;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.utils.LimelightHelpers;
 import frc.utils.ShooterData;
 
@@ -20,8 +23,7 @@ public class ShooterPrimitives {
     }
 
     public static Command warmUp() {
-        Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-front");
-        double distance = tagPose.getTranslation().getNorm();
+        Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
         return new RunCommand(() -> shooter.setDutyCycle(ShooterData.getInstance().getShooterDutyCycle(distance)))
                 .finallyDo(() -> shooter.stop());
     }

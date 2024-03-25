@@ -18,6 +18,7 @@ import frc.robot.commands.ShooterPrimitives;
 import frc.robot.commands.Drive;
 import frc.robot.commands.IntakePrimitives;
 import frc.robot.commands.PivotPrimitives;
+import frc.robot.commands.Align;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoRev;
 import frc.robot.commands.AutoShoot;

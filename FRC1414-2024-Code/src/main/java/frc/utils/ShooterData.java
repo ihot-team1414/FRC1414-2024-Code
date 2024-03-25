@@ -1,5 +1,6 @@
 package frc.utils;
 
+import java.util.Optional;
 import java.util.TreeMap;
 
 public class ShooterData {
@@ -87,5 +88,15 @@ public class ShooterData {
     private void addSpeaker(double distance, double dutyCycle, double position, double minShotVelocity) {
         Double[] entry = { dutyCycle, position, minShotVelocity };
         shooterData.put(distance, entry);
+    }
+
+    public double getShooterDutyCycle(Optional<Double> distance) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getShooterDutyCycle'");
+    }
+
+    public double getShooterPosition(Optional<Double> distance) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getShooterPosition'");
     }
 }
