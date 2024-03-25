@@ -302,7 +302,7 @@ public final class Constants {
     public static final double kLEDRed = 0.61;
     public static final double kLEDGold = 0.67;
     public static final double kLEDBlue = 0.87;
-    public static final double kLEDGreen = 0.77;
+    public static final double kLEDGreen = 0.73;
     public static final double kLEDBlack = 0.99;
     public static final double kLEDOrange = 0.65;
 
@@ -310,6 +310,11 @@ public final class Constants {
 
     public static final double kLEDHeartbeatMediumColor1 = 0.05;
     public static final double kLEDHeartbeatMediumColor2 = 0.25;
+
+    public static final double kLEDStrobeRed = -0.11;
+    public static final double kLEDLightChaseRed = -0.31;
+    public static final double kLEDGreenFlashing = -0.61;
+    public static final double kLEDRainbow = -0.99;
 
   }
 }

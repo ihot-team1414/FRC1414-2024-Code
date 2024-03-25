@@ -4,21 +4,18 @@ import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.utils.LimelightHelpers;
+import frc.utils.RobotState;
+import frc.utils.RobotState.RobotConfiguration;
 import frc.utils.ShooterData;
 
 public class AutoAimTeleop extends Command {
@@ -57,6 +54,11 @@ public class AutoAimTeleop extends Command {
     @Override
     public void execute() {
 
+        boolean seesTarget = VisionSubsystem.getInstance().getDistance().isPresent();
+
+        RobotState.getInstance().setRobotConfiguration(
+                seesTarget ? RobotConfiguration.AIMING_SUCCESS : RobotConfiguration.LIMELIGHT_SEARCHING);
+
         double translationX = translationXSupplier.getAsDouble() * limitingFactorSupplier.getAsDouble()
                 * DriveConstants.kMaxSpeedMetersPerSecond;
         double translationY = translationYSupplier.getAsDouble() * limitingFactorSupplier.getAsDouble()
@@ -78,5 +80,6 @@ public class AutoAimTeleop extends Command {
     public void end(boolean interrupted) {
         drivetrain.lock();
         pivot.setPosition(Constants.PivotConstants.kStowPosition);
+        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
     }
 }

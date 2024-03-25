@@ -1,71 +1,58 @@
 package frc.robot.commands;
 
-import java.util.Optional;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
-import frc.utils.ShooterData;
+import frc.utils.RobotState;
+import frc.utils.RobotState.RobotConfiguration;
 
 public class Routines {
 
     private static IntakeSubsystem intake = IntakeSubsystem.getInstance();
     private static PivotSubsystem pivot = PivotSubsystem.getInstance();
     private static ShooterSubsystem shooter = ShooterSubsystem.getInstance();
-    private static LEDSubsystem LED = LEDSubsystem.getInstance();
-    private static VisionSubsystem vision = VisionSubsystem.getInstance();
 
     public static Command primeAmp() {
-        return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpPrimePosition);
+        return RobotState.transition(RobotConfiguration.AMP,
+                PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpPrimePosition));
     }
 
     public static Command scoreAmp() {
-        return ShooterPrimitives
+        return RobotState.transition(RobotConfiguration.AMP, ShooterPrimitives
                 .rev(Constants.ShooterConstants.kAmpDutyCycleLeft, Constants.ShooterConstants.kAmpDutyCycleRight)
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition))
                 .andThen(IntakePrimitives.ampFeed()
-                        .onlyIf(() -> pivot.getPosition() > Constants.PivotConstants.kAmpFeedPosition).repeatedly())
+                        .onlyIf(() -> pivot.getPosition() > Constants.PivotConstants.kAmpFeedPosition).repeatedly()))
                 .finallyDo(() -> {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                    new InstantCommand(() -> {
-                        LED.setColor(Constants.LEDConstants.kLEDBlue);
-                    });
+                    RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
                 });
     }
 
     public static Command speakerShot() {
-        return ShooterPrimitives
+        return RobotState.transition(RobotConfiguration.AIMING_SUCCESS, ShooterPrimitives
                 .shoot()
-                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition))
-                .andThen(new InstantCommand(() -> {
-                    LED.setColor(Constants.LEDConstants.kLEDGreen);
-                }))
+                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition)))
                 .andThen(
-                        IntakePrimitives.speakerFeed().onlyIf(() -> shooter.isWithinVelocityTolerance(20)).repeatedly())
+                        RobotState.transition(RobotConfiguration.SHOOTING,
+                                IntakePrimitives.speakerFeed().onlyIf(() -> shooter.isWithinVelocityTolerance(20))
+                                        .repeatedly()))
                 .finallyDo(() -> {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                    new InstantCommand(() -> {
-                        LED.setColor(Constants.LEDConstants.kLEDBlue);
-                    });
+                    RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
                 });
     }
 
     public static Command intake() {
         return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kIntakePosition)
                 .andThen(IntakePrimitives.intake()).andThen(PivotPrimitives.stow())
-                .finallyDo((interrupted) -> {
-                    if (!interrupted) {
-                        LED.setColor(Constants.LEDConstants.kLEDOrange);
-                    }
+                .finallyDo(() -> {
                     intake.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
                 });
@@ -77,22 +64,21 @@ public class Routines {
                 .finallyDo(() -> {
                     intake.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                    new InstantCommand(() -> {
-                        LED.setColor(Constants.LEDConstants.kLEDBlue);
-                    });
+                    RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
                 });
     }
 
     public static Command eject() {
-        return ShooterPrimitives.rev(Constants.ShooterConstants.kEjectDutyCycle)
-                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kEjectPosition))
-                .andThen(IntakePrimitives.speakerFeed().withTimeout(1)).finallyDo(() -> {
+        return RobotState
+                .transition(RobotConfiguration.EJECTING,
+                        ShooterPrimitives.rev(Constants.ShooterConstants.kEjectDutyCycle)
+                                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kEjectPosition))
+                                .andThen(IntakePrimitives.speakerFeed().withTimeout(1)))
+                .finallyDo(() -> {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                    new InstantCommand(() -> {
-                        LED.setColor(Constants.LEDConstants.kLEDBlue);
-                    });
+                    RobotState.getInstance().setRobotConfiguration(RobotConfiguration.EJECTING);
                 });
     }
 

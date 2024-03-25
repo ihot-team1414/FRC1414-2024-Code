@@ -2,15 +2,10 @@ package frc.robot.commands;
 
 import java.util.Optional;
 
-import javax.sound.sampled.TargetDataLine;
-
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
@@ -21,7 +16,8 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.utils.LimelightHelpers;
+import frc.utils.RobotState;
+import frc.utils.RobotState.RobotConfiguration;
 import frc.utils.ShooterData;
 
 public class AutoShoot extends Command {
@@ -35,7 +31,7 @@ public class AutoShoot extends Command {
     private final PIDController alignmentController = new PIDController(DriveConstants.kAutoAimP,
             DriveConstants.kAutoAimI, DriveConstants.kAutoAimD);
 
-    public AutoShoot(double fbDistance) {
+    public AutoShoot(double fallbackDistance) {
         addRequirements(drivetrain, intake, pivot, shooter);
         this.fallbackDistance = fallbackDistance;
     }
@@ -56,9 +52,11 @@ public class AutoShoot extends Command {
         double currentAngle = drivetrain.getHeading().getDegrees();
 
         rotation = Rotation2d
-                .fromDegrees(alignmentController.calculate(drivetrain.getInstance().getHeading().getDegrees(), target));
+                .fromDegrees(alignmentController.calculate(drivetrain.getHeading().getDegrees(), target));
 
         if (VisionSubsystem.getInstance().getDistance().isPresent()) {
+            RobotState.getInstance().setRobotConfiguration(RobotConfiguration.AIMING_SUCCESS);
+
             Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
 
             pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
@@ -71,9 +69,9 @@ public class AutoShoot extends Command {
             } else {
                 intake.stop();
             }
-        }
+        } else {
+            RobotState.getInstance().setRobotConfiguration(RobotConfiguration.LIMELIGHT_SEARCHING);
 
-        else {
             pivot.setPosition(ShooterData.getInstance().getShooterPosition(fallbackDistance));
             shooter.setVelocity(ShooterConstants.kShotSpeed);
 
@@ -82,6 +80,7 @@ public class AutoShoot extends Command {
                     && shooter
                             .isWithinVelocityTolerance(
                                     ShooterConstants.kShotSpeed)) {
+                RobotState.getInstance().setRobotConfiguration(RobotConfiguration.SHOOTING);
                 intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
             } else {
                 intake.stop();
@@ -100,5 +99,6 @@ public class AutoShoot extends Command {
         drivetrain.lock();
         intake.stop();
         pivot.setPosition(Constants.PivotConstants.kStowPosition);
+        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
     }
 }

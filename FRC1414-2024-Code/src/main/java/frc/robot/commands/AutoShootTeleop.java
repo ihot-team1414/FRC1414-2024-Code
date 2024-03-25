@@ -1,11 +1,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
@@ -13,11 +11,11 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.utils.LimelightHelpers;
+import frc.utils.RobotState;
+import frc.utils.RobotState.RobotConfiguration;
 import frc.utils.ShooterData;
 
 import java.util.Optional;
@@ -28,7 +26,6 @@ public class AutoShootTeleop extends Command {
     private final PivotSubsystem pivot = PivotSubsystem.getInstance();
     private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
     private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
-    private final LEDSubsystem LED = LEDSubsystem.getInstance();
     private final DoubleSupplier translationXSupplier;
     private final DoubleSupplier translationYSupplier;
     private final DoubleSupplier limitingFactorSupplier;
@@ -65,6 +62,11 @@ public class AutoShootTeleop extends Command {
 
         double angle = drivetrain.getHeading().getDegrees();
 
+        boolean seesTarget = VisionSubsystem.getInstance().getDistance().isPresent();
+
+        RobotState.getInstance().setRobotConfiguration(
+                seesTarget ? RobotConfiguration.AIMING_SUCCESS : RobotConfiguration.LIMELIGHT_SEARCHING);
+
         Rotation2d rotation = Rotation2d.fromDegrees(alignmentController.calculate(angle, target));
 
         double translationX = translationXSupplier.getAsDouble() * limitingFactorSupplier.getAsDouble()
@@ -80,6 +82,8 @@ public class AutoShootTeleop extends Command {
         if (alignmentController.atSetpoint()
                 && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
                 && shooter.isWithinVelocityTolerance(ShooterConstants.kShotSpeed)) {
+
+            RobotState.getInstance().setRobotConfiguration(RobotConfiguration.SHOOTING);
             intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
         } else {
             intake.stop();
@@ -89,8 +93,6 @@ public class AutoShootTeleop extends Command {
                 .drive(new Transform2d(new Translation2d(translationX, translationY),
                         rotation),
                         true);
-
-        LED.setColor(Constants.LEDConstants.kLEDGreen);
     }
 
     @Override
@@ -98,5 +100,6 @@ public class AutoShootTeleop extends Command {
         drivetrain.lock();
         intake.stop();
         pivot.setPosition(Constants.PivotConstants.kStowPosition);
+        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
     }
 }
