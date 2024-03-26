@@ -33,16 +33,19 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Optional<Double> getTX() {
-        if (VisionConstants.kShootOnTheMove) {
-            ChassisSpeeds speeds = DrivetrainSubsystem.getInstance().getRobotRelativeSpeeds();
-            double cosAngle = DrivetrainSubsystem.getInstance().getHeading().getCos();
-            if (speeds.omegaRadiansPerSecond < 1) {
-                return isStale ? Optional.empty()
-                        : Optional.of(lastTX
-                                + (-speeds.vyMetersPerSecond * cosAngle * VisionConstants.kAngleConverter
-                                        / VisionConstants.kEstimatedShotSpeed));
-            }
-        }
+        // // removed because drivetrain doesn't like turning to the ocrrect angle
+
+        // if (VisionConstants.kShootOnTheMove) {
+        // ChassisSpeeds speeds =
+        // DrivetrainSubsystem.getInstance().getRobotRelativeSpeeds();
+        // double cosAngle = DrivetrainSubsystem.getInstance().getHeading().getCos();
+        // if (speeds.omegaRadiansPerSecond < 1) {
+        // return isStale ? Optional.empty()
+        // : Optional.of(lastTX
+        // + (-speeds.vyMetersPerSecond * cosAngle * VisionConstants.kAngleConverter
+        // / VisionConstants.kEstimatedShotSpeed));
+        // }
+        // }
         return isStale ? Optional.empty() : Optional.of(lastTX);
     }
 

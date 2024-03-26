@@ -19,10 +19,6 @@ public class LEDSubsystem extends SubsystemBase {
         blinkin.set(this.color);
     }
 
-    public void setColor(double newColor) {
-        this.color = newColor;
-    }
-
     public static synchronized LEDSubsystem getInstance() {
         if (instance == null) {
             instance = new LEDSubsystem();
