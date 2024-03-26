@@ -51,7 +51,7 @@ public final class Constants {
     public static final int kFrontRightTurningCanId = 21;
     public static final int kRearRightTurningCanId = 23;
 
-    public static final double kAutoAimTeleopErrorMargin = 2;
+    public static final double kAutoAimTeleopErrorMargin = 4;
     public static final double kAutoAimAutoErrorMargin = 1;
     public static final double kSlowMode = 0.1;
 
@@ -144,6 +144,10 @@ public final class Constants {
 
     public static final double kRightLimelightOffset = -30;
     public static final double kLeftLimelightOffset = 30;
+
+    public static final boolean kShootOnTheMove = true;
+    public static final double kEstimatedShotSpeed = 20;
+    public static final double kAngleConverter = 1;
   }
 
   public static final class NeoMotorConstants {

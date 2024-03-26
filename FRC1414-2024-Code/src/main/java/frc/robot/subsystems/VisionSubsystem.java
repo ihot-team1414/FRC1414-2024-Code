@@ -3,10 +3,12 @@ package frc.robot.subsystems;
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.commands.Drive;
 import frc.utils.LimelightHelpers;
 
 public class VisionSubsystem extends SubsystemBase {
@@ -31,10 +33,30 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Optional<Double> getTX() {
+        if (VisionConstants.kShootOnTheMove) {
+            ChassisSpeeds speeds = DrivetrainSubsystem.getInstance().getRobotRelativeSpeeds();
+            double cosAngle = DrivetrainSubsystem.getInstance().getHeading().getCos();
+            if (speeds.omegaRadiansPerSecond < 1) {
+                return isStale ? Optional.empty()
+                        : Optional.of(lastTX
+                                + (-speeds.vyMetersPerSecond * cosAngle * VisionConstants.kAngleConverter
+                                        / VisionConstants.kEstimatedShotSpeed));
+            }
+        }
         return isStale ? Optional.empty() : Optional.of(lastTX);
     }
 
     public Optional<Double> getDistance() {
+
+        if (VisionConstants.kShootOnTheMove) {
+            ChassisSpeeds speeds = DrivetrainSubsystem.getInstance().getRobotRelativeSpeeds();
+            if (speeds.omegaRadiansPerSecond < 1) {
+                return isStale ? Optional.empty()
+                        : Optional.of(lastDistance
+                                + ((lastDistance / VisionConstants.kEstimatedShotSpeed) * speeds.vxMetersPerSecond));
+            }
+        }
+
         return isStale ? Optional.empty() : Optional.of(lastDistance);
     }
 

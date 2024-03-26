@@ -65,9 +65,6 @@ public class AutoShootTeleop extends Command {
 
     @Override
     public void execute() {
-        alignmentController.setP(SmartDashboard.getNumber("Turning P", DriveConstants.kAutoAimP));
-        alignmentController.setI(SmartDashboard.getNumber("Turning I", DriveConstants.kAutoAimI));
-        alignmentController.setD(SmartDashboard.getNumber("Turning D", DriveConstants.kAutoAimD));
 
         target = -VisionSubsystem.getInstance().getTX().orElse(0.0);
         double angle = drivetrain.getHeading().getDegrees();
@@ -90,6 +87,12 @@ public class AutoShootTeleop extends Command {
         shooter.setVelocity(ShooterConstants.kShotSpeed);
         // shooter.setDutyCycle(ShooterConstants.kShotSpeedDutyCycle);
         // shooter.setVoltage(ShooterConstants.kShotSpeedDutyCycle);
+
+        SmartDashboard.putBoolean("Drive Aligned", Math.abs(target + angle) < DriveConstants.kAutoAimTeleopErrorMargin);
+        SmartDashboard.putBoolean("Shooter Up To Speed",
+                shooter.isWithinVelocityTolerance(ShooterConstants.kShotSpeed));
+        SmartDashboard.putBoolean("Pivot Aligned",
+                pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance)));
 
         if (Math.abs(target + angle) < DriveConstants.kAutoAimTeleopErrorMargin
                 && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
