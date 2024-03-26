@@ -19,67 +19,70 @@ import frc.utils.RobotState.RobotConfiguration;
 import frc.utils.ShooterData;
 
 public class AutoAimTeleop extends Command {
-    private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
-    private final PivotSubsystem pivot = PivotSubsystem.getInstance();
-    private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
+        private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
+        private final PivotSubsystem pivot = PivotSubsystem.getInstance();
+        private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
 
-    private final DoubleSupplier translationXSupplier;
-    private final DoubleSupplier translationYSupplier;
-    private final DoubleSupplier limitingFactorSupplier;
+        private final DoubleSupplier translationXSupplier;
+        private final DoubleSupplier translationYSupplier;
+        private final DoubleSupplier limitingFactorSupplier;
 
-    private double target;
+        private double target;
 
-    private final PIDController alignmentController = new PIDController(DriveConstants.kAutoAimP,
-            DriveConstants.kAutoAimI, DriveConstants.kAutoAimD);
+        private final PIDController alignmentController = new PIDController(DriveConstants.kAutoAimP,
+                        DriveConstants.kAutoAimI, DriveConstants.kAutoAimD);
 
-    public AutoAimTeleop(
-            DoubleSupplier translationXSupplier,
-            DoubleSupplier translationYSupplier,
-            DoubleSupplier limitingFactorSupplier) {
+        public AutoAimTeleop(
+                        DoubleSupplier translationXSupplier,
+                        DoubleSupplier translationYSupplier,
+                        DoubleSupplier limitingFactorSupplier) {
 
-        this.translationXSupplier = translationXSupplier;
-        this.translationYSupplier = translationYSupplier;
-        this.limitingFactorSupplier = limitingFactorSupplier;
-        addRequirements(drivetrain, pivot, shooter);
-    }
+                this.translationXSupplier = translationXSupplier;
+                this.translationYSupplier = translationYSupplier;
+                this.limitingFactorSupplier = limitingFactorSupplier;
+                addRequirements(drivetrain, pivot, shooter);
+        }
 
-    @Override
-    public void initialize() {
-        double yawError = VisionSubsystem.getInstance().getTX().orElse(0.0);
-        double currentAngle = drivetrain.getHeading().getDegrees();
+        @Override
+        public void initialize() {
+                alignmentController.enableContinuousInput(-180, 180);
 
-        target = yawError + currentAngle;
-    }
+                double yawError = VisionSubsystem.getInstance().getTX().orElse(0.0);
+                // double currentAngle = drivetrain.getHeading().getDegrees();
 
-    @Override
-    public void execute() {
+                target = -yawError;
+        }
 
-        boolean seesTarget = VisionSubsystem.getInstance().getDistance().isPresent();
+        @Override
+        public void execute() {
+                target = -VisionSubsystem.getInstance().getTX().orElse(0.0);
+                boolean seesTarget = VisionSubsystem.getInstance().getDistance().isPresent();
 
-        RobotState.getInstance().setRobotConfiguration(
-                seesTarget ? RobotConfiguration.AIMING_SUCCESS : RobotConfiguration.LIMELIGHT_SEARCHING);
+                RobotState.getInstance().setRobotConfiguration(
+                                seesTarget ? RobotConfiguration.AIMING_SUCCESS
+                                                : RobotConfiguration.LIMELIGHT_SEARCHING);
 
-        double translationX = translationXSupplier.getAsDouble() * limitingFactorSupplier.getAsDouble()
-                * DriveConstants.kMaxSpeedMetersPerSecond;
-        double translationY = translationYSupplier.getAsDouble() * limitingFactorSupplier.getAsDouble()
-                * DriveConstants.kMaxSpeedMetersPerSecond;
+                double translationX = translationXSupplier.getAsDouble() * limitingFactorSupplier.getAsDouble()
+                                * DriveConstants.kMaxSpeedMetersPerSecond;
+                double translationY = translationYSupplier.getAsDouble() * limitingFactorSupplier.getAsDouble()
+                                * DriveConstants.kMaxSpeedMetersPerSecond;
 
-        Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
-        pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
+                Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
+                pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
 
-        double angle = drivetrain.getHeading().getDegrees();
-        Rotation2d rotation = Rotation2d.fromDegrees(alignmentController.calculate(angle, target));
+                double angle = drivetrain.getHeading().getDegrees();
+                Rotation2d rotation = Rotation2d.fromDegrees(alignmentController.calculate(angle, target));
 
-        drivetrain
-                .drive(new Transform2d(new Translation2d(translationX, translationY),
-                        rotation),
-                        true);
-    }
+                drivetrain
+                                .drive(new Transform2d(new Translation2d(translationX, translationY),
+                                                rotation),
+                                                true);
+        }
 
-    @Override
-    public void end(boolean interrupted) {
-        drivetrain.lock();
-        pivot.setPosition(Constants.PivotConstants.kStowPosition);
-        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
-    }
+        @Override
+        public void end(boolean interrupted) {
+                drivetrain.lock();
+                pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
+        }
 }

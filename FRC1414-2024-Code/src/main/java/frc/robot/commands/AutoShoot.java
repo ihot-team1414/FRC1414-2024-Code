@@ -98,6 +98,7 @@ public class AutoShoot extends Command {
     public void end(boolean interrupted) {
         drivetrain.lock();
         intake.stop();
+        shooter.stop();
         pivot.setPosition(Constants.PivotConstants.kStowPosition);
         RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
     }

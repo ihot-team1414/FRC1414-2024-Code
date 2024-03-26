@@ -28,6 +28,8 @@ import frc.robot.commands.AutoShootTeleop;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.utils.RobotState;
+import frc.utils.RobotState.RobotConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -75,7 +77,10 @@ public class RobotContainer {
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> 0.9));
 
-                shooter.setDefaultCommand(ShooterPrimitives.rev(ShooterConstants.kShooterRestSpeed));
+                shooter.setDefaultCommand(ShooterPrimitives.rev(ShooterConstants.kRestDutyCycle).finallyDo(() -> {
+                        shooter.stop();
+                })
+                                .onlyIf(() -> RobotState.getInstance().hasNote()));
         }
 
         private void configureDriver() {

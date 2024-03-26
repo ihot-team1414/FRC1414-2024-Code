@@ -207,7 +207,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Gyro", getHeading().getDegrees());
+        SmartDashboard.putNumber("Gyro", getHeading().getDegrees() % 360);
         SmartDashboard.putData("Field", field);
 
         odometry.update(getHeading(), getSwerveModulePositions());

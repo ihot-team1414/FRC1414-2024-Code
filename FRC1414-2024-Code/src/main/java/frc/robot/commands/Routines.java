@@ -16,12 +16,12 @@ public class Routines {
 
     public static Command primeAmp() {
         return RobotState.transition(RobotConfiguration.AMP,
-                PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpPrimePosition));
+                PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition));
     }
 
     public static Command scoreAmp() {
         return RobotState.transition(RobotConfiguration.AMP, ShooterPrimitives
-                .rev(Constants.ShooterConstants.kAmpDutyCycleLeft, Constants.ShooterConstants.kAmpDutyCycleRight)
+                .rev(Constants.ShooterConstants.kAmpDutyCycleLeft)
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition))
                 .andThen(IntakePrimitives.ampFeed()
                         .onlyIf(() -> pivot.getPosition() > Constants.PivotConstants.kAmpFeedPosition).repeatedly()))

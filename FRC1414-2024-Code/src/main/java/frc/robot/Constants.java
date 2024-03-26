@@ -66,7 +66,7 @@ public final class Constants {
     // This changes the drive speed of the module (a pinion gear with more teeth
     // will result in a
     // robot that drives faster).
-    public static final int kDrivingMotorPinionTeeth = 15;
+    public static final int kDrivingMotorPinionTeeth = 14;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
     // direction of
@@ -79,7 +79,7 @@ public final class Constants {
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
     // teeth on the bevel pinion
-    public static final double kDrivingMotorReduction = (45.0 * 20) / (kDrivingMotorPinionTeeth * 15);
+    public static final double kDrivingMotorReduction = (45.0 * 21) / (kDrivingMotorPinionTeeth * 15);
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
 
@@ -140,7 +140,7 @@ public final class Constants {
     public static final double kLimelightAngle = 25; // from vertical
     public static final double kLimelightHeight = 10; // inches
 
-    public static final double kCacheTimeout = 2; // seconds
+    public static final double kCacheTimeout = 45; // seconds
 
     public static final double kRightLimelightOffset = -30;
     public static final double kLeftLimelightOffset = 30;
@@ -184,14 +184,16 @@ public final class Constants {
       kShooterConfiguration.kV = 0.1685;
     }
 
-    public static final double kAmpDutyCycleLeft = 0.2225;
+    public static final double kAmpDutyCycleLeft = 0.3225;
     public static final double kAmpDutyCycleRight = 0.1225;
     public static final double kEjectDutyCycle = 0.4;
+    public static final double kRestDutyCycle = 0.1;
     public static final double kShooterErrorMargin = 10;
     public static final double kSpeakerShotDutyCycle = 0.7;
+    public static final double kShotSpeedDutyCycle = 0.7;
 
-    public static final double kShooterRestSpeed = 500; // TODO
-    public static final double kShotSpeed = 1000; // TODO
+    public static final double kShooterRestSpeed = 5; // TODO
+    public static final double kShotSpeed = 10; // TODO
   }
 
   public static final class PivotConstants {
@@ -210,15 +212,15 @@ public final class Constants {
     public static final MotionMagicConfigs kPivotMotionMagic = new MotionMagicConfigs();
 
     static {
-      kPivotMotionMagic.MotionMagicCruiseVelocity = 300;
-      kPivotMotionMagic.MotionMagicAcceleration = 200;
+      kPivotMotionMagic.MotionMagicCruiseVelocity = 200;
+      kPivotMotionMagic.MotionMagicAcceleration = 100;
     }
 
-    public static final double kIntakePosition = 2;
+    public static final double kIntakePosition = 6; // 2
     public static final double kAmpPrimePosition = 6;
     public static final double kAmpScoringPosition = 17.5;
     public static final double kSpeakerShotPosition = 10;
-    public static final double kStowPosition = 0.5;
+    public static final double kStowPosition = 6; // 0.5
     public static final double kEjectPosition = 6;
     public static final double kPivotErrorMargin = 0.2;
     public static final double kAmpFeedPosition = 7.4; // 7.4
@@ -297,7 +299,7 @@ public final class Constants {
 
   public static final class LEDConstants {
 
-    public static final int kPWMPort = 9;
+    public static final int kPWMPort = 0;
 
     public static final double kLEDRed = 0.61;
     public static final double kLEDGold = 0.67;

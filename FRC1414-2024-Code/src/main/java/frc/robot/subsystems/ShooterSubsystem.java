@@ -78,7 +78,13 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setVelocity(double velocity) {
+        shooterMotor2.setControl(followerControl.withMasterID(32));
         shooterMotor1.setControl(velocityControl.withVelocity(velocity));
+    }
+
+    public void setVelocity(double velocityRight, double velocityLeft) {
+        shooterMotor2.setControl(velocityControl.withVelocity(-velocityRight));
+        shooterMotor1.setControl(velocityControl.withVelocity(velocityLeft));
     }
 
     public void setDutyCycle(double dutyCycle) {

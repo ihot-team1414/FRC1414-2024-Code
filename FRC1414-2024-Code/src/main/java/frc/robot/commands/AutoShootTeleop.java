@@ -51,15 +51,16 @@ public class AutoShootTeleop extends Command {
         double yawError = VisionSubsystem.getInstance().getTX().orElse(0.0);
         double currentAngle = drivetrain.getHeading().getDegrees();
 
-        target = yawError + currentAngle;
+        target = -yawError;
 
         alignmentController.setTolerance(DriveConstants.kAutoAimTeleopErrorMargin);
+        alignmentController.enableContinuousInput(-180, 180);
 
     }
 
     @Override
     public void execute() {
-
+        target = -VisionSubsystem.getInstance().getTX().orElse(0.0);
         double angle = drivetrain.getHeading().getDegrees();
 
         boolean seesTarget = VisionSubsystem.getInstance().getDistance().isPresent();
@@ -67,7 +68,7 @@ public class AutoShootTeleop extends Command {
         RobotState.getInstance().setRobotConfiguration(
                 seesTarget ? RobotConfiguration.AIMING_SUCCESS : RobotConfiguration.LIMELIGHT_SEARCHING);
 
-        Rotation2d rotation = Rotation2d.fromDegrees(alignmentController.calculate(angle, target));
+        Rotation2d rotation = Rotation2d.fromDegrees(-alignmentController.calculate(-angle, target));
 
         double translationX = translationXSupplier.getAsDouble() * limitingFactorSupplier.getAsDouble()
                 * DriveConstants.kMaxSpeedMetersPerSecond;
@@ -77,7 +78,8 @@ public class AutoShootTeleop extends Command {
         Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
 
         pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
-        shooter.setVelocity(ShooterConstants.kShotSpeed);
+        // shooter.setVelocity(ShooterConstants.kShotSpeed);
+        shooter.setDutyCycle(ShooterConstants.kShotSpeedDutyCycle);
 
         if (alignmentController.atSetpoint()
                 && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
@@ -99,6 +101,7 @@ public class AutoShootTeleop extends Command {
     public void end(boolean interrupted) {
         drivetrain.lock();
         intake.stop();
+        shooter.stop();
         pivot.setPosition(Constants.PivotConstants.kStowPosition);
         RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
     }

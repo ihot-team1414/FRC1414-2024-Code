@@ -77,7 +77,7 @@ public class ShooterData {
     }
 
     public double getShooterPosition(double distance) {
-        return getSpeakerEntry(distance)[1];
+        return getSpeakerEntry(distance)[0];
     }
 
     public double getShooterPosition(Optional<Double> distance) {

@@ -42,26 +42,29 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
 
         SmartDashboard.putNumber("Distance", lastDistance);
-        SmartDashboard.putNumber("TX", lastTX);
+        SmartDashboard.putNumber("TX", lastTX % 360);
         SmartDashboard.putBoolean("Vision stale?", isStale);
 
         if (LimelightHelpers.getTV("limelight-front")) {
-            lastTX = LimelightHelpers.getTX("limelight-front");
+            lastTX = DrivetrainSubsystem.getInstance().getHeading().getDegrees()
+                    - (LimelightHelpers.getTX("limelight-front"));
             Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-front");
             lastDistance = tagPose.getTranslation().getNorm();
             isStale = false;
 
             lastMeasurementTime = Timer.getFPGATimestamp();
         } else if (LimelightHelpers.getTV("limelight-left")) {
-            lastTX = LimelightHelpers.getTX("limelight-left") + VisionConstants.kLeftLimelightOffset;
+            lastTX = -LimelightHelpers.getTX("limelight-left") + VisionConstants.kLeftLimelightOffset
+                    + DrivetrainSubsystem.getInstance().getHeading().getDegrees();
             Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-left");
             lastDistance = tagPose.getTranslation().getNorm();
             isStale = false;
 
             lastMeasurementTime = Timer.getFPGATimestamp();
-        } else if (LimelightHelpers.getTV("limelight-left")) {
-            lastTX = LimelightHelpers.getTX("limelight-left") + VisionConstants.kRightLimelightOffset;
-            Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-left");
+        } else if (LimelightHelpers.getTV("limelight-right")) {
+            lastTX = -LimelightHelpers.getTX("limelight-right") + VisionConstants.kRightLimelightOffset
+                    + DrivetrainSubsystem.getInstance().getHeading().getDegrees();
+            Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-right");
             lastDistance = tagPose.getTranslation().getNorm();
             isStale = false;
 

@@ -16,6 +16,10 @@ public class ShooterPrimitives {
         return new InstantCommand(() -> shooter.setDutyCycle(dutyCycleLeft, dutyCycleRight), shooter);
     }
 
+    public static Command spin(double velocity) {
+        return new InstantCommand(() -> shooter.setVelocity(velocity), shooter);
+    }
+
     public static Command shoot() {
         return new InstantCommand(() -> {
             shooter.setVelocity(ShooterConstants.kShotSpeed);
