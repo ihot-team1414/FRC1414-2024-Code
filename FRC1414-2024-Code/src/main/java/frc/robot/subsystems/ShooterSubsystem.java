@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
@@ -24,6 +25,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private final VelocityVoltage velocityControl;
     private final DutyCycleOut dutyCycleOutControl;
     private final TalonFXConfiguration shooterMotorConfig;
+
+    private final VoltageOut voltageOutControl;
 
     public ShooterSubsystem() {
         /*
@@ -54,6 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
          */
         velocityControl = new VelocityVoltage(0, 0, false, 0, 0, false, false, false);
         dutyCycleOutControl = new DutyCycleOut(0, true, false, false, false);
+        voltageOutControl = new VoltageOut(0, true, false, false, false);
         followerControl = new Follower(shooterMotor1.getDeviceID(), true);
     }
 
@@ -75,6 +79,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void setVoltage(Measure<Voltage> voltage) {
         shooterMotor1.set(voltage.in(Volts));
+    }
+
+    public void setVoltage(double percent) {
+        shooterMotor2.setControl(followerControl.withMasterID(32));
+        shooterMotor1.setControl(voltageOutControl.withOutput(12 * percent));
     }
 
     public void setVelocity(double velocity) {
@@ -112,5 +121,9 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter Velocity", shooterMotor1.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter Voltage Out", shooterMotor1.getSupplyVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter Velocity Graph", shooterMotor1.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter Target", velocityControl.Velocity);
     }
+
 }

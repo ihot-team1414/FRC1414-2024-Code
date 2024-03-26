@@ -51,12 +51,12 @@ public final class Constants {
     public static final int kFrontRightTurningCanId = 21;
     public static final int kRearRightTurningCanId = 23;
 
-    public static final double kAutoAimTeleopErrorMargin = 3.5;
+    public static final double kAutoAimTeleopErrorMargin = 2;
     public static final double kAutoAimAutoErrorMargin = 1;
     public static final double kSlowMode = 0.1;
 
-    public static final double kAutoAimP = 5;
-    public static final double kAutoAimI = 0;
+    public static final double kAutoAimP = 3;
+    public static final double kAutoAimI = 0.0;
     public static final double kAutoAimD = 0;
   }
 
@@ -140,7 +140,7 @@ public final class Constants {
     public static final double kLimelightAngle = 25; // from vertical
     public static final double kLimelightHeight = 10; // inches
 
-    public static final double kCacheTimeout = 45; // seconds
+    public static final double kCacheTimeout = 5; // seconds
 
     public static final double kRightLimelightOffset = -30;
     public static final double kLeftLimelightOffset = 30;
@@ -176,7 +176,7 @@ public final class Constants {
     public static final Slot0Configs kShooterConfiguration = new Slot0Configs();
 
     static {
-      kShooterConfiguration.kP = 0.20275;
+      kShooterConfiguration.kP = 0.40275;
       kShooterConfiguration.kI = 0;
       kShooterConfiguration.kD = 0;
 
@@ -187,13 +187,13 @@ public final class Constants {
     public static final double kAmpDutyCycleLeft = 0.3225;
     public static final double kAmpDutyCycleRight = 0.1225;
     public static final double kEjectDutyCycle = 0.4;
-    public static final double kRestDutyCycle = 0.1;
+    public static final double kRestDutyCycle = 0.4;
     public static final double kShooterErrorMargin = 10;
     public static final double kSpeakerShotDutyCycle = 0.7;
     public static final double kShotSpeedDutyCycle = 0.7;
 
     public static final double kShooterRestSpeed = 5; // TODO
-    public static final double kShotSpeed = 10; // TODO
+    public static final double kShotSpeed = 60; // TODO
   }
 
   public static final class PivotConstants {
@@ -216,12 +216,12 @@ public final class Constants {
       kPivotMotionMagic.MotionMagicAcceleration = 100;
     }
 
-    public static final double kIntakePosition = 6; // 2
+    public static final double kIntakePosition = 2; // 2
     public static final double kAmpPrimePosition = 6;
     public static final double kAmpScoringPosition = 17.5;
     public static final double kSpeakerShotPosition = 10;
-    public static final double kStowPosition = 6; // 0.5
-    public static final double kEjectPosition = 6;
+    public static final double kStowPosition = 0.5; // 0.5
+    public static final double kEjectPosition = 10;
     public static final double kPivotErrorMargin = 0.2;
     public static final double kAmpFeedPosition = 7.4; // 7.4
   }
@@ -302,11 +302,11 @@ public final class Constants {
     public static final int kPWMPort = 0;
 
     public static final double kLEDRed = 0.61;
-    public static final double kLEDGold = 0.67;
-    public static final double kLEDBlue = 0.87;
-    public static final double kLEDGreen = 0.73;
+    public static final double kLEDViolet = 0.91;
+    public static final double kLEDBlue = 0.83;
+    public static final double kLEDGreen = 0.77;
     public static final double kLEDBlack = 0.99;
-    public static final double kLEDOrange = 0.65;
+    public static final double kLEDOrange = 0.17;
 
     public static final double kLEDRedBreath = -0.17;
 
@@ -315,8 +315,8 @@ public final class Constants {
 
     public static final double kLEDStrobeRed = -0.11;
     public static final double kLEDLightChaseRed = -0.31;
-    public static final double kLEDGreenFlashing = -0.61;
-    public static final double kLEDRainbow = -0.99;
+    public static final double kLEDGreenFlashing = 0.15;
+    public static final double kDisabledLED = 0.01; // -0.99 is rainbow
 
   }
 }

@@ -78,7 +78,7 @@ public class Routines {
                     intake.stop();
                     shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                    RobotState.getInstance().setRobotConfiguration(RobotConfiguration.EJECTING);
+                    RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
                 });
     }
 

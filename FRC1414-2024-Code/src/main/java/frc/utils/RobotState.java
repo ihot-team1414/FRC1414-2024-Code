@@ -64,7 +64,8 @@ public class RobotState {
         RobotState robotState = RobotState.getInstance();
 
         return command
-                .alongWith(new WaitCommand(1).andThen(new InstantCommand(() -> robotState.setRobotConfiguration(to))));
+                .alongWith(
+                        new WaitCommand(0.1).andThen(new InstantCommand(() -> robotState.setRobotConfiguration(to))));
     }
 
     public void reset(boolean hasNote) {

@@ -11,10 +11,12 @@ public class LEDSubsystem extends SubsystemBase {
     private static LEDSubsystem instance;
     private double color;
 
-    static Spark blinkin = new Spark(Constants.LEDConstants.kPWMPort);
+    static Spark blinkin;
 
     public LEDSubsystem() {
+        blinkin = new Spark(Constants.LEDConstants.kPWMPort);
         this.color = LEDConstants.kLEDBlue;
+        blinkin.set(this.color);
     }
 
     public void setColor(double newColor) {
@@ -39,7 +41,7 @@ public class LEDSubsystem extends SubsystemBase {
         }
 
         if (RobotState.getInstance().getRobotConfiguration() == RobotConfiguration.AMP) {
-            color = LEDConstants.kLEDGold;
+            color = LEDConstants.kLEDViolet;
         }
 
         if (RobotState.getInstance().getRobotConfiguration() == RobotConfiguration.EJECTING) {
@@ -59,7 +61,7 @@ public class LEDSubsystem extends SubsystemBase {
         }
 
         if (RobotState.getInstance().getRobotConfiguration() == RobotConfiguration.DISABLED) {
-            color = LEDConstants.kLEDRainbow;
+            color = LEDConstants.kDisabledLED;
         }
 
         blinkin.set(color);
