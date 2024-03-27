@@ -180,14 +180,13 @@ public class RobotContainer {
                 // chooser.addOption("Four Note Weak Side", AutoBuilder.buildAuto("Weak Side 4
                 // Note"));
                 // chooser.addOption("Test", AutoBuilder.buildAuto("Test"));
-                // chooser.addOption("WORKING 5 Note Auto", AutoBuilder.buildAuto("Moving Five
-                // Note"));
-                chooser.addOption("Justin 5 Note Auto",
-                                new InstantCommand(() -> drivetrain.resetOdometry(
-                                                PathPlannerPath.fromChoreoTrajectory("Justin 5 Note Auto")
-                                                                .getPreviewStartingHolonomicPose()))
-                                                .andThen(AutoBuilder.followPath(PathPlannerPath
-                                                                .fromChoreoTrajectory("Justin 5 Note Auto"))));
+                chooser.addOption("Justin 5 Note Auto", AutoBuilder.buildAuto("Justin 5 Note Auto"));
+                // chooser.addOption("Justin 5 Note Auto",
+                // new InstantCommand(() -> drivetrain.resetOdometry(
+                // PathPlannerPath.fromChoreoTrajectory("Justin 5 Note Auto")
+                // .getPreviewStartingHolonomicPose()))
+                // .andThen(AutoBuilder.followPath(PathPlannerPath
+                // .fromChoreoTrajectory("Justin 5 Note Auto"))));
                 SmartDashboard.putData("Auto Chooser", this.chooser);
 
         }

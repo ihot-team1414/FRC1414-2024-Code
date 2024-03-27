@@ -17,34 +17,19 @@ import frc.utils.ShooterData;
 import frc.utils.RobotState.RobotConfiguration;
 
 public class AutoAim extends Command {
-    private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
     private final PivotSubsystem pivot = PivotSubsystem.getInstance();
 
-    private final PIDController alignmentController = new PIDController(DriveConstants.kAutoAimP,
-            DriveConstants.kAutoAimI, DriveConstants.kAutoAimD);
-
-    private double target;
-
     public AutoAim() {
-        addRequirements(drivetrain, pivot);
+        addRequirements(pivot);
     }
 
     @Override
     public void initialize() {
-        double yawError = VisionSubsystem.getInstance().getTX().orElse(0.0);
-
-        target = -yawError;
-
-        alignmentController.setTolerance(Constants.DriveConstants.kAutoAimAutoErrorMargin);
-        alignmentController.enableContinuousInput(-180, 180);
 
     }
 
     @Override
     public void execute() {
-
-        target = -VisionSubsystem.getInstance().getTX().orElse(0.0);
-        double angle = drivetrain.getHeading().getDegrees();
 
         boolean seesTarget = VisionSubsystem.getInstance().getDistance().isPresent();
 
@@ -52,12 +37,8 @@ public class AutoAim extends Command {
                 seesTarget ? RobotConfiguration.AIMING_SUCCESS : RobotConfiguration.LIMELIGHT_SEARCHING);
 
         Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
-        Rotation2d rotation = Rotation2d.fromDegrees(-alignmentController.calculate(-angle, target));
         pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
 
-        drivetrain.drive(new Transform2d(new Translation2d(0, 0),
-                rotation),
-                true);
     }
 
     /*
@@ -74,7 +55,6 @@ public class AutoAim extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        drivetrain.lock();
         pivot.setPosition(Constants.PivotConstants.kStowPosition);
         RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
     }
