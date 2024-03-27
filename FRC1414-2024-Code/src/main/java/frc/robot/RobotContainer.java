@@ -3,6 +3,7 @@ package frc.robot;
 import java.util.TreeMap;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -153,7 +154,7 @@ public class RobotContainer {
                                 new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
                 NamedCommands.registerCommand("Warm Up", ShooterPrimitives.shoot());
 
-                NamedCommands.registerCommand("Intake", Routines.intake());
+                NamedCommands.registerCommand("Intake", IntakePrimitives.intake());
 
                 NamedCommands.registerCommand("Prepare",
                                 ShooterPrimitives.rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
@@ -173,12 +174,20 @@ public class RobotContainer {
                 NamedCommands.registerCommand("W4N Fallback 2", fallbackShot(0));
                 NamedCommands.registerCommand("W4N Fallback 3 & 4", fallbackShot(0));
 
-                chooser.addOption("Four Note", AutoBuilder.buildAuto("Top Clear"));
-                chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note (Old)"));
-                chooser.addOption("Walton 3 Note", AutoBuilder.buildAuto("Walton"));
-                chooser.addOption("Four Note Weak Side", AutoBuilder.buildAuto("Weak Side 4 Note"));
-                chooser.addOption("Test", AutoBuilder.buildAuto("Test"));
-                chooser.addOption("WORKING 5 Note Auto", AutoBuilder.buildAuto("Moving Five Note"));
+                // chooser.addOption("Four Note", AutoBuilder.buildAuto("Top Clear"));
+                // chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note (Old)"));
+                // chooser.addOption("Walton 3 Note", AutoBuilder.buildAuto("Walton"));
+                // chooser.addOption("Four Note Weak Side", AutoBuilder.buildAuto("Weak Side 4
+                // Note"));
+                // chooser.addOption("Test", AutoBuilder.buildAuto("Test"));
+                // chooser.addOption("WORKING 5 Note Auto", AutoBuilder.buildAuto("Moving Five
+                // Note"));
+                chooser.addOption("Justin 5 Note Auto",
+                                new InstantCommand(() -> drivetrain.resetOdometry(
+                                                PathPlannerPath.fromChoreoTrajectory("Justin 5 Note Auto")
+                                                                .getPreviewStartingHolonomicPose()))
+                                                .andThen(AutoBuilder.followPath(PathPlannerPath
+                                                                .fromChoreoTrajectory("Justin 5 Note Auto"))));
                 SmartDashboard.putData("Auto Chooser", this.chooser);
 
         }

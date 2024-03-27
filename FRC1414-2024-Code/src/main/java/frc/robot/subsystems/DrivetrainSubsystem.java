@@ -82,10 +82,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 this::getRobotRelativeSpeeds,
                 this::driveRobotRelative,
                 new HolonomicPathFollowerConfig(
-                        new PIDConstants(5, 0, 0),
-                        new PIDConstants(6.5, 0, 0),
+                        new PIDConstants(3, 0, 0),
+                        new PIDConstants(3, 0, 0),
                         AutoConstants.kMaxSpeedMetersPerSecond,
-                        0.4,
+                        0.42,
                         new ReplanningConfig()),
                 () -> {
                     var alliance = DriverStation.getAlliance();
@@ -114,7 +114,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Robot field relative drive for path planner
     public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
         ChassisSpeeds robotRelative = ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds,
-                getCurrentPose().getRotation());
+                getHeading());
         driveRobotRelative(robotRelative);
     }
 

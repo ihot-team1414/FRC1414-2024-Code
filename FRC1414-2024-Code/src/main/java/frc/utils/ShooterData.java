@@ -5,7 +5,6 @@ import java.util.TreeMap;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.PivotConstants;
-import frc.robot.Constants.ShooterConstants;
 
 public class ShooterData {
     private static final TreeMap<Double, Double[]> shooterData = new TreeMap<Double, Double[]>();

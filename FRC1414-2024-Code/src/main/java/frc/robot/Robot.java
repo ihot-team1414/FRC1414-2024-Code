@@ -1,13 +1,8 @@
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
-
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.utils.RobotState;
 import frc.utils.RobotState.RobotConfiguration;
 
@@ -19,7 +14,6 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         robotContainer = new RobotContainer();
-        SignalLogger.setPath("/media/sda1/ctre-logs");
     }
 
     @Override
@@ -30,7 +24,6 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         RobotState.getInstance().setRobotConfiguration(RobotConfiguration.DISABLED);
-        SignalLogger.stop();
     }
 
     @Override
@@ -56,8 +49,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         RobotState.getInstance().reset(false);
-
-        SignalLogger.start();
         if (autoCommand != null) {
             autoCommand.cancel();
         }
