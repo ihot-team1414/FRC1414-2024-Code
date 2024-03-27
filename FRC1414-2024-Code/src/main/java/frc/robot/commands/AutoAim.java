@@ -24,7 +24,6 @@ public class AutoAim extends Command {
             DriveConstants.kAutoAimI, DriveConstants.kAutoAimD);
 
     private double target;
-    private double threshold = Constants.DriveConstants.kAutoAimAutoErrorMargin;
 
     public AutoAim() {
         addRequirements(drivetrain, pivot);
@@ -33,14 +32,19 @@ public class AutoAim extends Command {
     @Override
     public void initialize() {
         double yawError = VisionSubsystem.getInstance().getTX().orElse(0.0);
-        double currentAngle = drivetrain.getHeading().getDegrees();
 
-        target = yawError + currentAngle;
+        target = -yawError;
+
+        alignmentController.setTolerance(Constants.DriveConstants.kAutoAimAutoErrorMargin);
+        alignmentController.enableContinuousInput(-180, 180);
 
     }
 
     @Override
     public void execute() {
+
+        target = -VisionSubsystem.getInstance().getTX().orElse(0.0);
+        double angle = drivetrain.getHeading().getDegrees();
 
         boolean seesTarget = VisionSubsystem.getInstance().getDistance().isPresent();
 
@@ -48,23 +52,25 @@ public class AutoAim extends Command {
                 seesTarget ? RobotConfiguration.AIMING_SUCCESS : RobotConfiguration.LIMELIGHT_SEARCHING);
 
         Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
+        Rotation2d rotation = Rotation2d.fromDegrees(-alignmentController.calculate(-angle, target));
         pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
-        double angle = drivetrain.getHeading().getDegrees();
-        Rotation2d rotation = Rotation2d.fromDegrees(alignmentController.calculate(angle, target));
 
         drivetrain.drive(new Transform2d(new Translation2d(0, 0),
                 rotation),
                 true);
     }
 
-    @Override
-    public boolean isFinished() {
-        Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
-        double pivotTarget = ShooterData.getInstance().getShooterPosition(distance);
-        double error = drivetrain.getHeading().getDegrees() - target;
-
-        return Math.abs(error) < threshold && pivot.isAtPositionSetpoint(pivotTarget);
-    }
+    /*
+     * @Override
+     * public boolean isFinished() {
+     * Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
+     * double pivotTarget = ShooterData.getInstance().getShooterPosition(distance);
+     * double error = drivetrain.getHeading().getDegrees() - target;
+     * 
+     * return Math.abs(error) < threshold &&
+     * pivot.isAtPositionSetpoint(pivotTarget);
+     * }
+     */
 
     @Override
     public void end(boolean interrupted) {

@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -41,56 +42,41 @@ public class AutoShoot extends Command {
         double yawError = VisionSubsystem.getInstance().getTX().orElse(0.0);
         double currentAngle = drivetrain.getHeading().getDegrees();
 
-        target = yawError + currentAngle;
+        target = -yawError;
+
+        alignmentController.setTolerance(DriveConstants.kAutoAimAutoErrorMargin);
+        alignmentController.enableContinuousInput(-180, 180);
+        alignmentController.setSetpoint(target);
     }
 
     @Override
     public void execute() {
 
-        Rotation2d rotation = Rotation2d.fromRadians(0);
+        target = -VisionSubsystem.getInstance().getTX().orElse(0.0);
+        double angle = drivetrain.getHeading().getDegrees();
 
-        double currentAngle = drivetrain.getHeading().getDegrees();
+        boolean seesTarget = VisionSubsystem.getInstance().getDistance().isPresent();
 
-        rotation = Rotation2d
-                .fromDegrees(alignmentController.calculate(drivetrain.getHeading().getDegrees(), target));
+        RobotState.getInstance().setRobotConfiguration(
+                seesTarget ? RobotConfiguration.AIMING_SUCCESS : RobotConfiguration.LIMELIGHT_SEARCHING);
 
-        if (VisionSubsystem.getInstance().getDistance().isPresent()) {
-            RobotState.getInstance().setRobotConfiguration(RobotConfiguration.AIMING_SUCCESS);
+        Rotation2d rotation = Rotation2d
+                .fromDegrees(-alignmentController.calculate(-angle, target));
 
-            Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
+        drivetrain.drive(new Transform2d(new Translation2d(0, 0), rotation), true);
 
-            pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
-            shooter.setVelocity(ShooterConstants.kShotSpeed);
+        Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
 
-            if (Math.abs(currentAngle - target) < Constants.DriveConstants.kAutoAimAutoErrorMargin
-                    && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
-                    && shooter.isWithinVelocityTolerance(ShooterConstants.kShotSpeed)) {
-                intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
-            } else {
-                intake.stop();
-            }
-        } else {
-            RobotState.getInstance().setRobotConfiguration(RobotConfiguration.LIMELIGHT_SEARCHING);
+        pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
+        shooter.setVelocity(ShooterConstants.kShotSpeed);
 
-            pivot.setPosition(ShooterData.getInstance().getShooterPosition(fallbackDistance));
-            shooter.setVelocity(ShooterConstants.kShotSpeed);
-
-            // Check if rotation is correct?
-            if (pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(fallbackDistance))
-                    && shooter
-                            .isWithinVelocityTolerance(
-                                    ShooterConstants.kShotSpeed)) {
-                RobotState.getInstance().setRobotConfiguration(RobotConfiguration.SHOOTING);
-                intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
-            } else {
-                intake.stop();
-            }
+        if (Math.abs(target + angle) < DriveConstants.kAutoAimTeleopErrorMargin
+                && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
+                && shooter.isWithinVelocityTolerance(ShooterConstants.kShotSpeed)) {
+            RobotState.getInstance().setRobotConfiguration(RobotConfiguration.SHOOTING);
+            intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
+            // end(true);
         }
-
-        drivetrain
-                .drive(new Transform2d(new Translation2d(0, 0),
-                        rotation),
-                        true);
 
     }
 
