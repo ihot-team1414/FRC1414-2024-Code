@@ -76,11 +76,11 @@ public class RobotContainer {
                  */
                 DrivetrainSubsystem.getInstance().resetHeading();
                 drivetrain.setDefaultCommand(
-                                new Drive(() -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                new Drive(() -> MathUtil.applyDeadband(-driver.getRightY(),
                                                 Constants.OIConstants.kJoystickDeadband),
-                                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
-                                                                Constants.OIConstants.kJoystickDeadband),
                                                 () -> MathUtil.applyDeadband(-driver.getRightX(),
+                                                                Constants.OIConstants.kJoystickDeadband),
+                                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> 1));
 
@@ -106,14 +106,14 @@ public class RobotContainer {
                 new JoystickButton(driver, Button.kR1.value).onTrue(Routines.intake());
                 new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());
                 new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShootTeleop(
-                                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                () -> MathUtil.applyDeadband(-driver.getRightY(),
                                                 Constants.OIConstants.kJoystickDeadband),
-                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                () -> MathUtil.applyDeadband(-driver.getRightX(),
                                                 Constants.OIConstants.kJoystickDeadband),
                                 () -> 0.3));
 
                 new JoystickButton(driver, Button.kL2.value).whileTrue(new AutoAimTeleop(
-                                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                () -> MathUtil.applyDeadband(-driver.getRightY(),
                                                 Constants.OIConstants.kJoystickDeadband),
                                 () -> MathUtil.applyDeadband(-driver.getRightX(),
                                                 Constants.OIConstants.kJoystickDeadband),
