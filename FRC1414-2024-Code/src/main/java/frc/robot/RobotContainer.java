@@ -13,21 +13,29 @@ import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Routines;
 import frc.robot.commands.ShooterPrimitives;
 import frc.robot.commands.Drive;
 import frc.robot.commands.IntakePrimitives;
 import frc.robot.commands.PivotPrimitives;
+import frc.robot.commands.Align;
 import frc.robot.commands.AutoAim;
+import frc.robot.commands.AutoAimTeleop;
 import frc.robot.commands.AutoRev;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutoShootTeleop;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.utils.RobotState;
+import frc.utils.RobotState.RobotConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -37,6 +45,10 @@ public class RobotContainer {
          * Subsystems
          */
         private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
+        private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
+        private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
+        private final PivotSubsystem pivot = PivotSubsystem.getInstance();
+        private final LEDSubsystem led = LEDSubsystem.getInstance();
 
         /*
          * Controllers
@@ -69,7 +81,12 @@ public class RobotContainer {
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> MathUtil.applyDeadband(-driver.getRightX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
-                                                () -> 0.9));
+                                                () -> 1));
+
+                shooter.setDefaultCommand(ShooterPrimitives.rev(ShooterConstants.kRestDutyCycle).finallyDo(() -> {
+                        shooter.stop();
+                })
+                                .onlyIf(() -> RobotState.getInstance().hasNote()));
         }
 
         private void configureDriver() {
@@ -84,6 +101,7 @@ public class RobotContainer {
                                 Button.kTriangle.value).whileTrue(Routines.scoreAmp());
                 new JoystickButton(driver,
                                 Button.kSquare.value).whileTrue(Routines.primeAmp());
+                new JoystickButton(driver, Button.kCircle.value).whileTrue(IntakePrimitives.speakerFeed());
                 new JoystickButton(driver, Button.kR1.value).onTrue(Routines.intake());
                 new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());
                 new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShootTeleop(
@@ -91,18 +109,23 @@ public class RobotContainer {
                                                 Constants.OIConstants.kJoystickDeadband),
                                 () -> MathUtil.applyDeadband(-driver.getLeftX(),
                                                 Constants.OIConstants.kJoystickDeadband),
-                                () -> 0.9));
+                                () -> 0.3));
 
-                new JoystickButton(driver, Button.kL2.value).whileTrue(Routines.speakerShot());
+                new JoystickButton(driver, Button.kL2.value).whileTrue(new AutoAimTeleop(
+                                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> MathUtil.applyDeadband(-driver.getRightX(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> 1));
         }
 
         private void configureOperator() {
                 new JoystickButton(operator, XboxController.Button.kLeftBumper.value)
-                                .whileTrue(ShooterPrimitives.rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
+                                .whileTrue(ShooterPrimitives.shoot()
                                                 .alongWith(PivotPrimitives.pivotToPosition(
                                                                 Constants.PivotConstants.kSpeakerShotPosition)));
 
-                new JoystickButton(operator, XboxController.Button.kRightBumper.value)
+                new JoystickButton(operator, XboxController.Button.kB.value)
                                 .whileTrue(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kStowPosition)
                                                 .alongWith(new InstantCommand(
                                                                 () -> ShooterSubsystem.getInstance().stop())));
@@ -110,6 +133,13 @@ public class RobotContainer {
                 new JoystickButton(operator, XboxController.Button.kX.value).whileTrue(
                                 IntakePrimitives.speakerFeed().withTimeout(1)
                                                 .finallyDo(() -> IntakeSubsystem.getInstance().stop()));
+
+                new JoystickButton(operator, XboxController.Button.kRightBumper.value).whileTrue(new AutoAimTeleop(
+                                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> 1));
 
                 new JoystickButton(operator, XboxController.Button.kA.value).whileTrue(Routines.outtake());
         }
@@ -121,7 +151,7 @@ public class RobotContainer {
                                 new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
                 NamedCommands.registerCommand("Delayed Feed 5 Note",
                                 new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
-                NamedCommands.registerCommand("Warm Up", ShooterPrimitives.warmUp());
+                NamedCommands.registerCommand("Warm Up", ShooterPrimitives.shoot());
 
                 NamedCommands.registerCommand("Intake", Routines.intake());
 
@@ -135,20 +165,31 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("Feed", IntakePrimitives.speakerFeed().withTimeout(0.75));
 
-                NamedCommands.registerCommand("MFN Fallback 2", new AutoShoot(0).repeatedly());
-                NamedCommands.registerCommand("MFN Fallback 3", new AutoShoot(0).repeatedly());
-                NamedCommands.registerCommand("MFN Fallback 4 & 6", new AutoShoot(0).repeatedly());
+                NamedCommands.registerCommand("MFN Fallback 2", fallbackShot(0));
 
-                NamedCommands.registerCommand("W4N Fallback 2", new AutoShoot(0).repeatedly());
-                NamedCommands.registerCommand("W4N Fallback 3 & 4", new AutoShoot(0).repeatedly());
+                NamedCommands.registerCommand("MFN Fallback 3", fallbackShot(0));
+                NamedCommands.registerCommand("MFN Fallback 4 & 6", fallbackShot(0));
+
+                NamedCommands.registerCommand("W4N Fallback 2", fallbackShot(0));
+                NamedCommands.registerCommand("W4N Fallback 3 & 4", fallbackShot(0));
 
                 chooser.addOption("Four Note", AutoBuilder.buildAuto("Top Clear"));
-                chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note"));
+                chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note (Old)"));
                 chooser.addOption("Walton 3 Note", AutoBuilder.buildAuto("Walton"));
                 chooser.addOption("Four Note Weak Side", AutoBuilder.buildAuto("Weak Side 4 Note"));
                 chooser.addOption("Test", AutoBuilder.buildAuto("Test"));
+                chooser.addOption("WORKING 5 Note Auto", AutoBuilder.buildAuto("Moving Five Note"));
                 SmartDashboard.putData("Auto Chooser", this.chooser);
 
+        }
+
+        public Command fallbackShot(double distance) {
+                return new AutoShoot(distance).repeatedly().withTimeout(1.5).finallyDo(() -> {
+                        intake.stop();
+                        shooter.stop();
+                        pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
+                });
         }
 
         public Pose2d getStart(String auto) {

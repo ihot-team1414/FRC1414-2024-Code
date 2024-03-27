@@ -10,6 +10,7 @@ import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import frc.utils.RobotState;
 
 public class IntakeSubsystem extends SubsystemBase {
     private static IntakeSubsystem instance;
@@ -92,5 +93,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        RobotState.getInstance().setHasNote(isLoaded());
     }
 }

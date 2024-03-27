@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7499077544059043,
-        "y": 5.566298146190925
+        "x": 2.9961928869726684,
+        "y": 7.0398809743488435
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5915439759904944,
-        "y": 6.174630708195032
+        "x": 5.892536075670442,
+        "y": 6.679267168733768
       },
       "isLocked": false,
       "linkedName": "MFN46END"
     },
     {
       "anchor": {
-        "x": 8.07441470462037,
-        "y": 5.815024578495485
+        "x": 8.188397459416,
+        "y": 5.823688912335091
       },
       "prevControl": {
-        "x": 6.253158638026316,
-        "y": 7.125184558455275
+        "x": 6.223779513086091,
+        "y": 6.665668032190766
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,21 +29,36 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Intake",
+      "minWaypointRelativePos": 0.8,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 10.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
+    "maxVelocity": 5.5,
     "maxAcceleration": 10.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -13.38233513426516,
+    "rotation": -25.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "MFN",
-  "previewStartingState": null,
+  "previewStartingState": {
+    "rotation": 25.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

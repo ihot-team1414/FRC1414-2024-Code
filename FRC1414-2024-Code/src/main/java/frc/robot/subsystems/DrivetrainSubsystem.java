@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.LimelightHelpers;
 
@@ -83,7 +84,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 new HolonomicPathFollowerConfig(
                         new PIDConstants(5, 0, 0),
                         new PIDConstants(6.5, 0, 0),
-                        4.5,
+                        AutoConstants.kMaxSpeedMetersPerSecond,
                         0.4,
                         new ReplanningConfig()),
                 () -> {
@@ -106,7 +107,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Robot relative drive for path planner
     public void driveRobotRelative(ChassisSpeeds robotRelativeSpeeds) {
         var states = DriveConstants.kDriveKinematics.toSwerveModuleStates(robotRelativeSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.kMaxSpeedMetersPerSecond);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, AutoConstants.kMaxSpeedMetersPerSecond);
         setModuleStates(states);
     }
 
@@ -207,7 +208,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Gyro", getHeading().getDegrees());
+        SmartDashboard.putNumber("Gyro", getHeading().getDegrees() % 360);
         SmartDashboard.putData("Field", field);
 
         odometry.update(getHeading(), getSwerveModulePositions());
@@ -219,7 +220,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void addVisionMeasurement() {
         if (LimelightHelpers.getTV("limelight-front")) {
             odometry.addVisionMeasurement(LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front").pose,
-                    LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front").timestampSeconds);
+                    LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front").timestampSeconds
+                            - LimelightHelpers.getLatency_Capture("limelight-front"));
         }
     }
 }

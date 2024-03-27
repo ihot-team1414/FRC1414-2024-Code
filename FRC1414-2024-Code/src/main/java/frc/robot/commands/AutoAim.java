@@ -1,56 +1,81 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose3d;
+import java.util.Optional;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
-import frc.utils.LimelightHelpers;
+import frc.robot.subsystems.VisionSubsystem;
+import frc.utils.RobotState;
 import frc.utils.ShooterData;
+import frc.utils.RobotState.RobotConfiguration;
 
 public class AutoAim extends Command {
     private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
     private final PivotSubsystem pivot = PivotSubsystem.getInstance();
+
+    private final PIDController alignmentController = new PIDController(DriveConstants.kAutoAimP,
+            DriveConstants.kAutoAimI, DriveConstants.kAutoAimD);
+
+    private double target;
 
     public AutoAim() {
         addRequirements(drivetrain, pivot);
     }
 
     @Override
+    public void initialize() {
+        double yawError = VisionSubsystem.getInstance().getTX().orElse(0.0);
+
+        target = -yawError;
+
+        alignmentController.setTolerance(Constants.DriveConstants.kAutoAimAutoErrorMargin);
+        alignmentController.enableContinuousInput(-180, 180);
+
+    }
+
+    @Override
     public void execute() {
 
-        Rotation2d rotation = Rotation2d.fromRadians(0);
+        target = -VisionSubsystem.getInstance().getTX().orElse(0.0);
+        double angle = drivetrain.getHeading().getDegrees();
 
-        if (LimelightHelpers.getTV("limelight-front")) {
-            double yawError = LimelightHelpers.getTX("limelight-front");
+        boolean seesTarget = VisionSubsystem.getInstance().getDistance().isPresent();
 
-            if (Math.abs(yawError) > Constants.DriveConstants.kAutoAimAutoErrorMargin) {
-                rotation = Rotation2d.fromDegrees(-yawError * Constants.DriveConstants.kAutoAimP);
-            }
+        RobotState.getInstance().setRobotConfiguration(
+                seesTarget ? RobotConfiguration.AIMING_SUCCESS : RobotConfiguration.LIMELIGHT_SEARCHING);
 
-            Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-front");
-            double distance = tagPose.getTranslation().getNorm();
+        Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
+        Rotation2d rotation = Rotation2d.fromDegrees(-alignmentController.calculate(-angle, target));
+        pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
 
-            pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
-
-            SmartDashboard.putNumber("Tag Distance", tagPose.getTranslation().getNorm());
-        } else {
-            pivot.setPosition(ShooterData.getInstance().getShooterPosition(0));
-        }
-
-        drivetrain
-                .drive(new Transform2d(new Translation2d(0, 0),
-                        rotation),
-                        true);
+        drivetrain.drive(new Transform2d(new Translation2d(0, 0),
+                rotation),
+                true);
     }
+
+    /*
+     * @Override
+     * public boolean isFinished() {
+     * Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
+     * double pivotTarget = ShooterData.getInstance().getShooterPosition(distance);
+     * double error = drivetrain.getHeading().getDegrees() - target;
+     * 
+     * return Math.abs(error) < threshold &&
+     * pivot.isAtPositionSetpoint(pivotTarget);
+     * }
+     */
 
     @Override
     public void end(boolean interrupted) {
         drivetrain.lock();
         pivot.setPosition(Constants.PivotConstants.kStowPosition);
+        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
     }
 }

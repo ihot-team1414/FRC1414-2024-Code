@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 1.35,
-      "y": 5.55
+      "y": 5.6
     },
     "rotation": 0
   },
@@ -126,7 +126,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
               {
@@ -171,7 +171,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
               {

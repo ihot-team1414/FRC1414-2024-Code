@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.07441470462037,
-        "y": 5.815024578495485
+        "x": 8.188397459416,
+        "y": 5.823688912335091
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.427189570480836,
-        "y": 6.737470653613624
+        "x": 6.492745065262209,
+        "y": 6.841080348827365
       },
       "isLocked": false,
       "linkedName": "MFN5END"
     },
     {
       "anchor": {
-        "x": 2.7499077544059043,
-        "y": 5.566298146190925
+        "x": 2.9961928869726684,
+        "y": 7.0398809743488435
       },
       "prevControl": {
-        "x": 4.615515699957954,
-        "y": 6.7377900601493295
+        "x": 4.921921256947926,
+        "y": 7.006703493122086
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,11 +39,14 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 25.0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "MFN",
-  "previewStartingState": null,
+  "previewStartingState": {
+    "rotation": -25.0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }
