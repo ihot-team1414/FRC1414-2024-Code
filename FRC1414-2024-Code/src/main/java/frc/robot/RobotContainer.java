@@ -76,11 +76,11 @@ public class RobotContainer {
                  */
                 DrivetrainSubsystem.getInstance().resetHeading();
                 drivetrain.setDefaultCommand(
-                                new Drive(() -> MathUtil.applyDeadband(-driver.getRightY(),
+                                new Drive(() -> MathUtil.applyDeadband(-driver.getLeftY(),
                                                 Constants.OIConstants.kJoystickDeadband),
-                                                () -> MathUtil.applyDeadband(-driver.getRightX(),
-                                                                Constants.OIConstants.kJoystickDeadband),
                                                 () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                                                Constants.OIConstants.kJoystickDeadband),
+                                                () -> MathUtil.applyDeadband(-driver.getRightX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> 1));
 
