@@ -1,7 +1,13 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Amps;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
+import frc.robot.Constants.AmpConstants;
+import frc.robot.subsystems.AmpSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -13,6 +19,7 @@ public class Routines {
     private static IntakeSubsystem intake = IntakeSubsystem.getInstance();
     private static PivotSubsystem pivot = PivotSubsystem.getInstance();
     private static ShooterSubsystem shooter = ShooterSubsystem.getInstance();
+    private static AmpSubsystem amp = AmpSubsystem.getInstance();
 
     public static Command primeAmp() {
         return RobotState.transition(RobotConfiguration.AMP,
@@ -22,12 +29,16 @@ public class Routines {
     public static Command scoreAmp() {
         return RobotState.transition(RobotConfiguration.AMP, ShooterPrimitives
                 .rev(Constants.ShooterConstants.kAmpDutyCycleLeft)
-                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition))
+                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
+                        .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
+                                () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition)))))
                 .andThen(IntakePrimitives.ampFeed()
-                        .onlyIf(() -> pivot.getPosition() > Constants.PivotConstants.kAmpFeedPosition).repeatedly()))
+                        .onlyIf(() -> pivot.getPosition() > Constants.PivotConstants.kAmpFeedPosition)
+                        .repeatedly()))
                 .finallyDo(() -> {
                     intake.stop();
                     shooter.stop();
+                    amp.setPosition(AmpConstants.kAmpRestPosition);
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
                     RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
                 });

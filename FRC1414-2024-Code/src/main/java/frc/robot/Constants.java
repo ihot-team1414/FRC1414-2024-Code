@@ -190,7 +190,7 @@ public final class Constants {
       kShooterConfiguration.kV = 0.1685;
     }
 
-    public static final double kAmpDutyCycleLeft = 0.2225;
+    public static final double kAmpDutyCycleLeft = 0.3225;
     public static final double kAmpDutyCycleRight = 0.1225;
     public static final double kEjectDutyCycle = 0.4;
     public static final double kRestDutyCycle = 0.2;
@@ -231,6 +231,22 @@ public final class Constants {
     public static final double kEjectPosition = 10;
     public static final double kPivotErrorMargin = 0.2;
     public static final double kAmpFeedPosition = 7.4; // 7.4
+  }
+
+  public static final class AmpConstants {
+
+    public static final int kAmpRightCanId = 41;
+    public static final int kAmpLeftCanId = 40;
+    public static final int kAmpMotorCurrentLimit = 20;
+
+    public static final double kAmpP = 1;
+    public static final double kAmpI = 0.0;
+    public static final double kAmpD = 0.0;
+
+    public static final double kAmpScoringPosition = -1.2;
+    public static final double kAmpRestPosition = 0.3;
+
+    public static final double kErrorMargin = 0.02;
   }
 
   public static final class FieldConstants {
