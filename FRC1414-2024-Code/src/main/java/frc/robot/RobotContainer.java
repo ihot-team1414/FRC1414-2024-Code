@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
+import frc.robot.Constants.AmpConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Routines;
@@ -26,6 +27,7 @@ import frc.robot.commands.AutoAimTeleop;
 import frc.robot.commands.AutoRev;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutoShootTeleop;
+import frc.robot.subsystems.AmpSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
@@ -50,6 +52,7 @@ public class RobotContainer {
         private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
         private final PivotSubsystem pivot = PivotSubsystem.getInstance();
         private final LEDSubsystem led = LEDSubsystem.getInstance();
+        private final AmpSubsystem amp = AmpSubsystem.getInstance();
 
         /*
          * Controllers
@@ -88,6 +91,8 @@ public class RobotContainer {
                         shooter.stop();
                 })
                                 .onlyIf(() -> RobotState.getInstance().hasNote()));
+
+                amp.setDefaultCommand(new RunCommand(() -> amp.setPosition(AmpConstants.kAmpRestPosition)));
         }
 
         private void configureDriver() {
@@ -100,8 +105,7 @@ public class RobotContainer {
                                 }));
                 new JoystickButton(driver,
                                 Button.kTriangle.value).whileTrue(Routines.scoreAmp());
-                new JoystickButton(driver,
-                                Button.kSquare.value).whileTrue(Routines.primeAmp());
+
                 new JoystickButton(driver, Button.kCircle.value).whileTrue(IntakePrimitives.speakerFeed());
                 new JoystickButton(driver, Button.kR1.value).onTrue(Routines.intake());
                 new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());

@@ -23,7 +23,15 @@ public class Routines {
 
     public static Command primeAmp() {
         return RobotState.transition(RobotConfiguration.AMP,
-                PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition));
+                PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
+                        .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
+                                () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition)))))
+                .repeatedly()
+                .finallyDo(() -> {
+                    amp.setPosition(AmpConstants.kAmpRestPosition);
+                    pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                    RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
+                });
     }
 
     public static Command scoreAmp() {
