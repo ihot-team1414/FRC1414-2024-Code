@@ -181,6 +181,7 @@ public class RobotContainer {
                 // Note"));
                 // chooser.addOption("Test", AutoBuilder.buildAuto("Test"));
                 chooser.addOption("Justin 5 Note Auto", AutoBuilder.buildAuto("Justin 5 Note Auto"));
+                chooser.addOption("Justin 3 Note Auto", AutoBuilder.buildAuto("Justin 3 Note Auto"));
                 // chooser.addOption("Justin 5 Note Auto",
                 // new InstantCommand(() -> drivetrain.resetOdometry(
                 // PathPlannerPath.fromChoreoTrajectory("Justin 5 Note Auto")

@@ -5,7 +5,7 @@
       "x": 1.380510926246643,
       "y": 5.559878826141357
     },
-    "rotation": -1.9741617712974235e-32
+    "rotation": 1.9670326758221712e-32
   },
   "command": {
     "type": "sequential",
@@ -66,7 +66,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.15
+                        "waitTime": 0.25
                       }
                     }
                   ]
@@ -110,7 +110,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.15
+                        "waitTime": 0.25
                       }
                     }
                   ]
@@ -161,9 +161,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "Intake"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.02
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -224,7 +237,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.25
+                        "waitTime": 0.35
                       }
                     }
                   ]
