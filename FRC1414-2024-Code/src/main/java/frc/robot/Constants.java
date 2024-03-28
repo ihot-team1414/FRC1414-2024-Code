@@ -190,16 +190,17 @@ public final class Constants {
       kShooterConfiguration.kV = 0.1685;
     }
 
-    public static final double kAmpDutyCycleLeft = 0.3225;
+    public static final double kAmpDutyCycleLeft = 0.2225;
     public static final double kAmpDutyCycleRight = 0.1225;
     public static final double kEjectDutyCycle = 0.4;
-    public static final double kRestDutyCycle = 0.4;
+    public static final double kRestDutyCycle = 0.2;
     public static final double kShooterErrorMargin = 10;
     public static final double kSpeakerShotDutyCycle = 0.7;
     public static final double kShotSpeedDutyCycle = 0.7;
 
     public static final double kShooterRestSpeed = 5; // TODO
     public static final double kShotSpeed = 60; // TODO
+    public static final double kAutoAimTimeout = 1.5;
   }
 
   public static final class PivotConstants {

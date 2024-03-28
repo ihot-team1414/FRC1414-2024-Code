@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -32,6 +33,7 @@ public class AutoShootTeleop extends Command {
         private final DoubleSupplier limitingFactorSupplier;
 
         private double target;
+        private double startTime;
 
         private final PIDController alignmentController = new PIDController(DriveConstants.kAutoAimP,
                         DriveConstants.kAutoAimI, DriveConstants.kAutoAimD);
@@ -61,6 +63,7 @@ public class AutoShootTeleop extends Command {
                 SmartDashboard.putNumber("Turning D", DriveConstants.kAutoAimD);
                 alignmentController.setSetpoint(target);
 
+                startTime = Timer.getFPGATimestamp();
         }
 
         @Override
@@ -89,6 +92,8 @@ public class AutoShootTeleop extends Command {
                 // shooter.setDutyCycle(ShooterConstants.kShotSpeedDutyCycle);
                 // shooter.setVoltage(ShooterConstants.kShotSpeedDutyCycle);
 
+                double currentTime = Timer.getFPGATimestamp();
+
                 SmartDashboard.putBoolean("Drive Aligned",
                                 Math.abs(target + angle) < DriveConstants.kAutoAimTeleopErrorMargin);
                 SmartDashboard.putBoolean("Shooter Up To Speed",
@@ -99,6 +104,7 @@ public class AutoShootTeleop extends Command {
                 if (Math.abs(target + angle) < DriveConstants.kAutoAimTeleopErrorMargin
                                 && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
                                 && shooter.isWithinVelocityTolerance(ShooterConstants.kShotSpeed)
+                                || (currentTime - startTime > ShooterConstants.kAutoAimTimeout)
                 //
                 ) {
                         RobotState.getInstance().setRobotConfiguration(RobotConfiguration.SHOOTING);
