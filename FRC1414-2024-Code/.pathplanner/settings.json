@@ -3,22 +3,9 @@
   "robotLength": 0.91,
   "holonomicMode": true,
   "pathFolders": [
-    "Arjan",
-    "Center Simple",
-    "Five Note",
-    "MFN",
-    "NFN",
-    "W4N",
-    "No Amp",
-    "Top Clear",
-    "Top Simple",
-    "WIP",
     "Walton"
   ],
-  "autoFolders": [
-    "Arjan",
-    "WIP"
-  ],
+  "autoFolders": [],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 7.0,
   "defaultMaxAngVel": 540.0,
