@@ -92,7 +92,7 @@ public class RobotContainer {
                 })
                                 .onlyIf(() -> RobotState.getInstance().hasNote()));
 
-                amp.setDefaultCommand(new RunCommand(() -> amp.setPosition(AmpConstants.kAmpRestPosition)));
+                amp.setDefaultCommand(new RunCommand(() -> amp.setPosition(AmpConstants.kAmpRestPosition), amp));
         }
 
         private void configureDriver() {

@@ -5,7 +5,7 @@
       "x": 1.380510926246643,
       "y": 5.559878826141357
     },
-    "rotation": 1.9670326758221712e-32
+    "rotation": -8.832291463243844e-34
   },
   "command": {
     "type": "sequential",
@@ -150,12 +150,6 @@
                       "data": {
                         "pathName": "Justin 5 Note Auto.3"
                       }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.25
-                      }
                     }
                   ]
                 }
@@ -167,7 +161,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.02
+                        "waitTime": 0.01
                       }
                     },
                     {
@@ -191,9 +185,22 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "Justin 5 Note Auto.4"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Justin 5 Note Auto.4"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -233,12 +240,6 @@
                       "data": {
                         "pathName": "Justin 5 Note Auto.5"
                       }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.35
-                      }
                     }
                   ]
                 }
@@ -261,9 +262,22 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "Justin 5 Note Auto.6"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Justin 5 Note Auto.6"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
