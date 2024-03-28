@@ -150,59 +150,19 @@ public class RobotContainer {
         }
 
         public void configureAuto() {
-                NamedCommands.registerCommand("Auto Aim", new AutoAim().repeatedly());
-                NamedCommands.registerCommand("Auto Rev", new AutoRev().repeatedly());
-                NamedCommands.registerCommand("Delayed Feed",
-                                new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
-                NamedCommands.registerCommand("Delayed Feed 5 Note",
-                                new WaitCommand(1).andThen(IntakePrimitives.speakerFeed().withTimeout(0.5)));
-                NamedCommands.registerCommand("Warm Up", ShooterPrimitives.shoot());
-
                 NamedCommands.registerCommand("Intake", IntakePrimitives.intake());
-
-                NamedCommands.registerCommand("Prepare",
-                                ShooterPrimitives.rev(Constants.ShooterConstants.kSpeakerShotDutyCycle)
-                                                .alongWith(PivotPrimitives.pivotToPosition(
-                                                                Constants.PivotConstants.kSpeakerShotPosition)));
-
-                NamedCommands.registerCommand("Stop Rev", new InstantCommand(
-                                () -> ShooterSubsystem.getInstance().stop(), ShooterSubsystem.getInstance()));
-
+                NamedCommands.registerCommand("Auto Aim", new AutoAim().repeatedly());
+                NamedCommands.registerCommand("Auto Aim 1", new AutoAim(1.75).repeatedly());
+                NamedCommands.registerCommand("Auto Aim 2", new AutoAim(2.9).repeatedly());
+                NamedCommands.registerCommand("Auto Aim 3", new AutoAim(3.5).repeatedly());
+                NamedCommands.registerCommand("Auto Aim 4", new AutoAim(4.6).repeatedly());
+                NamedCommands.registerCommand("Auto Aim 5", new AutoAim(4.6).repeatedly());
+                NamedCommands.registerCommand("Auto Rev", new AutoRev().repeatedly());
                 NamedCommands.registerCommand("Feed", IntakePrimitives.speakerFeed().withTimeout(0.75));
-
-                NamedCommands.registerCommand("MFN Fallback 2", fallbackShot(0));
-
-                NamedCommands.registerCommand("MFN Fallback 3", fallbackShot(0));
-                NamedCommands.registerCommand("MFN Fallback 4 & 6", fallbackShot(0));
-
-                NamedCommands.registerCommand("W4N Fallback 2", fallbackShot(0));
-                NamedCommands.registerCommand("W4N Fallback 3 & 4", fallbackShot(0));
-
-                // chooser.addOption("Four Note", AutoBuilder.buildAuto("Top Clear"));
-                // chooser.addOption("Five Note", AutoBuilder.buildAuto("Five Note (Old)"));
-                // chooser.addOption("Walton 3 Note", AutoBuilder.buildAuto("Walton"));
-                // chooser.addOption("Four Note Weak Side", AutoBuilder.buildAuto("Weak Side 4
-                // Note"));
-                // chooser.addOption("Test", AutoBuilder.buildAuto("Test"));
                 chooser.addOption("Justin 5 Note Auto", AutoBuilder.buildAuto("Justin 5 Note Auto"));
                 chooser.addOption("Justin 3 Note Auto", AutoBuilder.buildAuto("Justin 3 Note Auto"));
-                // chooser.addOption("Justin 5 Note Auto",
-                // new InstantCommand(() -> drivetrain.resetOdometry(
-                // PathPlannerPath.fromChoreoTrajectory("Justin 5 Note Auto")
-                // .getPreviewStartingHolonomicPose()))
-                // .andThen(AutoBuilder.followPath(PathPlannerPath
-                // .fromChoreoTrajectory("Justin 5 Note Auto"))));
                 SmartDashboard.putData("Auto Chooser", this.chooser);
 
-        }
-
-        public Command fallbackShot(double distance) {
-                return new AutoShoot(distance).repeatedly().withTimeout(1.5).finallyDo(() -> {
-                        intake.stop();
-                        shooter.stop();
-                        pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
-                });
         }
 
         public Pose2d getStart(String auto) {

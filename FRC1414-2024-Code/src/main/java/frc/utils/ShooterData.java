@@ -61,6 +61,10 @@ public class ShooterData {
     public Double[] getSpeakerEntry(double distance) {
         Double[] empty = { 0.0, 0.0 };
 
+        if (shooterData.get(distance) != null) {
+            return shooterData.get(distance);
+        }
+
         try {
 
             // Get the closest distance to the given distance
@@ -90,6 +94,10 @@ public class ShooterData {
 
     public Double[] getInterpolatedSpeakerEntry(double distance) {
         Double[] empty = { 0.0, 0.0 };
+
+        if (shooterData.get(distance) != null) {
+            return shooterData.get(distance);
+        }
 
         try {
 

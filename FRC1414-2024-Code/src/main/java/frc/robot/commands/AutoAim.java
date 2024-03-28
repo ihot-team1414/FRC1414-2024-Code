@@ -2,14 +2,9 @@ package frc.robot.commands;
 
 import java.util.Optional;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.utils.RobotState;
@@ -19,8 +14,16 @@ import frc.utils.RobotState.RobotConfiguration;
 public class AutoAim extends Command {
     private final PivotSubsystem pivot = PivotSubsystem.getInstance();
 
+    private double fallbackDistance;
+
     public AutoAim() {
         addRequirements(pivot);
+        this.fallbackDistance = 4.5;
+    }
+
+    public AutoAim(double fallbackDistance) {
+        addRequirements(pivot);
+        this.fallbackDistance = fallbackDistance;
     }
 
     @Override
@@ -30,15 +33,14 @@ public class AutoAim extends Command {
 
     @Override
     public void execute() {
-
         boolean seesTarget = VisionSubsystem.getInstance().getDistance().isPresent();
 
         RobotState.getInstance().setRobotConfiguration(
                 seesTarget ? RobotConfiguration.AIMING_SUCCESS : RobotConfiguration.LIMELIGHT_SEARCHING);
 
-        Optional<Double> distance = VisionSubsystem.getInstance().getDistance();
+        double distance = VisionSubsystem.getInstance().getDistance().orElse(fallbackDistance);
+        SmartDashboard.putNumber("Retrieved Distance", distance);
         pivot.setPosition(ShooterData.getInstance().getShooterPosition(distance));
-
     }
 
     /*

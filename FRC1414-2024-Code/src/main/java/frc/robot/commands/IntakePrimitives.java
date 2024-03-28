@@ -5,12 +5,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
+import frc.robot.Constants.PivotConstants;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.utils.RobotState;
 import frc.utils.RobotState.RobotConfiguration;
 
 public class IntakePrimitives {
     private static IntakeSubsystem intake = IntakeSubsystem.getInstance();
+    private static PivotSubsystem pivot = PivotSubsystem.getInstance();
 
     public static Command intake() {
         return RobotState.transition(RobotConfiguration.INTAKING,
@@ -22,11 +25,14 @@ public class IntakePrimitives {
     }
 
     public static Command speakerFeed() {
-        return new RunCommand(() -> intake.setDutyCycle(Constants.IntakeConstants.kSpeakerFeedDutyCycle), intake);
+        return new RunCommand(() -> intake.setDutyCycle(Constants.IntakeConstants.kSpeakerFeedDutyCycle), intake)
+                .onlyIf(() -> pivot.getPosition() >= PivotConstants.kMinFeedPosition);
     }
 
     public static Command ampFeed() {
-        return new RunCommand(() -> intake.setDutyCycle(Constants.IntakeConstants.kAmpFeedDutyCycle), intake);
+        return new RunCommand(() -> intake.setDutyCycle(Constants.IntakeConstants.kAmpFeedDutyCycle), intake)
+                .onlyIf(() -> pivot.getPosition() >= PivotConstants.kMinFeedPosition);
+
     }
 
     public static Command outtake() {

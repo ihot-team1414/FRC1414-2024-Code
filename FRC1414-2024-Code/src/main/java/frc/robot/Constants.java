@@ -229,6 +229,7 @@ public final class Constants {
     public static final double kSpeakerShotPosition = 10;
     public static final double kStowPosition = 0.5; // 0.5
     public static final double kEjectPosition = 10;
+    public static final double kMinFeedPosition = 4;
     public static final double kPivotErrorMargin = 0.2;
     public static final double kAmpFeedPosition = 7.4; // 7.4
   }

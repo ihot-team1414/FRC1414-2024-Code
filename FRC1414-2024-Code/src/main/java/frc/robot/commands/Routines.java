@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.AmpConstants;
+import frc.robot.Constants.PivotConstants;
 import frc.robot.subsystems.AmpSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
@@ -58,7 +59,9 @@ public class Routines {
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition)))
                 .andThen(
                         RobotState.transition(RobotConfiguration.SHOOTING,
-                                IntakePrimitives.speakerFeed().onlyIf(() -> shooter.isWithinVelocityTolerance(20))
+                                IntakePrimitives.speakerFeed()
+                                        .onlyIf(() -> (shooter.isWithinVelocityTolerance(20)
+                                                && pivot.getPosition() >= PivotConstants.kIntakePosition))
                                         .repeatedly()))
                 .finallyDo(() -> {
                     intake.stop();
@@ -78,8 +81,9 @@ public class Routines {
     }
 
     public static Command outtake() {
-        return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kIntakePosition).andThen(
-                IntakePrimitives.outtake())
+        return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kIntakePosition)
+                .onlyIf(() -> RobotState.getInstance().getRobotConfiguration() == RobotConfiguration.AMP).andThen(
+                        IntakePrimitives.outtake().alongWith(ShooterPrimitives.rev(-0.3)))
                 .finallyDo(() -> {
                     intake.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
