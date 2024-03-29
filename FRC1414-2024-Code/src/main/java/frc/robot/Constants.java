@@ -182,7 +182,7 @@ public final class Constants {
     public static final Slot0Configs kShooterConfiguration = new Slot0Configs();
 
     static {
-      kShooterConfiguration.kP = 0.40275;
+      kShooterConfiguration.kP = 0.80275;
       kShooterConfiguration.kI = 0;
       kShooterConfiguration.kD = 0;
 
@@ -199,7 +199,7 @@ public final class Constants {
     public static final double kShotSpeedDutyCycle = 0.7;
 
     public static final double kShooterRestSpeed = 5; // TODO
-    public static final double kShotSpeed = 60; // TODO
+    public static final double kShotSpeed = 70; // TODO
     public static final double kAutoAimTimeout = 1.5;
   }
 

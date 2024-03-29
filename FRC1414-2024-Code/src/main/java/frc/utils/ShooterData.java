@@ -13,14 +13,14 @@ public class ShooterData {
 
     private ShooterData() {
         addSpeaker(0, 6);
-        addSpeaker(1.75, 9.7);
+        addSpeaker(1.75, 9.9);
         addSpeaker(2, 8.8);
         addSpeaker(2.1, 8.3);
         addSpeaker(2.25, 8);
         addSpeaker(2.35, 7.75);
         addSpeaker(2.55, 7.5);
-        addSpeaker(2.65, 7.25);
-        addSpeaker(2.75, 7.1);
+        addSpeaker(2.65, 7.2);
+        addSpeaker(2.75, 7.0);
         addSpeaker(2.8, 6.9);
         addSpeaker(2.9, 6.75);
         addSpeaker(3, 6.25);
