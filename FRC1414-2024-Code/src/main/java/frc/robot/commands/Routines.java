@@ -27,12 +27,15 @@ public class Routines {
         return RobotState.transition(RobotConfiguration.AMP,
                 PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
                         .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
-                                () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition)))))
+                                () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition),
+                                AmpSubsystem.getInstance()))))
                 .repeatedly()
-                .finallyDo(() -> {
-                    amp.setPosition(AmpConstants.kAmpRestPosition);
-                    pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                    RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
+                .finallyDo((interrupted) -> {
+                    // if (!interrupted) {
+                    // amp.setPosition(AmpConstants.kAmpRestPosition);
+                    // pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                    // RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
+                    // }
                 });
     }
 

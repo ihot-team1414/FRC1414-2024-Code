@@ -105,7 +105,8 @@ public class RobotContainer {
                                 }));
                 new JoystickButton(driver,
                                 Button.kTriangle.value).whileTrue(Routines.scoreAmp());
-
+                new JoystickButton(driver,
+                                Button.kSquare.value).onTrue(Routines.primeAmp());
                 new JoystickButton(driver, Button.kCircle.value).whileTrue(IntakePrimitives.speakerFeed());
                 new JoystickButton(driver, Button.kR1.value).onTrue(Routines.intake());
                 new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());

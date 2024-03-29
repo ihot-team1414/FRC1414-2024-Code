@@ -160,9 +160,22 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "Justin 3 Note Auto.4"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Justin 3 Note Auto.4"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
