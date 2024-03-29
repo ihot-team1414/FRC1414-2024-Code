@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.AmpConstants;
 import frc.robot.Constants.PivotConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.AmpSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
@@ -59,12 +60,11 @@ public class Routines {
     public static Command speakerShot() {
         return RobotState.transition(RobotConfiguration.AIMING_SUCCESS, ShooterPrimitives
                 .shoot()
-                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition)))
+                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition))
+                .alongWith(ShooterPrimitives.rev(ShooterConstants.kSpeakerShotDutyCycle))).withTimeout(1)
                 .andThen(
                         RobotState.transition(RobotConfiguration.SHOOTING,
                                 IntakePrimitives.speakerFeed()
-                                        .onlyIf(() -> (shooter.isWithinVelocityTolerance(20)
-                                                && pivot.getPosition() >= PivotConstants.kIntakePosition))
                                         .repeatedly()))
                 .finallyDo(() -> {
                     intake.stop();

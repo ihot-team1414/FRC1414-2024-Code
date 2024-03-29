@@ -126,9 +126,7 @@ public class RobotContainer {
 
         private void configureOperator() {
                 new JoystickButton(operator, XboxController.Button.kLeftBumper.value)
-                                .whileTrue(ShooterPrimitives.shoot()
-                                                .alongWith(PivotPrimitives.pivotToPosition(
-                                                                Constants.PivotConstants.kSpeakerShotPosition)));
+                                .whileTrue(Routines.speakerShot());
 
                 new JoystickButton(operator, XboxController.Button.kB.value)
                                 .whileTrue(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kStowPosition)
