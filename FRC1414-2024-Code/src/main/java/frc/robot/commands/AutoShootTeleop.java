@@ -101,10 +101,11 @@ public class AutoShootTeleop extends Command {
                 SmartDashboard.putBoolean("Pivot Aligned",
                                 pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance)));
 
-                if (Math.abs(target + angle) < DriveConstants.kAutoAimTeleopErrorMargin
+                if ((Math.abs(target + angle) < DriveConstants.kAutoAimTeleopErrorMargin
                                 && pivot.isAtPositionSetpoint(ShooterData.getInstance().getShooterPosition(distance))
                                 && shooter.isWithinVelocityTolerance(ShooterConstants.kShotSpeed)
-                                || (currentTime - startTime > ShooterConstants.kAutoAimTimeout)
+                                || (currentTime - startTime > ShooterConstants.kAutoAimTimeout))
+                                && VisionSubsystem.getInstance().getDistance().isPresent()
                 //
                 ) {
                         RobotState.getInstance().setRobotConfiguration(RobotConfiguration.SHOOTING);

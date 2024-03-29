@@ -13,16 +13,16 @@ public class ShooterData {
 
     private ShooterData() {
         addSpeaker(0, 6);
-        addSpeaker(1.75, 9.5);
-        addSpeaker(2, 9);
-        addSpeaker(2.1, 8.5);
+        addSpeaker(1.75, 9.3);
+        addSpeaker(2, 8.8);
+        addSpeaker(2.1, 8.3);
         addSpeaker(2.25, 8);
         addSpeaker(2.35, 7.75);
         addSpeaker(2.55, 7.5);
         addSpeaker(2.65, 7.25);
         addSpeaker(2.75, 7.1);
-        addSpeaker(2.8, 7.05);
-        addSpeaker(2.9, 6.95);
+        addSpeaker(2.8, 6.9);
+        addSpeaker(2.9, 6.75);
         addSpeaker(3, 6.25);
         addSpeaker(3.25, 6.17);
         addSpeaker(3.3, 6.05);
@@ -128,7 +128,7 @@ public class ShooterData {
     public double getShooterPosition(double distance) {
         double target = getInterpolatedSpeakerEntry(distance)[0];
         SmartDashboard.putNumber("Pivot Target", target);
-        return target == 0 ? PivotConstants.kSpeakerShotPosition : target - 0.2;
+        return target == 0 ? PivotConstants.kSpeakerShotPosition : target - 0.6;
     }
 
     public double getShooterPosition(Optional<Double> distance) {

@@ -142,7 +142,7 @@ public final class Constants {
     public static final double kLimelightAngle = 25; // from vertical
     public static final double kLimelightHeight = 10; // inches
 
-    public static final double kCacheTimeout = 5; // seconds
+    public static final double kCacheTimeout = 10; // seconds
 
     public static final double kRightLimelightOffset = -30;
     public static final double kLeftLimelightOffset = 30;

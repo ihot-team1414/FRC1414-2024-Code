@@ -40,10 +40,13 @@ public class Routines {
                 .rev(Constants.ShooterConstants.kAmpDutyCycleLeft)
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
                         .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
-                                () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition)))))
+                                () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition),
+                                AmpSubsystem.getInstance()))))
                 .andThen(IntakePrimitives.ampFeed()
                         .onlyIf(() -> pivot.getPosition() > Constants.PivotConstants.kAmpFeedPosition)
-                        .repeatedly()))
+                        .repeatedly().alongWith(new InstantCommand(
+                                () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition),
+                                AmpSubsystem.getInstance()))))
                 .finallyDo(() -> {
                     intake.stop();
                     shooter.stop();
