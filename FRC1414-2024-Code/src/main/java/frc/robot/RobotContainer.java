@@ -149,7 +149,7 @@ public class RobotContainer {
         }
 
         public void configureAuto() {
-                NamedCommands.registerCommand("Intake", IntakePrimitives.intake());
+                NamedCommands.registerCommand("Intake", IntakePrimitives.intakeAuto());
                 NamedCommands.registerCommand("Auto Aim", new AutoAim().repeatedly());
                 NamedCommands.registerCommand("Auto Aim 1", new AutoAim(1.75).repeatedly());
                 NamedCommands.registerCommand("Auto Aim 2", new AutoAim(2.9).repeatedly());

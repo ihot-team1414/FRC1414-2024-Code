@@ -24,6 +24,16 @@ public class IntakePrimitives {
                         }));
     }
 
+    public static Command intakeAuto() {
+        return RobotState.transition(RobotConfiguration.INTAKING,
+                new RunCommand(() -> intake.setDutyCycle(Constants.IntakeConstants.kIntakeDutyCycle),
+                        intake)
+                        .until(() -> intake.isLoaded()).andThen(new WaitCommand(0.06)).finallyDo(() -> {
+                            intake.stop();
+                        }))
+                .onlyIf(() -> !intake.isLoaded());
+    }
+
     public static Command speakerFeed() {
         return new RunCommand(() -> intake.setDutyCycle(Constants.IntakeConstants.kSpeakerFeedDutyCycle), intake)
                 .onlyIf(() -> pivot.getPosition() >= PivotConstants.kMinFeedPosition);
