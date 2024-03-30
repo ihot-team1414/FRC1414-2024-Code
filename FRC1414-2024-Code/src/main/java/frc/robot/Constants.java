@@ -190,7 +190,7 @@ public final class Constants {
       kShooterConfiguration.kV = 0.1685;
     }
 
-    public static final double kAmpDutyCycleLeft = 0.4225;
+    public static final double kAmpDutyCycleLeft = 0.3225;
     public static final double kAmpDutyCycleRight = 0.1225;
     public static final double kEjectDutyCycle = 0.4;
     public static final double kRestDutyCycle = 0.2;

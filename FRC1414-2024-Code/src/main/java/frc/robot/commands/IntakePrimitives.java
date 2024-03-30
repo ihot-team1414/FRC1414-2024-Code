@@ -15,16 +15,18 @@ public class IntakePrimitives {
     private static IntakeSubsystem intake = IntakeSubsystem.getInstance();
     private static PivotSubsystem pivot = PivotSubsystem.getInstance();
 
-    public static Command intake() {
-        return RobotState.transition(RobotConfiguration.INTAKING,
-                new RunCommand(() -> intake.setDutyCycle(Constants.IntakeConstants.kIntakeDutyCycle),
-                        intake)
-                        .until(() -> intake.isLoaded()).andThen(new WaitCommand(0.06)).finallyDo(() -> {
-                            intake.stop();
-                        }));
-    }
+    // public static Command intake() {
+    // return RobotState.transition(RobotConfiguration.INTAKING,
+    // new RunCommand(() ->
+    // intake.setDutyCycle(Constants.IntakeConstants.kIntakeDutyCycle),
+    // intake)
+    // .until(() -> intake.isLoaded()).andThen(new WaitCommand(0.06)).finallyDo(()
+    // -> {
+    // intake.stop();
+    // }));
+    // }
 
-    public static Command intakeAuto() {
+    public static Command intake() {
         return RobotState.transition(RobotConfiguration.INTAKING,
                 new RunCommand(() -> intake.setDutyCycle(Constants.IntakeConstants.kIntakeDutyCycle),
                         intake)
