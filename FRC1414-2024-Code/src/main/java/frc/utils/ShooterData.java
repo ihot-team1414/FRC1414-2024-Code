@@ -28,8 +28,8 @@ public class ShooterData {
         addSpeaker(3.3, 6.05);
         addSpeaker(3.35, 6.95);
         addSpeaker(3.4, 5.90);
-        addSpeaker(3.5, 5.75);
-        addSpeaker(3.6, 5.7);
+        addSpeaker(3.5, 5.65);
+        addSpeaker(3.6, 5.65);
         addSpeaker(3.7, 5.65);
         addSpeaker(3.8, 5.55);
         addSpeaker(3.9, 5.5);
