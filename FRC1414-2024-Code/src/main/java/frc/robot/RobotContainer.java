@@ -3,13 +3,11 @@ package frc.robot;
 import java.util.TreeMap;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
@@ -21,25 +19,19 @@ import frc.robot.commands.ShooterPrimitives;
 import frc.robot.commands.Drive;
 import frc.robot.commands.IntakePrimitives;
 import frc.robot.commands.PivotPrimitives;
-import frc.robot.commands.Align;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoAimTeleop;
 import frc.robot.commands.AutoRev;
-import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutoShootTeleop;
 import frc.robot.subsystems.AmpSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
-import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.utils.RobotState;
-import frc.utils.RobotState.RobotConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class RobotContainer {
@@ -49,9 +41,6 @@ public class RobotContainer {
          */
         private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
         private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
-        private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
-        private final PivotSubsystem pivot = PivotSubsystem.getInstance();
-        private final LEDSubsystem led = LEDSubsystem.getInstance();
         private final AmpSubsystem amp = AmpSubsystem.getInstance();
 
         /*
@@ -67,7 +56,7 @@ public class RobotContainer {
         private SendableChooser<Command> chooser = new SendableChooser<>();
 
         public RobotContainer() {
-
+                LEDSubsystem.getInstance();
                 configureAuto();
                 configureDriver();
                 configureOperator();

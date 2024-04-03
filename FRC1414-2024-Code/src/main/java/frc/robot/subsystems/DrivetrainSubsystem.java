@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -54,12 +53,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     /*
      * Initialize gryo.
      */
-    private final AHRS gyro = new AHRS();
     private final Pigeon2 pigeon = new Pigeon2(DriveConstants.kPigeonCanID);
 
     /*
      * Initialize odometry.
-     * TODO: Tune odometry standard deviations.
      */
     SwerveDrivePoseEstimator odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
             getHeading(), new SwerveModulePosition[] {
@@ -202,17 +199,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * Returns current drivetrain heading in the WPILIB coordinate system.
      */
     public Rotation2d getHeading() {
-        if (DriveConstants.kUsePigeon) {
-            return pigeon.getRotation2d();
-        }
-        return Rotation2d.fromDegrees(-gyro.getAngle());
+        return pigeon.getRotation2d();
     }
 
     public void resetHeading() {
-        if (DriveConstants.kUsePigeon) {
-            pigeon.setYaw(0);
-        }
-        gyro.zeroYaw();
+        pigeon.setYaw(0);
     }
 
     @Override

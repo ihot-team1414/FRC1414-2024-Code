@@ -9,15 +9,17 @@ public class ShooterPrimitives {
     private static ShooterSubsystem shooter = ShooterSubsystem.getInstance();
 
     public static Command rev(double dutyCycle) {
-        return new InstantCommand(() -> shooter.setDutyCycle(dutyCycle), shooter);
+        return rev(dutyCycle, false);
     }
 
-    public static Command rev(double dutyCycleLeft, double dutyCycleRight) {
-        return new InstantCommand(() -> shooter.setDutyCycle(dutyCycleLeft, dutyCycleRight), shooter);
-    }
-
-    public static Command spin(double velocity) {
-        return new InstantCommand(() -> shooter.setVelocity(velocity), shooter);
+    public static Command rev(double dutyCycle, boolean useVoltageCompensation) {
+        return new InstantCommand(() -> {
+            if (useVoltageCompensation) {
+                shooter.setVoltage(dutyCycle);
+            } else {
+                shooter.setDutyCycle(dutyCycle);
+            }
+        }, shooter);
     }
 
     public static Command shoot() {

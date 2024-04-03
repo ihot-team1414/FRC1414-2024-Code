@@ -58,8 +58,7 @@ public final class Constants {
     public static final double kAutoAimP = 3;
     public static final double kAutoAimI = 0.0;
     public static final double kAutoAimD = 0;
-    public static final int kPigeonCanID = 0;
-    public static final boolean kUsePigeon = false;
+    public static final int kPigeonCanID = 60;
   }
 
   public static final class ModuleConstants {
@@ -190,15 +189,13 @@ public final class Constants {
       kShooterConfiguration.kV = 0.1685;
     }
 
-    public static final double kAmpDutyCycleLeft = 0.3225;
-    public static final double kAmpDutyCycleRight = 0.1225;
+    public static final double kAmpDutyCycle = 0.3;
     public static final double kEjectDutyCycle = 0.4;
     public static final double kRestDutyCycle = 0.2;
     public static final double kShooterErrorMargin = 10;
     public static final double kSpeakerShotDutyCycle = 0.7;
     public static final double kShotSpeedDutyCycle = 0.7;
 
-    public static final double kShooterRestSpeed = 5; // TODO
     public static final double kShotSpeed = 70; // TODO
     public static final double kAutoAimTimeout = 1.5;
   }
@@ -244,8 +241,8 @@ public final class Constants {
     public static final double kAmpI = 0.0;
     public static final double kAmpD = 0.0;
 
-    public static final double kAmpScoringPosition = -1.2;
-    public static final double kAmpRestPosition = 0.3;
+    public static final double kAmpScoringPosition = -1.72;
+    public static final double kAmpRestPosition = 0;
 
     public static final double kErrorMargin = 0.02;
   }

@@ -1,13 +1,10 @@
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Amps;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.AmpConstants;
-import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.AmpSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -41,7 +38,7 @@ public class Routines {
 
     public static Command scoreAmp() {
         return RobotState.transition(RobotConfiguration.AMP, ShooterPrimitives
-                .rev(Constants.ShooterConstants.kAmpDutyCycleLeft)
+                .rev(Constants.ShooterConstants.kAmpDutyCycle, true)
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
                         .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
                                 () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition),
@@ -64,7 +61,7 @@ public class Routines {
         return RobotState.transition(RobotConfiguration.AIMING_SUCCESS, ShooterPrimitives
                 .shoot()
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition))
-                .alongWith(ShooterPrimitives.rev(ShooterConstants.kSpeakerShotDutyCycle))).withTimeout(1)
+                .alongWith(ShooterPrimitives.rev(ShooterConstants.kSpeakerShotDutyCycle, true))).withTimeout(1)
                 .andThen(
                         RobotState.transition(RobotConfiguration.SHOOTING,
                                 IntakePrimitives.speakerFeed()
