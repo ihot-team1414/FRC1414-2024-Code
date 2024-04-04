@@ -170,8 +170,10 @@ public final class Constants {
       kIntakeConfiguration.kD = 0;
     }
     public static double kIntakeDutyCycle = 0.75;
-    public static int kIntakeSensorCandId = 50;
-    public static double kIndexThreshold = 40;
+    public static int kIntakeSensorTopCandId = 51;
+    public static double kIndexThresholdTop = 47;
+    public static double kIndexThresholdBottom = 50;
+    public static int kIntakeSensorBottomCanId = 50;
   }
 
   public static final class ShooterConstants {
@@ -325,7 +327,7 @@ public final class Constants {
 
   public static final class LEDConstants {
 
-    public static final int kPWMPort = 0;
+    public static final int kPWMPort = 9;
 
     public static final double kLEDRed = 0.61;
     public static final double kLEDViolet = 0.91;

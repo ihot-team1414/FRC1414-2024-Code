@@ -85,11 +85,6 @@ public class RobotContainer {
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> 1));
 
-                shooter.setDefaultCommand(ShooterPrimitives.rev(ShooterConstants.kRestDutyCycle).finallyDo(() -> {
-                        shooter.stop();
-                })
-                                .onlyIf(() -> RobotState.getInstance().hasNote()));
-
                 amp.setDefaultCommand(new RunCommand(() -> amp.setPosition(AmpConstants.kAmpRestPosition), amp));
         }
 

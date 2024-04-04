@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import frc.utils.RobotState;
@@ -17,7 +18,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final TalonFX intakeMotor1;
     private final TalonFX intakeMotor2;
-    private final TimeOfFlight intakeSensor;
+    private final TimeOfFlight intakeSensorTop;
+    private final TimeOfFlight intakeSensorBottom;
+    // private final TimeOfFlight intakeSensorSide;
     private Follower followerControl;
     private DutyCycleOut dutyCycleOutControl;
     private TalonFXConfiguration intakeMotorConfiguration;
@@ -29,7 +32,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
         intakeMotor1 = new TalonFX(IntakeConstants.kIntakeMotor1CanId);
         intakeMotor2 = new TalonFX(IntakeConstants.kIntakeMotor2CanId);
-        intakeSensor = new TimeOfFlight(IntakeConstants.kIntakeSensorCandId);
+        intakeSensorTop = new TimeOfFlight(IntakeConstants.kIntakeSensorTopCandId);
+        intakeSensorBottom = new TimeOfFlight(IntakeConstants.kIntakeSensorBottomCanId);
 
         /*
          * Configure motor current limit.
@@ -50,7 +54,8 @@ public class IntakeSubsystem extends SubsystemBase {
         /*
          * Configure sensor.
          */
-        intakeSensor.setRangingMode(RangingMode.Short, 24);
+        intakeSensorTop.setRangingMode(RangingMode.Short, 24);
+        intakeSensorBottom.setRangingMode(RangingMode.Short, 24);
 
         /*
          * Set default controls.
@@ -87,12 +92,17 @@ public class IntakeSubsystem extends SubsystemBase {
      * Sensor Methods
      */
     public boolean isLoaded() {
-        double distance = intakeSensor.getRange();
-        return intakeSensor.isRangeValid() ? distance < IntakeConstants.kIndexThreshold : false;
+        double distanceTop = intakeSensorTop.getRange();
+        double distanceBottom = intakeSensorBottom.getRange();
+        return (intakeSensorTop.isRangeValid() && distanceTop < IntakeConstants.kIndexThresholdTop)
+                || (intakeSensorBottom.isRangeValid() && distanceBottom < IntakeConstants.kIndexThresholdBottom);
     }
 
     @Override
     public void periodic() {
         RobotState.getInstance().setHasNote(isLoaded());
+        SmartDashboard.putNumber("Top Range", intakeSensorTop.getRange());
+        SmartDashboard.putNumber("Bottom Range", intakeSensorBottom.getRange());
+
     }
 }
