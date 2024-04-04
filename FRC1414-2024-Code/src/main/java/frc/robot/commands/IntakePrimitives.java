@@ -30,7 +30,7 @@ public class IntakePrimitives {
         return RobotState.transition(RobotConfiguration.INTAKING,
                 new RunCommand(() -> intake.setDutyCycle(Constants.IntakeConstants.kIntakeDutyCycle),
                         intake)
-                        .until(() -> intake.isLoaded()).andThen(new WaitCommand(0.06)).finallyDo(() -> {
+                        .until(() -> intake.isLoaded()).finallyDo(() -> {
                             intake.stop();
                         }))
                 .onlyIf(() -> !intake.isLoaded());

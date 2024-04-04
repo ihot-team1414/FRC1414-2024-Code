@@ -171,7 +171,7 @@ public final class Constants {
     }
     public static double kIntakeDutyCycle = 0.75;
     public static int kIntakeSensorCandId = 50;
-    public static double kIndexThreshold = 228;
+    public static double kIndexThreshold = 40;
   }
 
   public static final class ShooterConstants {

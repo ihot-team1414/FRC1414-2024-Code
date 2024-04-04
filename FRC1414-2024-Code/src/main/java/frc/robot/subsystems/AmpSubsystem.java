@@ -47,8 +47,7 @@ public class AmpSubsystem extends SubsystemBase {
         /*
          * Set default controls.
          */
-        // ampMotor2.follow(ampMotor1);
-        ampMotor2.setInverted(false);
+        ampMotor2.follow(ampMotor1, true);
     }
 
     public static synchronized AmpSubsystem getInstance() {
