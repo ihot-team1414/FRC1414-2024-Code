@@ -41,7 +41,7 @@ public class Routines {
 
     public static Command scoreAmp() {
         return RobotState.transition(RobotConfiguration.AMP, ShooterPrimitives
-                .rev(Constants.ShooterConstants.kAmpDutyCycleLeft)
+                .revVolt(Constants.ShooterConstants.kAmpDutyCycleLeft)
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
                         .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
                                 () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition),

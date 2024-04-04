@@ -171,7 +171,7 @@ public final class Constants {
     }
     public static double kIntakeDutyCycle = 0.75;
     public static int kIntakeSensorCandId = 50;
-    public static double kIndexThreshold = 228;
+    public static double kIndexThreshold = 40;
   }
 
   public static final class ShooterConstants {
@@ -199,7 +199,9 @@ public final class Constants {
     public static final double kShotSpeedDutyCycle = 0.7;
 
     public static final double kShooterRestSpeed = 5; // TODO
-    public static final double kShotSpeed = 70; // TODO
+    // public static final double kShotSpeedRight = 70;
+    // public static final double kShotSpeedLeft = 70;
+    public static final double kShotSpeed = 70;
     public static final double kAutoAimTimeout = 1.5;
   }
 
@@ -244,8 +246,8 @@ public final class Constants {
     public static final double kAmpI = 0.0;
     public static final double kAmpD = 0.0;
 
-    public static final double kAmpScoringPosition = -1.2;
-    public static final double kAmpRestPosition = 0.3;
+    public static final double kAmpScoringPosition = -1.7;
+    public static final double kAmpRestPosition = 0;
 
     public static final double kErrorMargin = 0.02;
   }
