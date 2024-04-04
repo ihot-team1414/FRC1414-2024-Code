@@ -20,6 +20,10 @@ public class ShooterPrimitives {
         return new InstantCommand(() -> shooter.setVelocity(velocity), shooter);
     }
 
+    public static Command revVolt(double voltage) {
+        return new InstantCommand(() -> shooter.setVoltage(voltage), shooter);
+    }
+
     public static Command shoot() {
         return new InstantCommand(() -> {
             shooter.setVelocity(ShooterConstants.kShotSpeed);
