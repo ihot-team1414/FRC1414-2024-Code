@@ -171,8 +171,8 @@ public final class Constants {
     }
     public static double kIntakeDutyCycle = 0.75;
     public static int kIntakeSensorTopCandId = 51;
-    public static double kIndexThresholdTop = 47;
-    public static double kIndexThresholdBottom = 50;
+    public static double kIndexThresholdTop = 52;
+    public static double kIndexThresholdBottom = 52;
     public static int kIntakeSensorBottomCanId = 50;
   }
 
@@ -342,6 +342,7 @@ public final class Constants {
     public static final double kLEDHeartbeatMediumColor2 = 0.25;
 
     public static final double kLEDStrobeRed = -0.11;
+    public static final double kLEDStrobeOrange = 0.27;
     public static final double kLEDLightChaseRed = -0.31;
     public static final double kLEDGreenFlashing = 0.15;
     public static final double kDisabledLED = 0.01; // -0.99 is rainbow
