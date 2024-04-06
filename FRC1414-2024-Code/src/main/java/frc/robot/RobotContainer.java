@@ -153,7 +153,7 @@ public class RobotContainer {
                 NamedCommands.registerCommand("Feed", IntakePrimitives.speakerFeed().withTimeout(0.75));
                 chooser.addOption("Justin 5 Note Auto", AutoBuilder.buildAuto("Justin 5 Note Auto"));
                 chooser.addOption("Justin 3 Note Auto", AutoBuilder.buildAuto("Justin 3 Note Auto"));
-                chooser.addOption("Commodores 4 Note Easy Auto", AutoBuilder.buildAuto("Commodores 4 Note Easy"));
+                chooser.addOption("Beeline Auto", AutoBuilder.buildAuto("Beeline Auto"));
                 SmartDashboard.putData("Auto Chooser", this.chooser);
 
         }
