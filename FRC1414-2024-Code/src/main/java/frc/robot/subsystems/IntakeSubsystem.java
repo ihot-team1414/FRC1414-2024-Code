@@ -26,7 +26,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private DutyCycleOut dutyCycleOutControl;
     private TalonFXConfiguration intakeMotorConfiguration;
 
-    private Debouncer debouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
+    private Debouncer debouncer = new Debouncer(0.1, Debouncer.DebounceType.kFalling);
 
     public IntakeSubsystem() {
         /*
