@@ -221,16 +221,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SmartDashboard.putData("Field", field);
 
         odometry.update(getHeading(), getSwerveModulePositions());
-        // addVisionMeasurement();
+        addVisionMeasurement("limelight-front");
 
         field.setRobotPose(odometry.getEstimatedPosition());
     }
 
-    public void addVisionMeasurement() {
-        if (LimelightHelpers.getTV("limelight-front")) {
-            odometry.addVisionMeasurement(LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front").pose,
-                    LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front").timestampSeconds
-                            - LimelightHelpers.getLatency_Capture("limelight-front"));
+    public void addVisionMeasurement(String limelight) {
+        if (LimelightHelpers.getTV(limelight)) {
+            LimelightHelpers.SetRobotOrientation(limelight, odometry.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+            LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
+
+            if(!(Math.abs(gyro.getRate()) > 720) && !(mt2.tagCount == 0)) {
+                odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+                odometry.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+            }
         }
     }
 }
