@@ -84,6 +84,7 @@ public class Routines {
                 .andThen(IntakePrimitives.intake()).andThen(PivotPrimitives.stow())
                 .finallyDo(() -> {
                     intake.stop();
+                    IntakePrimitives.rumble();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
                 });
     }

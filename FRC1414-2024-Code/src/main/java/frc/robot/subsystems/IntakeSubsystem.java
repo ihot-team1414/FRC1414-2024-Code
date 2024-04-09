@@ -9,9 +9,12 @@ import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.wpilibj.PS5Controller;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.OIConstants;
 import frc.utils.RobotState;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -27,6 +30,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private TalonFXConfiguration intakeMotorConfiguration;
 
     private Debouncer debouncer = new Debouncer(0.1, Debouncer.DebounceType.kFalling);
+    private PS5Controller driver = new PS5Controller(OIConstants.kDriverControllerPort);
 
     public IntakeSubsystem() {
         /*
@@ -103,6 +107,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public boolean isLoadedDebounced() {
         return debouncer.calculate(isLoaded());
+    }
+
+    public void rumble(){
+        driver.setRumble(RumbleType.kBothRumble, 1);
+    }
+
+    public void stopRumble(){
+        driver.setRumble(RumbleType.kBothRumble, 0);
     }
 
     @Override
