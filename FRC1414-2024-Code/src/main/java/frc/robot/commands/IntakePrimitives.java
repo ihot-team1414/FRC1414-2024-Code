@@ -30,10 +30,10 @@ public class IntakePrimitives {
         return RobotState.transition(RobotConfiguration.INTAKING,
                 new RunCommand(() -> intake.setDutyCycle(Constants.IntakeConstants.kIntakeDutyCycle),
                         intake)
-                        .until(() -> intake.isLoaded()).finallyDo(() -> {
+                        .until(() -> intake.isLoadedDebounced()).finallyDo(() -> {
                             intake.stop();
                         }))
-                .onlyIf(() -> !intake.isLoaded());
+                .onlyIf(() -> !intake.isLoadedDebounced());
     }
 
     public static Command speakerFeed() {

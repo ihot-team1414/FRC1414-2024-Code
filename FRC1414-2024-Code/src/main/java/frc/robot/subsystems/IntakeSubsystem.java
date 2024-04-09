@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
@@ -24,6 +25,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private Follower followerControl;
     private DutyCycleOut dutyCycleOutControl;
     private TalonFXConfiguration intakeMotorConfiguration;
+
+    private Debouncer debouncer = new Debouncer(0.1, Debouncer.DebounceType.kBoth);
 
     public IntakeSubsystem() {
         /*
@@ -91,16 +94,20 @@ public class IntakeSubsystem extends SubsystemBase {
     /*
      * Sensor Methods
      */
-    public boolean isLoaded() {
+    private boolean isLoaded() {
         double distanceTop = intakeSensorTop.getRange();
         double distanceBottom = intakeSensorBottom.getRange();
         return (intakeSensorTop.isRangeValid() && distanceTop < IntakeConstants.kIndexThresholdTop)
                 || (intakeSensorBottom.isRangeValid() && distanceBottom < IntakeConstants.kIndexThresholdBottom);
     }
 
+    public boolean isLoadedDebounced() {
+        return debouncer.calculate(isLoaded());
+    }
+
     @Override
     public void periodic() {
-        RobotState.getInstance().setHasNote(isLoaded());
+        RobotState.getInstance().setHasNote(isLoadedDebounced());
         SmartDashboard.putNumber("Top Range", intakeSensorTop.getRange());
         SmartDashboard.putNumber("Bottom Range", intakeSensorBottom.getRange());
 

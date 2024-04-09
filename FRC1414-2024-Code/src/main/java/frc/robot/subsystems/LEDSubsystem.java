@@ -30,7 +30,7 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        if (IntakeSubsystem.getInstance().isLoaded()) {
+        if (IntakeSubsystem.getInstance().isLoadedDebounced()) {
             color = LEDConstants.kLEDOrange;
         } else {
             color = LEDConstants.kLEDBlue;
