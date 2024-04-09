@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Amps;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -24,11 +26,11 @@ public class Routines {
     public static Command primeAmp() {
         return RobotState.transition(RobotConfiguration.AMP,
                 PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
-                    .onlyIf(() -> IntakeSubsystem.getInstance().isLoadedDebounced())
                         .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
                                 () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition),
                                 AmpSubsystem.getInstance()))))
                 .repeatedly()
+                .onlyIf(() -> IntakeSubsystem.getInstance().isLoadedDebounced())
                 .finallyDo((interrupted) -> {
                     // if (!interrupted) {
                     // amp.setPosition(AmpConstants.kAmpRestPosition);
@@ -41,7 +43,6 @@ public class Routines {
     public static Command scoreAmp() {
         return RobotState.transition(RobotConfiguration.AMP, ShooterPrimitives
                 .revVolt(Constants.ShooterConstants.kAmpDutyCycleLeft)
-                .onlyIf(() -> IntakeSubsystem.getInstance().isLoadedDebounced())
                 .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
                         .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
                                 () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition),
@@ -51,6 +52,7 @@ public class Routines {
                         .repeatedly().alongWith(new InstantCommand(
                                 () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition),
                                 AmpSubsystem.getInstance()))))
+                .onlyIf(() -> IntakeSubsystem.getInstance().isLoadedDebounced())
                 .finallyDo(() -> {
                     intake.stop();
                     shooter.stop();
