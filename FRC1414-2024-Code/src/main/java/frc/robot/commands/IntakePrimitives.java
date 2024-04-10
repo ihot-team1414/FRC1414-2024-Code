@@ -48,14 +48,6 @@ public class IntakePrimitives {
 
     }
 
-    public static Command rumble(){
-        return new ParallelDeadlineGroup(
-            new WaitCommand(0.25), 
-            new RunCommand(() -> intake.rumble())
-                .onlyIf(() -> intake.isLoadedDebounced()))
-                .finallyDo(() -> intake.stopRumble());
-    }
-
     public static Command outtake() {
         return RobotState.transition(RobotConfiguration.EJECTING,
                 new InstantCommand(() -> intake.setDutyCycle(-Constants.IntakeConstants.kIntakeDutyCycle),

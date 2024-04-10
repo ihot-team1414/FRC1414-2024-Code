@@ -10,12 +10,17 @@ import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.PS5Controller;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.OIConstants;
 import frc.utils.RobotState;
+import frc.utils.RobotState.RobotConfiguration;
 
 public class IntakeSubsystem extends SubsystemBase {
     private static IntakeSubsystem instance;
@@ -30,7 +35,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private TalonFXConfiguration intakeMotorConfiguration;
 
     private Debouncer debouncer = new Debouncer(0.1, Debouncer.DebounceType.kFalling);
-    private PS5Controller driver = new PS5Controller(OIConstants.kOperatorControllerPort);
+    private XboxController driver = new XboxController(OIConstants.kOperatorControllerPort);
 
     public IntakeSubsystem() {
         /*
@@ -110,11 +115,11 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void rumble(){
-        driver.setRumble(RumbleType.kBothRumble, 1);
+        driver.setRumble(RumbleType.kLeftRumble, 1);
     }
 
     public void stopRumble(){
-        driver.setRumble(RumbleType.kBothRumble, 0);
+        driver.setRumble(RumbleType.kLeftRumble, 0);
     }
 
     @Override
@@ -124,5 +129,9 @@ public class IntakeSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Bottom Range", intakeSensorBottom.getRange());
         SmartDashboard.putBoolean("No debounce", isLoaded());
         SmartDashboard.putBoolean("Valid???", intakeSensorTop.isRangeValid());
+        
+        if(RobotState.getInstance().getRobotConfiguration() == RobotConfiguration.INTAKING){
+            rumble();
+        } else { stopRumble(); } 
     }
 }
