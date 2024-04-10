@@ -114,4 +114,39 @@ public class Routines {
                 });
     }
 
+    public static Command trapShot() {
+        return RobotState
+                .transition(RobotConfiguration.EJECTING,
+                        ShooterPrimitives.rev(0.5)
+                                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kEjectPosition))
+                                .andThen(IntakePrimitives.speakerFeed().withTimeout(1)))
+                .finallyDo(() -> {
+                    intake.stop();
+                    shooter.stop();
+                    pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                    RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
+                });
+    }
+
+    public static Command trapAmp() {
+        return RobotState.transition(RobotConfiguration.AMP, ShooterPrimitives
+                .revVolt(0.5)
+                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
+                        .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
+                                () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition),
+                                AmpSubsystem.getInstance()))))
+                .andThen(IntakePrimitives.ampFeed()
+                        .onlyIf(() -> pivot.getPosition() > Constants.PivotConstants.kAmpFeedPosition)
+                        .repeatedly().alongWith(new InstantCommand(
+                                () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition),
+                                AmpSubsystem.getInstance()))))
+                .finallyDo(() -> {
+                    intake.stop();
+                    shooter.stop();
+                    amp.setPosition(AmpConstants.kAmpRestPosition);
+                    pivot.setPosition(Constants.PivotConstants.kStowPosition);
+                    RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
+                });
+    }
+
 }

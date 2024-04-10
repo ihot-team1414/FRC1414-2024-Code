@@ -31,6 +31,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import frc.utils.RobotState;
 import frc.utils.RobotState.RobotConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,6 +52,7 @@ public class RobotContainer {
         private final PivotSubsystem pivot = PivotSubsystem.getInstance();
         private final LEDSubsystem led = LEDSubsystem.getInstance();
         private final AmpSubsystem amp = AmpSubsystem.getInstance();
+        private final VisionSubsystem vision = VisionSubsystem.getInstance();
 
         /*
          * Controllers
@@ -139,6 +141,7 @@ public class RobotContainer {
                                 () -> 1));
 
                 new JoystickButton(operator, XboxController.Button.kA.value).whileTrue(Routines.outtake());
+                new JoystickButton(operator, XboxController.Button.kY.value).whileTrue(Routines.trapShot());
         }
 
         public void configureAuto() {

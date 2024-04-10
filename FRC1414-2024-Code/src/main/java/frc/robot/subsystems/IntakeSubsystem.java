@@ -30,7 +30,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private TalonFXConfiguration intakeMotorConfiguration;
 
     private Debouncer debouncer = new Debouncer(0.1, Debouncer.DebounceType.kFalling);
-    private PS5Controller driver = new PS5Controller(OIConstants.kDriverControllerPort);
+    private PS5Controller driver = new PS5Controller(OIConstants.kOperatorControllerPort);
 
     public IntakeSubsystem() {
         /*
@@ -122,6 +122,7 @@ public class IntakeSubsystem extends SubsystemBase {
         RobotState.getInstance().setHasNote(isLoadedDebounced());
         SmartDashboard.putNumber("Top Range", intakeSensorTop.getRange());
         SmartDashboard.putNumber("Bottom Range", intakeSensorBottom.getRange());
-
+        SmartDashboard.putBoolean("No debounce", isLoaded());
+        SmartDashboard.putBoolean("Valid???", intakeSensorTop.isRangeValid());
     }
 }

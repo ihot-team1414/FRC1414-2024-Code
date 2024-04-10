@@ -69,7 +69,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                     rearRightSwerve.getPosition()
             }, new Pose2d(),
             VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(5)),
-            VecBuilder.fill(0.75, 0.75, Units.degreesToRadians(130)));
+            VecBuilder.fill(0.75, 0.75, 99999999));
 
     /*
      * Initialize visualization.
@@ -222,6 +222,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         odometry.update(getHeading(), getSwerveModulePositions());
         addVisionMeasurement("limelight-front");
+        addVisionMeasurement("limelight-left");
+        addVisionMeasurement("limelight-right");
 
         field.setRobotPose(odometry.getEstimatedPosition());
     }
