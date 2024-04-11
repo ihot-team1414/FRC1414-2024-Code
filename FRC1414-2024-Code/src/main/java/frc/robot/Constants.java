@@ -58,7 +58,7 @@ public final class Constants {
     public static final double kAutoAimP = 3;
     public static final double kAutoAimI = 0.0;
     public static final double kAutoAimD = 0;
-    public static final int kPigeonCanID = 0;
+    public static final int kPigeonCanID = 60;
     public static final boolean kUsePigeon = false;
   }
 

@@ -30,7 +30,6 @@ public class Routines {
                                 () -> AmpSubsystem.getInstance().setPosition(AmpConstants.kAmpScoringPosition),
                                 AmpSubsystem.getInstance()))))
                 .repeatedly()
-                .onlyIf(() -> IntakeSubsystem.getInstance().isLoadedDebounced())
                 .finallyDo((interrupted) -> {
                     // if (!interrupted) {
                     // amp.setPosition(AmpConstants.kAmpRestPosition);

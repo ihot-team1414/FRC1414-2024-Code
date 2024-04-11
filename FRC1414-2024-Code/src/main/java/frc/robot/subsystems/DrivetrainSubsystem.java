@@ -54,7 +54,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     /*
      * Initialize gryo.
      */
-    private final AHRS gyro = new AHRS();
     private final Pigeon2 pigeon = new Pigeon2(DriveConstants.kPigeonCanID);
 
     /*
@@ -173,12 +172,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void resetOdometry(Pose2d pose) {
         odometry.resetPosition(
                 getHeading(),
-                new SwerveModulePosition[] {
-                        frontLeftSwerve.getPosition(),
-                        frontRightSwerve.getPosition(),
-                        rearLeftSwerve.getPosition(),
-                        rearRightSwerve.getPosition()
-                },
+                getSwerveModulePositions(),
                 pose);
     }
 
@@ -202,17 +196,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * Returns current drivetrain heading in the WPILIB coordinate system.
      */
     public Rotation2d getHeading() {
-        if (DriveConstants.kUsePigeon) {
-            return pigeon.getRotation2d();
-        }
-        return Rotation2d.fromDegrees(-gyro.getAngle());
+        return pigeon.getRotation2d();
     }
 
+    //TODO: Fix gyro reset to properly relocate the robot
     public void resetHeading() {
-        if (DriveConstants.kUsePigeon) {
-            pigeon.setYaw(0);
-        }
-        gyro.zeroYaw();
+        odometry.resetPosition(getHeading(), getSwerveModulePositions(), new Pose2d(getCurrentPose().getTranslation(), new Rotation2d(0)));
     }
 
     @Override
@@ -229,11 +218,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void addVisionMeasurement(String limelight) {
+        LimelightHelpers.SetRobotOrientation(limelight, odometry.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         if (LimelightHelpers.getTV(limelight)) {
-            LimelightHelpers.SetRobotOrientation(limelight, odometry.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
             LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
 
-            if(!(Math.abs(gyro.getRate()) > 720) && !(mt2.tagCount == 0)) {
+            if(!(Math.abs(pigeon.getRate()) > 720) && !(mt2.tagCount == 0)) {
                 odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
                 odometry.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
             }
