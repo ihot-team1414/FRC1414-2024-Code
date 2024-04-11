@@ -1,11 +1,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
@@ -16,46 +19,59 @@ public class RotateToPose extends Command {
     private final DrivetrainSubsystem drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private final DoubleSupplier translationXSupplier;
     private final DoubleSupplier translationYSupplier;
-    private final Translation2d target;
-    private final PIDController rotController;
-    private double additive;
+    private double angle;
+    private Pose2d start;
+    private Pose2d target;
+    private Pose2d current;
+
+    private final HolonomicDriveController holonomicDriveController;
+    private final PIDController xController;
+    private final PIDController yController;
+    private final ProfiledPIDController rotController;
 
     public RotateToPose(
             DoubleSupplier translationXSupplier,
             DoubleSupplier translationYSupplier,
-            Translation2d target) {
+            double angle) {
 
         this.translationXSupplier = translationXSupplier;
         this.translationYSupplier = translationYSupplier;
-        this.target = target;
-        additive = 0;
-        rotController = new PIDController(0.01, 0, 0);
+        this.angle = angle;
+
+        start = new Pose2d();
+        target = new Pose2d();
+        current = new Pose2d();
+        xController = new PIDController(5, 0, 0);
+        yController = new PIDController(5, 0, 0);
+        rotController = new ProfiledPIDController(0.05, 0, 0, new TrapezoidProfile.Constraints(1, 1));
+        holonomicDriveController = new HolonomicDriveController(xController, yController, rotController);
+        holonomicDriveController.setTolerance(new Pose2d(0.5, 0.5, Rotation2d.fromDegrees(0.5)));
 
         addRequirements(drivetrainSubsystem);
     }
 
     @Override
+    public void initialize(){
+        start = drivetrainSubsystem.getCurrentPose();
+        target = new Pose2d(start.getTranslation(), Rotation2d.fromDegrees(angle));
+
+    }
+
+    @Override
     public void execute() {
+        current = drivetrainSubsystem.getCurrentPose();
 
-
-        double robotToTargetX = drivetrainSubsystem.getCurrentPose().getX() - target.getX();
-        double robotToTargetY = drivetrainSubsystem.getCurrentPose().getY() - target.getY();
-        additive = robotToTargetX < 0 ? 180 : 0;
-        double poseAngle = Math.toDegrees(Math.atan(robotToTargetY / robotToTargetX)) + additive;
-        rotController.setSetpoint(poseAngle);
-        double rotation = rotController.calculate(-(MathUtil.inputModulus(drivetrainSubsystem.getDegrees(), -180, 180)), rotController.getSetpoint());
-
-        SmartDashboard.putNumber("p angle", poseAngle);
+        //SmartDashboard.putNumber("p angle", poseAngle);
 
         double translationX = translationXSupplier.getAsDouble()
                 * DriveConstants.kMaxSpeedMetersPerSecond;
         double translationY = translationYSupplier.getAsDouble()
                 * DriveConstants.kMaxSpeedMetersPerSecond;
-
+/*
         drivetrainSubsystem
                 .drive(new Transform2d(new Translation2d(translationX, translationY),
                         Rotation2d.fromDegrees(rotation)),
-                        true);
+                        true);*/
     }
 
     @Override

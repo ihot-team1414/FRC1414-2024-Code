@@ -145,13 +145,13 @@ public class RobotContainer {
 
                 new JoystickButton(operator, XboxController.Button.kA.value).whileTrue(Routines.outtake());
                 new JoystickButton(operator, XboxController.Button.kY.value).whileTrue(Routines.trapShot());
-                new JoystickButton(operator, XboxController.Button.kLeftStick.value).whileTrue(new RotateToPose(
+                /*new JoystickButton(operator, XboxController.Button.kLeftStick.value).whileTrue(new RotateToPose(
                                 () -> MathUtil.applyDeadband(-driver.getLeftY(), 
                                         Constants.OIConstants.kJoystickDeadband),
                                 () -> MathUtil.applyDeadband(-driver.getLeftX(), 
                                         Constants.OIConstants.kJoystickDeadband), 
                                 FieldConstants.getTagTranslation(5))
-                );
+                );*/
         }
 
         public void configureAuto() {

@@ -89,11 +89,12 @@ public class Routines {
     }
 
     public static Command outtake() {
-        return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kIntakePosition)
-                .onlyIf(() -> RobotState.getInstance().getRobotConfiguration() == RobotConfiguration.AMP).andThen(
+        return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpFeedPosition)
+                .andThen(
                         IntakePrimitives.outtake().alongWith(ShooterPrimitives.rev(-0.3)))
                 .finallyDo(() -> {
                     intake.stop();
+                    shooter.stop();
                     pivot.setPosition(Constants.PivotConstants.kStowPosition);
                     RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
                 });
