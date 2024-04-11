@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
 import frc.robot.Constants.AmpConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Routines;
@@ -149,7 +150,7 @@ public class RobotContainer {
                                         Constants.OIConstants.kJoystickDeadband),
                                 () -> MathUtil.applyDeadband(-driver.getLeftX(), 
                                         Constants.OIConstants.kJoystickDeadband), 
-                                new Translation2d(0, 0))
+                                FieldConstants.getTagTranslation(5))
                 );
         }
 

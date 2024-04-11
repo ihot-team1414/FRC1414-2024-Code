@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -17,6 +18,7 @@ public class RotateToPose extends Command {
     private final DoubleSupplier translationYSupplier;
     private final Translation2d target;
     private final PIDController rotController;
+    private double additive;
 
     public RotateToPose(
             DoubleSupplier translationXSupplier,
@@ -26,6 +28,7 @@ public class RotateToPose extends Command {
         this.translationXSupplier = translationXSupplier;
         this.translationYSupplier = translationYSupplier;
         this.target = target;
+        additive = 0;
         rotController = new PIDController(0.01, 0, 0);
 
         addRequirements(drivetrainSubsystem);
@@ -37,10 +40,12 @@ public class RotateToPose extends Command {
 
         double robotToTargetX = drivetrainSubsystem.getCurrentPose().getX() - target.getX();
         double robotToTargetY = drivetrainSubsystem.getCurrentPose().getY() - target.getY();
-        double additive = robotToTargetX < 0 ? 180 : 0;
+        additive = robotToTargetX < 0 ? 180 : 0;
         double poseAngle = Math.toDegrees(Math.atan(robotToTargetY / robotToTargetX)) + additive;
         rotController.setSetpoint(poseAngle);
-        double rotation = rotController.calculate(-(MathUtil.inputModulus(drivetrainSubsystem.getCurrentPose().getRotation().getDegrees(), -180, 180)), rotController.getSetpoint());
+        double rotation = rotController.calculate(-(MathUtil.inputModulus(drivetrainSubsystem.getDegrees(), -180, 180)), rotController.getSetpoint());
+
+        SmartDashboard.putNumber("p angle", poseAngle);
 
         double translationX = translationXSupplier.getAsDouble()
                 * DriveConstants.kMaxSpeedMetersPerSecond;
@@ -49,7 +54,7 @@ public class RotateToPose extends Command {
 
         drivetrainSubsystem
                 .drive(new Transform2d(new Translation2d(translationX, translationY),
-                        Rotation2d.fromRadians(rotation)),
+                        Rotation2d.fromDegrees(rotation)),
                         true);
     }
 

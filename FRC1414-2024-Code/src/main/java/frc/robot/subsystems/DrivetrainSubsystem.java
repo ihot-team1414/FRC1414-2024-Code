@@ -199,6 +199,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return pigeon.getRotation2d();
     }
 
+    public double getDegrees(){
+        return pigeon.getAngle();
+    }
+
     //TODO: Fix gyro reset to properly relocate the robot
     public void resetHeading() {
         odometry.resetPosition(getHeading(), getSwerveModulePositions(), new Pose2d(getCurrentPose().getTranslation(), new Rotation2d(0)));
