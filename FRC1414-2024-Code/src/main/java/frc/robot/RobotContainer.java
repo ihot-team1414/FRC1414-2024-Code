@@ -7,6 +7,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,6 +22,7 @@ import frc.robot.commands.ShooterPrimitives;
 import frc.robot.commands.Drive;
 import frc.robot.commands.IntakePrimitives;
 import frc.robot.commands.PivotPrimitives;
+import frc.robot.commands.RotateToPose;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoAimTeleop;
 import frc.robot.commands.AutoRev;
@@ -142,6 +144,13 @@ public class RobotContainer {
 
                 new JoystickButton(operator, XboxController.Button.kA.value).whileTrue(Routines.outtake());
                 new JoystickButton(operator, XboxController.Button.kY.value).whileTrue(Routines.trapShot());
+                new JoystickButton(operator, XboxController.Button.kLeftStick.value).whileTrue(new RotateToPose(
+                                () -> MathUtil.applyDeadband(-driver.getLeftY(), 
+                                        Constants.OIConstants.kJoystickDeadband),
+                                () -> MathUtil.applyDeadband(-driver.getLeftX(), 
+                                        Constants.OIConstants.kJoystickDeadband), 
+                                new Translation2d(0, 0))
+                );
         }
 
         public void configureAuto() {
