@@ -23,7 +23,8 @@ import frc.robot.commands.ShooterPrimitives;
 import frc.robot.commands.Drive;
 import frc.robot.commands.IntakePrimitives;
 import frc.robot.commands.PivotPrimitives;
-import frc.robot.commands.RotateToPose;
+import frc.robot.commands.RotateToPoint;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoAimTeleop;
 import frc.robot.commands.AutoRev;
@@ -145,13 +146,13 @@ public class RobotContainer {
 
                 new JoystickButton(operator, XboxController.Button.kA.value).whileTrue(Routines.outtake());
                 new JoystickButton(operator, XboxController.Button.kY.value).whileTrue(Routines.trapShot());
-                /*new JoystickButton(operator, XboxController.Button.kLeftStick.value).whileTrue(new RotateToPose(
+                new JoystickButton(operator, XboxController.Button.kLeftStick.value).whileTrue(new RotateToPoint(
                                 () -> MathUtil.applyDeadband(-driver.getLeftY(), 
                                         Constants.OIConstants.kJoystickDeadband),
                                 () -> MathUtil.applyDeadband(-driver.getLeftX(), 
                                         Constants.OIConstants.kJoystickDeadband), 
-                                FieldConstants.getTagTranslation(5))
-                );*/
+                                new Translation2d(4.5, 5.5))
+                );
         }
 
         public void configureAuto() {

@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -205,7 +204,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     //TODO: Fix gyro reset to properly relocate the robot
     public void resetHeading() {
-        odometry.resetPosition(getHeading(), getSwerveModulePositions(), new Pose2d(getCurrentPose().getTranslation(), new Rotation2d(0)));
+        pigeon.setYaw(0);
+        odometry.resetPosition(getHeading(), getSwerveModulePositions(), getCurrentPose());
     }
 
     @Override
