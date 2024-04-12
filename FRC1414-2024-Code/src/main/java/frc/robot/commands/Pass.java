@@ -14,7 +14,7 @@ import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.util.PIDConstants;
 
-public class RotateToPoint extends Command {
+public class Pass extends Command {
     private final DrivetrainSubsystem drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private final DoubleSupplier translationXSupplier;
     private final DoubleSupplier translationYSupplier;
@@ -22,7 +22,7 @@ public class RotateToPoint extends Command {
 
     private Translation2d target;
 
-    public RotateToPoint(
+    public Pass(
             DoubleSupplier translationXSupplier,
             DoubleSupplier translationYSupplier, 
             Translation2d target) {
@@ -34,7 +34,7 @@ public class RotateToPoint extends Command {
         addRequirements(drivetrainSubsystem);
     }
 
-    public RotateToPoint(
+    public Pass(
         DoubleSupplier translationXSupplier,
         DoubleSupplier translationYSupplier,
         Pose2d target) {
@@ -62,7 +62,7 @@ public class RotateToPoint extends Command {
         double difference = Math.toDegrees(Math.atan(y / x)) + additive;
         rotController.setSetpoint(difference);
 
-        Rotation2d rotation = Rotation2d.fromDegrees(-rotController.calculate(-angle, rotController.getSetpoint()));
+        Rotation2d rotation = Rotation2d.fromDegrees(-rotController.calculate(-angle, -rotController.getSetpoint()));
 
         double translationX = translationXSupplier.getAsDouble()
                 * DriveConstants.kMaxSpeedMetersPerSecond;

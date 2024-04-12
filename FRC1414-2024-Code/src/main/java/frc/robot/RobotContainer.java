@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.util.Optional;
 import java.util.TreeMap;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -11,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
@@ -23,7 +25,7 @@ import frc.robot.commands.ShooterPrimitives;
 import frc.robot.commands.Drive;
 import frc.robot.commands.IntakePrimitives;
 import frc.robot.commands.PivotPrimitives;
-import frc.robot.commands.RotateToPoint;
+import frc.robot.commands.Pass;
 import frc.robot.commands.DriveToPose;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoAimTeleop;
@@ -57,6 +59,7 @@ public class RobotContainer {
         private final LEDSubsystem led = LEDSubsystem.getInstance();
         private final AmpSubsystem amp = AmpSubsystem.getInstance();
         private final VisionSubsystem vision = VisionSubsystem.getInstance();
+        private Optional<Alliance> ds = DriverStation.getAlliance();
 
         /*
          * Controllers
@@ -65,16 +68,19 @@ public class RobotContainer {
         XboxController operator = new XboxController(OIConstants.kOperatorControllerPort);
 
         /*
-         * Auto Chooser
+         * Shooting, Auto and Passing
          */
         private TreeMap<String, Pose2d> autoPoses = new TreeMap<>();
         private SendableChooser<Command> chooser = new SendableChooser<>();
+        private Translation2d pass = ds.isPresent() && ds.get().equals(DriverStation.Alliance.Red) ? FieldConstants.getTagTranslation(5) : FieldConstants.getTagTranslation(6);
 
         public RobotContainer() {
 
                 configureAuto();
                 configureDriver();
                 configureOperator();
+
+                
 
                 /*
                  * We invert the controller axes to match the field coordinate system.
@@ -122,6 +128,14 @@ public class RobotContainer {
                                 () -> MathUtil.applyDeadband(-driver.getLeftX(),
                                                 Constants.OIConstants.kJoystickDeadband),
                                 () -> 1));
+
+                new JoystickButton(driver, Button.kR3.value).whileTrue(new Pass(
+                                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                        Constants.OIConstants.kJoystickDeadband),
+                                () -> MathUtil.applyDeadband(-driver.getLeftX(), 
+                                        Constants.OIConstants.kJoystickDeadband), 
+                                pass)
+                );
         }
 
         private void configureOperator() {
@@ -146,13 +160,7 @@ public class RobotContainer {
 
                 new JoystickButton(operator, XboxController.Button.kA.value).whileTrue(Routines.outtake());
                 new JoystickButton(operator, XboxController.Button.kY.value).whileTrue(Routines.trapShot());
-                new JoystickButton(operator, XboxController.Button.kLeftStick.value).whileTrue(new RotateToPoint(
-                                () -> MathUtil.applyDeadband(-driver.getLeftY(), 
-                                        Constants.OIConstants.kJoystickDeadband),
-                                () -> MathUtil.applyDeadband(-driver.getLeftX(), 
-                                        Constants.OIConstants.kJoystickDeadband), 
-                                new Translation2d(4.5, 5.5))
-                );
+
         }
 
         public void configureAuto() {

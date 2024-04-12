@@ -18,7 +18,8 @@ public class RobotState {
         SHOOTING,
         AMP,
         EJECTING,
-        DISABLED
+        DISABLED,
+        PASS
     }
 
     private static RobotState instance;
