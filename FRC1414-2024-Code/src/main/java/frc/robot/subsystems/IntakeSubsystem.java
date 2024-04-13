@@ -106,8 +106,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private boolean isLoaded() {
         double distanceTop = intakeSensorTop.getRange();
         double distanceBottom = intakeSensorBottom.getRange();
-        return (intakeSensorTop.isRangeValid() && distanceTop < IntakeConstants.kIndexThresholdTop)
-                || (intakeSensorBottom.isRangeValid() && distanceBottom < IntakeConstants.kIndexThresholdBottom);
+        return //(intakeSensorTop.isRangeValid() && distanceTop < IntakeConstants.kIndexThresholdTop)
+                (intakeSensorBottom.isRangeValid() && distanceBottom < IntakeConstants.kIndexThresholdBottom);
     }
 
     public boolean isLoadedDebounced() {

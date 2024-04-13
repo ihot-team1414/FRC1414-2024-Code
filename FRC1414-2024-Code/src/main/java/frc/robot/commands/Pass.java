@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -107,6 +108,8 @@ public class Pass extends Command {
                 intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
                 RobotState.getInstance().setRobotConfiguration(RobotConfiguration.PASS);
             }
+        
+        SmartDashboard.putNumber("Vector P Distance", distance);
     }
 
     @Override

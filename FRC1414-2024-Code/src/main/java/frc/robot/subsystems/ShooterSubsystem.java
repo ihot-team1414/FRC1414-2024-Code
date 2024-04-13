@@ -57,7 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
          */
         velocityControl = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
         dutyCycleOutControl = new DutyCycleOut(0, true, false, false, false);
-        voltageOutControl = new VoltageOut(0, true, false, false, false);
+        voltageOutControl = new VoltageOut(0, false, false, false, false);
         followerControl = new Follower(shooterMotor1.getDeviceID(), true);
     }
 

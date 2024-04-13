@@ -73,8 +73,8 @@ public class RobotContainer {
         public RobotContainer() {
 
                 isRed = ds.isPresent() && ds.get().equals(DriverStation.Alliance.Red);
-                pass = isRed ? FieldConstants.getTagTranslation(5) : FieldConstants.getTagTranslation(6);
-                target = isRed ? FieldConstants.kSector.get("RCenter") : FieldConstants.kSector.get("BCenter");
+                pass = isRed ? FieldConstants.getTagTranslation(51) : FieldConstants.getTagTranslation(61);
+                target = isRed ? FieldConstants.getTagTranslation(4) : FieldConstants.getTagTranslation(7);
                 
 
                 configureAuto();
@@ -145,7 +145,7 @@ public class RobotContainer {
                                                 Constants.OIConstants.kJoystickDeadband),
                                 () -> MathUtil.applyDeadband(-driver.getLeftX(),
                                                 Constants.OIConstants.kJoystickDeadband),
-                                                 target, isRed));
+                                                target));
         }
 
         private void configureOperator() {

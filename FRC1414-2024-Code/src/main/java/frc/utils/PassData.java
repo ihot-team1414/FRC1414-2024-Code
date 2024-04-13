@@ -9,8 +9,14 @@ public class PassData {
     private static PassData instance;
 
     private PassData() {
-        addPass(10, 7);
-        addPass(2, 10);
+        addPass(5, 12);
+        addPass(7, 10);
+        addPass(7.5, 9.6);
+        addPass(8, 9.5);
+        addPass(8.5, 9.4);
+        addPass(9, 9.3);
+        addPass(9.5, 9.15);
+        addPass(10, 9);
 
     }
 

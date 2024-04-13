@@ -3,11 +3,13 @@ package frc.robot.commands;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
@@ -33,28 +35,25 @@ public class PoseShoot extends Command {
 
     private final DoubleSupplier translationXSupplier;
     private final DoubleSupplier translationYSupplier;
-    private boolean isRed;
 
-    private final PIDController rotController = new PIDController(4, 0, 0);
+    private final PIDController rotController = new PIDController(12, 0.01, 0);
 
     private Translation2d target;
 
     public PoseShoot(
             DoubleSupplier translationXSupplier,
             DoubleSupplier translationYSupplier,
-            Translation2d target,
-            boolean isRed) {
+            Translation2d target) {
 
         this.translationXSupplier = translationXSupplier;
         this.translationYSupplier = translationYSupplier;
-        this.isRed = isRed;
         this.target = target;
         addRequirements(drive);
     }
 
     @Override
     public void initialize(){
-        rotController.setTolerance(2);
+        rotController.setTolerance(1.2);
         rotController.enableContinuousInput(-180, 180);
     }
 
@@ -86,30 +85,26 @@ public class PoseShoot extends Command {
         double translationY = translationYSupplier.getAsDouble()
                 * DriveConstants.kMaxSpeedMetersPerSecond;
 
-        drive.drive(new Transform2d(new Translation2d(translationX, translationY),
-                        rotation),
-                        true);
-
-
-        double heading = drive.getDegrees();
-        double position;
-        if (heading >= 45) { target = isRed ? FieldConstants.kSector.get("RAmp") : FieldConstants.kSector.get("BAmp");
-            position = OdometryData.getInstance().getShooterPosition(distance, "AMP"); }
-        else if (heading <= -45) { target = isRed ? FieldConstants.kSector.get("RWeak") : FieldConstants.kSector.get("BWeak");
-            position = OdometryData.getInstance().getShooterPosition(distance, "WEAK"); }
-        else { target = isRed ? FieldConstants.kSector.get("RCenter") : FieldConstants.kSector.get("BCenter");
-            position = OdometryData.getInstance().getShooterPosition(distance); }
-
+                
+        double position = OdometryData.getInstance().getShooterPosition(distance);
         pivot.setPosition(position);
-        shooter.setVelocity(ShooterConstants.kPassVelocity);
+        shooter.setVoltage(1);
 
         if(rotController.atSetpoint() 
-            && shooter.isWithinVelocityTolerance(ShooterConstants.kPassVelocity)
+            && shooter.isWithinVelocityTolerance(ShooterConstants.kShotSpeed + 10)
             && pivot.isAtPositionSetpoint(position))
             {
                 intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
                 RobotState.getInstance().setRobotConfiguration(RobotConfiguration.SHOOTING);
             }
+
+        SmartDashboard.putNumber("Vector S Dist", distance);
+
+        drive.drive(new Transform2d(new Translation2d(translationX, translationY),
+                        rotation),
+                        true);
+
+
     }
 
     @Override

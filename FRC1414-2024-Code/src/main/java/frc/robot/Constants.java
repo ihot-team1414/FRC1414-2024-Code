@@ -171,9 +171,9 @@ public final class Constants {
     }
     public static double kIntakeDutyCycle = 0.75;
     public static int kIntakeSensorTopCandId = 51;
-    public static double kIndexThresholdTop = 52;
-    public static double kIndexThresholdBottom = 52;
     public static int kIntakeSensorBottomCanId = 50;
+    public static double kIndexThresholdTop = 238;
+    public static double kIndexThresholdBottom = 238;
   }
 
   public static final class ShooterConstants {
@@ -205,7 +205,7 @@ public final class Constants {
     // public static final double kShotSpeedLeft = 70;
     public static final double kShotSpeed = 70;
     public static final double kAutoAimTimeout = 1.5;
-    public static final double kPassVelocity = 30;
+    public static final double kPassVelocity = 50;
   }
 
   public static final class PivotConstants {
@@ -266,6 +266,7 @@ public final class Constants {
         put(11, new Translation2d(Units.inchesToMeters(468.69), Units.inchesToMeters(146.19)));
         put(12, new Translation2d(Units.inchesToMeters(468.69), Units.inchesToMeters(177.10)));
         put(13, new Translation2d(Units.inchesToMeters(441.74), Units.inchesToMeters(161.62)));
+        put(51, new Translation2d(Units.inchesToMeters(566.77), Units.inchesToMeters(287.00)));
       }
 
     };
@@ -280,6 +281,7 @@ public final class Constants {
         put(14, new Translation2d(Units.inchesToMeters(209.48), Units.inchesToMeters(161.62)));
         put(15, new Translation2d(Units.inchesToMeters(182.73), Units.inchesToMeters(177.10)));
         put(16, new Translation2d(Units.inchesToMeters(182.73), Units.inchesToMeters(146.19)));
+        put(61, new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(287)));
       }
     };
 
