@@ -283,6 +283,18 @@ public final class Constants {
       }
     };
 
+    public static final TreeMap<String, Translation2d> kSector = new TreeMap<String, Translation2d>() {
+      {
+        put("BCenter", new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(196.17)));
+        put("BWeak", new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(185)));
+        put("BAmp", new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(215)));
+        
+        put("RCenter", new Translation2d(Units.inchesToMeters(650), Units.inchesToMeters(218.42)));
+        put("RWeak", new Translation2d(Units.inchesToMeters(650), Units.inchesToMeters(200)));
+        put("RAmp", new Translation2d(Units.inchesToMeters(650), Units.inchesToMeters(2230)));
+      }
+    };
+
     public static final Translation2d kBlueAmpSafe = new Translation2d(Units.inchesToMeters(72.5),
         Units.inchesToMeters(313.00));
     public static final Translation2d kRedAmpSafe = new Translation2d(Units.inchesToMeters(587.77),

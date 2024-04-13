@@ -59,36 +59,6 @@ public class ShooterData {
         return instance;
     }
 
-    public Double[] getSpeakerEntry(double distance) {
-        Double[] empty = { 0.0, 0.0 };
-
-        if (shooterData.get(distance) != null) {
-            return shooterData.get(distance);
-        }
-
-        try {
-
-            // Get the closest distance to the given distance
-            Double ceiling = shooterData.ceilingKey(distance);
-            Double floor = shooterData.floorKey(distance);
-
-            if (ceiling != null && floor != null) {
-
-                // Return the closest distance to the given distance
-                return Math.abs(ceiling - distance) < Math.abs(floor - distance) ? shooterData.get(ceiling)
-                        : shooterData.get(floor);
-            } else if (ceiling != null) {
-                return shooterData.get(ceiling);
-            } else if (floor != null) {
-                return shooterData.get(floor);
-            } else {
-                return empty;
-            }
-        } catch (Exception e) {
-            return empty;
-        }
-    }
-
     private double interpolate(double a, double b, double frac) {
         return a + (b - a) * frac;
     }

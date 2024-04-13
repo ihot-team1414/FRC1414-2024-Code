@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.TreeMap;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,14 +18,11 @@ import edu.wpi.first.wpilibj.PS5Controller.Button;
 import frc.robot.Constants.AmpConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.Routines;
-import frc.robot.commands.ShooterPrimitives;
 import frc.robot.commands.Drive;
 import frc.robot.commands.IntakePrimitives;
 import frc.robot.commands.PivotPrimitives;
 import frc.robot.commands.Pass;
-import frc.robot.commands.DriveToPose;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoAimTeleop;
 import frc.robot.commands.AutoRev;
@@ -38,14 +34,11 @@ import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.utils.RobotState;
-import frc.utils.RobotState.RobotConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 public class RobotContainer {
 
@@ -72,11 +65,16 @@ public class RobotContainer {
          */
         private TreeMap<String, Pose2d> autoPoses = new TreeMap<>();
         private SendableChooser<Command> chooser = new SendableChooser<>();
+        private boolean isRed;
+        private Translation2d target = new Translation2d();
         private Translation2d pass = new Translation2d();
 
         public RobotContainer() {
 
-                pass = ds.isPresent() && ds.get().equals(DriverStation.Alliance.Red) ? FieldConstants.getTagTranslation(5) : FieldConstants.getTagTranslation(6);
+                isRed = ds.isPresent() && ds.get().equals(DriverStation.Alliance.Red);
+                pass = isRed ? FieldConstants.getTagTranslation(5) : FieldConstants.getTagTranslation(6);
+                target = isRed ? FieldConstants.kSector.get("RCenter") : FieldConstants.kSector.get("BCenter");
+                
 
                 configureAuto();
                 configureDriver();
@@ -116,7 +114,7 @@ public class RobotContainer {
 
                 new JoystickButton(driver, Button.kR1.value).onTrue(Routines.intake());
                 new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());
-                
+
                 new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShootTeleop(
                                 () -> MathUtil.applyDeadband(-driver.getLeftY(),
                                                 Constants.OIConstants.kJoystickDeadband),
@@ -138,6 +136,9 @@ public class RobotContainer {
                                         Constants.OIConstants.kJoystickDeadband), 
                                 pass)
                 );
+
+                new POVButton(driver, 0).whileTrue(new RunCommand(() -> pivot.setPosition(pivot.getPosition() + 0.1), pivot));
+                new POVButton(driver, 180).whileTrue(new RunCommand(() -> pivot.setPosition(pivot.getPosition() - 0.1), pivot));
         }
 
         private void configureOperator() {
