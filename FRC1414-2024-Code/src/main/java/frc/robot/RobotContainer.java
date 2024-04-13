@@ -72,15 +72,15 @@ public class RobotContainer {
          */
         private TreeMap<String, Pose2d> autoPoses = new TreeMap<>();
         private SendableChooser<Command> chooser = new SendableChooser<>();
-        private Translation2d pass = ds.isPresent() && ds.get().equals(DriverStation.Alliance.Red) ? FieldConstants.getTagTranslation(5) : FieldConstants.getTagTranslation(6);
+        private Translation2d pass = new Translation2d();
 
         public RobotContainer() {
+
+                pass = ds.isPresent() && ds.get().equals(DriverStation.Alliance.Red) ? FieldConstants.getTagTranslation(5) : FieldConstants.getTagTranslation(6);
 
                 configureAuto();
                 configureDriver();
                 configureOperator();
-
-                
 
                 /*
                  * We invert the controller axes to match the field coordinate system.
@@ -113,8 +113,10 @@ public class RobotContainer {
                 new JoystickButton(driver,
                                 Button.kSquare.value).onTrue(Routines.primeAmp());
                 new JoystickButton(driver, Button.kCircle.value).whileTrue(IntakePrimitives.speakerFeed());
+
                 new JoystickButton(driver, Button.kR1.value).onTrue(Routines.intake());
                 new JoystickButton(driver, Button.kR2.value).whileTrue(Routines.eject());
+                
                 new JoystickButton(driver, Button.kL1.value).whileTrue(new AutoShootTeleop(
                                 () -> MathUtil.applyDeadband(-driver.getLeftY(),
                                                 Constants.OIConstants.kJoystickDeadband),

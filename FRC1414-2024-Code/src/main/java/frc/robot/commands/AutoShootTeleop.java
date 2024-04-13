@@ -52,7 +52,6 @@ public class AutoShootTeleop extends Command {
         @Override
         public void initialize() {
                 double yawError = VisionSubsystem.getInstance().getTX().orElse(0.0);
-                double currentAngle = drivetrain.getHeading().getDegrees();
 
                 target = -yawError;
 

@@ -205,6 +205,7 @@ public final class Constants {
     // public static final double kShotSpeedLeft = 70;
     public static final double kShotSpeed = 70;
     public static final double kAutoAimTimeout = 1.5;
+    public static final double kPassVelocity = 70;
   }
 
   public static final class PivotConstants {
@@ -346,6 +347,8 @@ public final class Constants {
     public static final double kLEDLightChaseRed = -0.31;
     public static final double kLEDGreenFlashing = 0.15;
     public static final double kDisabledLED = 0.01; // -0.99 is rainbow
+
+    public static final double kLarsonLED = -0.01;
 
   }
 }

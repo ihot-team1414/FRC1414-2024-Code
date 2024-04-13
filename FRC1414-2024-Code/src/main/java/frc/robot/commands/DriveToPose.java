@@ -44,11 +44,14 @@ public class DriveToPose extends Command {
         start = new Pose2d();
         target = new Pose2d();
         current = new Pose2d();
+
         xController = new PIDController(5, 0, 0);
         yController = new PIDController(5, 0, 0);
-        rotController = new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(1, 1));
+
+        rotController = new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(2, 2));
+        
         holonomicDriveController = new HolonomicDriveController(xController, yController, rotController);
-        holonomicDriveController.setTolerance(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+        holonomicDriveController.setTolerance(new Pose2d(0.05, 0.05, Rotation2d.fromDegrees(2)));
 
         addRequirements(drivetrainSubsystem);
     }
@@ -62,21 +65,12 @@ public class DriveToPose extends Command {
 
     @Override
     public void execute() {
+
         current = drivetrainSubsystem.getCurrentPose();
-        ChassisSpeeds chassisSpeeds = this.holonomicDriveController.calculate(current, target, 0, target.getRotation());
+        ChassisSpeeds chassisSpeeds = holonomicDriveController.calculate(current, target, 0, target.getRotation());
         SwerveModuleState[] swerveModuleStates = Constants.DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
         drivetrainSubsystem.setModuleStates(swerveModuleStates);
 
-        /*
-        double translationX = translationXSupplier.getAsDouble()
-                * DriveConstants.kMaxSpeedMetersPerSecond;
-        double translationY = translationYSupplier.getAsDouble()
-                * DriveConstants.kMaxSpeedMetersPerSecond;
-
-        drivetrainSubsystem
-                .drive(new Transform2d(new Translation2d(translationX, translationY),
-                        Rotation2d.fromDegrees(rotation)),
-                        true);*/
     }
 
     @Override

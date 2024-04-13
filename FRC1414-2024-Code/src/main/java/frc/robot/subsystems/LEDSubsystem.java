@@ -56,6 +56,10 @@ public class LEDSubsystem extends SubsystemBase {
             color = LEDConstants.kLEDGreen;
         }
 
+        if(RobotState.getInstance().getRobotConfiguration() == RobotConfiguration.PASS) {
+            color = LEDConstants.kLarsonLED;
+        }
+
         if (RobotState.getInstance().getRobotConfiguration() == RobotConfiguration.DISABLED) {
             color = LEDConstants.kDisabledLED;
         }
