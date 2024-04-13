@@ -22,6 +22,7 @@ import frc.robot.commands.Routines;
 import frc.robot.commands.Drive;
 import frc.robot.commands.IntakePrimitives;
 import frc.robot.commands.PivotPrimitives;
+import frc.robot.commands.PoseShoot;
 import frc.robot.commands.Pass;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoAimTeleop;
@@ -139,6 +140,12 @@ public class RobotContainer {
 
                 new POVButton(driver, 0).whileTrue(new RunCommand(() -> pivot.setPosition(pivot.getPosition() + 0.1), pivot));
                 new POVButton(driver, 180).whileTrue(new RunCommand(() -> pivot.setPosition(pivot.getPosition() - 0.1), pivot));
+                new POVButton(driver, 90).whileTrue(new PoseShoot(
+                                () -> MathUtil.applyDeadband(-driver.getLeftY(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                                Constants.OIConstants.kJoystickDeadband),
+                                                 target, isRed));
         }
 
         private void configureOperator() {

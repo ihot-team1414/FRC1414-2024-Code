@@ -62,7 +62,7 @@ public class Pass extends Command {
 
     @Override
     public void initialize(){
-        rotController.setTolerance(1);
+        rotController.setTolerance(3);
         rotController.enableContinuousInput(-180, 180);
     }
 

@@ -48,12 +48,13 @@ public class PoseShoot extends Command {
         this.translationXSupplier = translationXSupplier;
         this.translationYSupplier = translationYSupplier;
         this.isRed = isRed;
+        this.target = target;
         addRequirements(drive);
     }
 
     @Override
     public void initialize(){
-        rotController.setTolerance(1);
+        rotController.setTolerance(2);
         rotController.enableContinuousInput(-180, 180);
     }
 
@@ -100,7 +101,7 @@ public class PoseShoot extends Command {
             position = OdometryData.getInstance().getShooterPosition(distance); }
 
         pivot.setPosition(position);
-        shooter.setVelocity(ShooterConstants.kShotSpeed);
+        shooter.setVelocity(ShooterConstants.kPassVelocity);
 
         if(rotController.atSetpoint() 
             && shooter.isWithinVelocityTolerance(ShooterConstants.kPassVelocity)

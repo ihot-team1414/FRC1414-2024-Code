@@ -205,7 +205,7 @@ public final class Constants {
     // public static final double kShotSpeedLeft = 70;
     public static final double kShotSpeed = 70;
     public static final double kAutoAimTimeout = 1.5;
-    public static final double kPassVelocity = 70;
+    public static final double kPassVelocity = 30;
   }
 
   public static final class PivotConstants {
