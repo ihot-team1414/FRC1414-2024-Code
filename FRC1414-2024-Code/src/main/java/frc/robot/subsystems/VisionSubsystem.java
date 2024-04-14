@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.commands.Drive;
 import frc.utils.LimelightHelpers;
 
 public class VisionSubsystem extends SubsystemBase {
@@ -33,24 +32,10 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Optional<Double> getTX() {
-        // // removed because drivetrain doesn't like turning to the ocrrect angle
-
-        // if (VisionConstants.kShootOnTheMove) {
-        // ChassisSpeeds speeds =
-        // DrivetrainSubsystem.getInstance().getRobotRelativeSpeeds();
-        // double cosAngle = DrivetrainSubsystem.getInstance().getHeading().getCos();
-        // if (speeds.omegaRadiansPerSecond < 1) {
-        // return isStale ? Optional.empty()
-        // : Optional.of(lastTX
-        // + (-speeds.vyMetersPerSecond * cosAngle * VisionConstants.kAngleConverter
-        // / VisionConstants.kEstimatedShotSpeed));
-        // }
-        // }
         return isStale ? Optional.empty() : Optional.of(lastTX);
     }
 
     public Optional<Double> getDistance() {
-
         if (VisionConstants.kShootOnTheMove) {
             ChassisSpeeds speeds = DrivetrainSubsystem.getInstance().getRobotRelativeSpeeds();
             if (speeds.omegaRadiansPerSecond < 1) {
@@ -65,31 +50,13 @@ public class VisionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-
-        SmartDashboard.putNumber("Distance", lastDistance);
-        SmartDashboard.putNumber("TX", lastTX % 360);
-        SmartDashboard.putBoolean("Vision stale?", isStale);
+        SmartDashboard.putNumber("Limelight Distance", lastDistance);
+        SmartDashboard.putNumber("Limelight Angular Error", lastTX % 360);
 
         if (LimelightHelpers.getTV("limelight-front")) {
             lastTX = DrivetrainSubsystem.getInstance().getHeading().getDegrees()
                     - (LimelightHelpers.getTX("limelight-front"));
             Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-front");
-            lastDistance = tagPose.getTranslation().getNorm();
-            isStale = false;
-
-            lastMeasurementTime = Timer.getFPGATimestamp();
-        } else if (LimelightHelpers.getTV("limelight-left")) {
-            lastTX = -LimelightHelpers.getTX("limelight-left") + VisionConstants.kLeftLimelightOffset
-                    + DrivetrainSubsystem.getInstance().getHeading().getDegrees();
-            Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-left");
-            lastDistance = tagPose.getTranslation().getNorm();
-            isStale = false;
-
-            lastMeasurementTime = Timer.getFPGATimestamp();
-        } else if (LimelightHelpers.getTV("limelight-right")) {
-            lastTX = -LimelightHelpers.getTX("limelight-right") + VisionConstants.kRightLimelightOffset
-                    + DrivetrainSubsystem.getInstance().getHeading().getDegrees();
-            Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-right");
             lastDistance = tagPose.getTranslation().getNorm();
             isStale = false;
 

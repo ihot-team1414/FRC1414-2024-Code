@@ -1,7 +1,6 @@
 package frc.robot;
 
 import java.util.TreeMap;
-
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -76,7 +75,7 @@ public final class Constants {
     public static final boolean kTurningEncoderInverted = true;
 
     // Calculations required for driving motor conversion factors and feed forward
-    public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
+    public static final double kDrivingMotorFreeSpeedRps = VortexMotorConstants.kFreeSpeedRpm / 60;
     public static final double kWheelDiameterMeters = 0.0762;
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
@@ -152,28 +151,27 @@ public final class Constants {
     public static final double kAngleConverter = 1;
   }
 
-  public static final class NeoMotorConstants {
+  public static final class VortexMotorConstants {
     public static final double kFreeSpeedRpm = 6784;
   }
 
   public static final class IntakeConstants {
     public static final int kIntakeMotor1CanId = 35;
     public static final int kIntakeMotor2CanId = 34;
-    public static final boolean kIntakeMotorInverted = false;
-    public static final int kIntakeMotorCurrentLimit = 40;
+
+    public static final int kIntakeMotorCurrentLimit = 10;
+
+    public static double kIntakeDutyCycle = 0.75;
     public static final double kSpeakerFeedDutyCycle = 0.75;
     public static final double kAmpFeedDutyCycle = 0.6;
-    public static final Slot0Configs kIntakeConfiguration = new Slot0Configs();
-    static {
-      kIntakeConfiguration.kP = 1;
-      kIntakeConfiguration.kI = 0;
-      kIntakeConfiguration.kD = 0;
-    }
-    public static double kIntakeDutyCycle = 0.75;
-    public static int kIntakeSensorTopCandId = 51;
-    public static int kIntakeSensorBottomCanId = 50;
-    public static double kIndexThresholdTop = 238;
-    public static double kIndexThresholdBottom = 238;
+
+    public static final int kIntakeSensorMiddleCanId = 50;
+    public static final int kIntakeSensorBackCanId = 51;
+    public static final int kIntakeSensorFrontCanId = 100; // TODO
+
+    public static double kFrontSensorThreshold = 238;
+    public static double kMiddleSensorThreshold = 238;
+    public static double kBackSensorThreshold = 238;
   }
 
   public static final class ShooterConstants {
@@ -211,8 +209,6 @@ public final class Constants {
   public static final class PivotConstants {
     public static final int kPivotMotor1CanId = 30;
     public static final int kPivotMotor2CanId = 31;
-    public static final double kMaxAngleThreshold = 18;
-    public static final double kMinAngleThreshold = 1;
     public static final Slot0Configs kPivotConfiguration = new Slot0Configs();
 
     static {
@@ -228,34 +224,36 @@ public final class Constants {
       kPivotMotionMagic.MotionMagicAcceleration = 100;
     }
 
-    public static final double kIntakePosition = 2; // 2
+    public static final double kIntakePosition = 2;
     public static final double kAmpPrimePosition = 6;
     public static final double kAmpScoringPosition = 17.5;
     public static final double kSpeakerShotPosition = 10;
-    public static final double kStowPosition = 0.5; // 0.5
+    public static final double kStowPosition = 0.5;
     public static final double kEjectPosition = 10;
     public static final double kMinFeedPosition = 4;
     public static final double kPivotErrorMargin = 0.2;
-    public static final double kAmpFeedPosition = 7.4; // 7.4
+    public static final double kAmpFeedPosition = 7.4;
   }
 
-  public static final class AmpConstants {
+  public static final class DeflectorConstants {
+    public static final int kDeflectorMotor1CanId = 41;
+    public static final int kDeflectorMotor2CanId = 40;
+    public static final int kDeflectorCurrentLimit = 5;
 
-    public static final int kAmpRightCanId = 41;
-    public static final int kAmpLeftCanId = 40;
-    public static final int kAmpMotorCurrentLimit = 20;
+    public static final double kDeflectorP = 1;
+    public static final double kDeflectorI = 0.0;
+    public static final double kDeflectorD = 0.0;
 
-    public static final double kAmpP = 1;
-    public static final double kAmpI = 0.0;
-    public static final double kAmpD = 0.0;
+    public static final double kDeflectorScoringPosition = -1.7;
+    public static final double kDeflectorStowPosition = 0;
 
-    public static final double kAmpScoringPosition = -1.7;
-    public static final double kAmpRestPosition = 0;
-
-    public static final double kErrorMargin = 0.02;
+    public static final double kDeflectorTolerance = 0.02;
   }
 
   public static final class FieldConstants {
+    public static final Translation2d bluePassPosition = new Translation2d(0.6, 7.5);
+    public static final Translation2d redPassPosition = new Translation2d(16, 7.5);
+
     public static final TreeMap<Integer, Translation2d> kRedAprilTagLayout = new TreeMap<Integer, Translation2d>() {
       {
         put(1, new Translation2d(Units.inchesToMeters(593.68), Units.inchesToMeters(9.68)));
@@ -290,7 +288,7 @@ public final class Constants {
         put("BCenter", new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(196.17)));
         put("BWeak", new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(185)));
         put("BAmp", new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(215)));
-        
+
         put("RCenter", new Translation2d(Units.inchesToMeters(650), Units.inchesToMeters(218.42)));
         put("RWeak", new Translation2d(Units.inchesToMeters(650), Units.inchesToMeters(200)));
         put("RAmp", new Translation2d(Units.inchesToMeters(650), Units.inchesToMeters(2230)));
@@ -341,7 +339,6 @@ public final class Constants {
   }
 
   public static final class LEDConstants {
-
     public static final int kPWMPort = 9;
 
     public static final double kLEDRed = 0.61;
@@ -363,6 +360,5 @@ public final class Constants {
     public static final double kDisabledLED = 0.01; // -0.99 is rainbow
 
     public static final double kLarsonLED = -0.01;
-
   }
 }

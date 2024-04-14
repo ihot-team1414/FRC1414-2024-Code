@@ -9,69 +9,49 @@ import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.wpilibj.PS5Controller;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.OIConstants;
-import frc.utils.RobotState;
-import frc.utils.RobotState.RobotConfiguration;
 
 public class IntakeSubsystem extends SubsystemBase {
     private static IntakeSubsystem instance;
 
     private final TalonFX intakeMotor1;
     private final TalonFX intakeMotor2;
-    private final TimeOfFlight intakeSensorTop;
-    private final TimeOfFlight intakeSensorBottom;
-    // private final TimeOfFlight intakeSensorSide;
+
+    private final TimeOfFlight intakeSensorFront;
+    private final TimeOfFlight intakeSensorMiddle;
+    private final TimeOfFlight intakeSensorBack;
+
     private Follower followerControl;
     private DutyCycleOut dutyCycleOutControl;
     private TalonFXConfiguration intakeMotorConfiguration;
 
-    private Debouncer debouncer = new Debouncer(0.1, Debouncer.DebounceType.kFalling);
-    private XboxController driver = new XboxController(OIConstants.kOperatorControllerPort);
+    private Debouncer presenceDebouncer = new Debouncer(0.1,
+            Debouncer.DebounceType.kFalling);
 
     public IntakeSubsystem() {
-        /*
-         * Initialize CAN IDs.
-         */
-
         intakeMotor1 = new TalonFX(IntakeConstants.kIntakeMotor1CanId);
         intakeMotor2 = new TalonFX(IntakeConstants.kIntakeMotor2CanId);
-        intakeSensorTop = new TimeOfFlight(IntakeConstants.kIntakeSensorTopCandId);
-        intakeSensorBottom = new TimeOfFlight(IntakeConstants.kIntakeSensorBottomCanId);
 
-        /*
-         * Configure motor current limit.
-         */
+        intakeSensorFront = new TimeOfFlight(IntakeConstants.kIntakeSensorFrontCanId);
+        intakeSensorMiddle = new TimeOfFlight(IntakeConstants.kIntakeSensorMiddleCanId);
+        intakeSensorBack = new TimeOfFlight(IntakeConstants.kIntakeSensorBackCanId);
+
         intakeMotorConfiguration = new TalonFXConfiguration();
-        intakeMotorConfiguration.withSlot0(IntakeConstants.kIntakeConfiguration);
         intakeMotorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
-        intakeMotorConfiguration.CurrentLimits.SupplyCurrentLimit = 10;
+        intakeMotorConfiguration.CurrentLimits.SupplyCurrentLimit = IntakeConstants.kIntakeMotorCurrentLimit;
 
         intakeMotor1.getConfigurator().apply(intakeMotorConfiguration);
         intakeMotor2.getConfigurator().apply(intakeMotorConfiguration);
 
-        /*
-         * Configure motor neutral modes.
-         */
-        setDesiredNeutralMode();
+        intakeMotor1.setNeutralMode(NeutralModeValue.Brake);
+        intakeMotor2.setNeutralMode(NeutralModeValue.Brake);
 
-        /*
-         * Configure sensor.
-         */
-        intakeSensorTop.setRangingMode(RangingMode.Short, 24);
-        intakeSensorBottom.setRangingMode(RangingMode.Short, 24);
+        intakeSensorFront.setRangingMode(RangingMode.Short, 24);
+        intakeSensorMiddle.setRangingMode(RangingMode.Short, 24);
+        intakeSensorBack.setRangingMode(RangingMode.Short, 24);
 
-        /*
-         * Set default controls.
-         */
         dutyCycleOutControl = new DutyCycleOut(0, true, false, false, false);
         followerControl = new Follower(intakeMotor1.getDeviceID(), true);
         intakeMotor2.setControl(followerControl);
@@ -84,14 +64,6 @@ public class IntakeSubsystem extends SubsystemBase {
         return instance;
     }
 
-    /*
-     * Control Methods
-     */
-    public void setDesiredNeutralMode() {
-        intakeMotor1.setNeutralMode(NeutralModeValue.Brake);
-        intakeMotor2.setNeutralMode(NeutralModeValue.Brake);
-    }
-
     public void setDutyCycle(double dutyCycle) {
         intakeMotor1.setControl(dutyCycleOutControl.withOutput(dutyCycle));
     }
@@ -100,38 +72,36 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor1.stopMotor();
     }
 
-    /*
-     * Sensor Methods
-     */
-    private boolean isLoaded() {
-        double distanceTop = intakeSensorTop.getRange();
-        double distanceBottom = intakeSensorBottom.getRange();
-        return //(intakeSensorTop.isRangeValid() && distanceTop < IntakeConstants.kIndexThresholdTop)
-                (intakeSensorBottom.isRangeValid() && distanceBottom < IntakeConstants.kIndexThresholdBottom);
+    public boolean isNotePresent(boolean debounced) {
+        double distanceFront = intakeSensorFront.getRange();
+        double distanceMiddle = intakeSensorMiddle.getRange();
+        double distanceBack = intakeSensorBack.getRange();
+
+        boolean isNotePresent = distanceFront < IntakeConstants.kFrontSensorThreshold
+                || distanceMiddle < IntakeConstants.kMiddleSensorThreshold
+                || distanceBack < IntakeConstants.kBackSensorThreshold;
+
+        if (debounced) {
+            return presenceDebouncer.calculate(isNotePresent);
+        }
+
+        return isNotePresent;
     }
 
-    public boolean isLoadedDebounced() {
-        return debouncer.calculate(isLoaded());
+    public boolean isNotePresent() {
+        return isNotePresent(false);
     }
 
-    public void rumble(){
-        driver.setRumble(RumbleType.kLeftRumble, 1);
-    }
-
-    public void stopRumble(){
-        driver.setRumble(RumbleType.kLeftRumble, 0);
+    public boolean isLoaded() {
+        return intakeSensorBack.getRange() < IntakeConstants.kBackSensorThreshold;
     }
 
     @Override
     public void periodic() {
-        RobotState.getInstance().setHasNote(isLoadedDebounced());
-        SmartDashboard.putNumber("Top Range", intakeSensorTop.getRange());
-        SmartDashboard.putNumber("Bottom Range", intakeSensorBottom.getRange());
-        SmartDashboard.putBoolean("No debounce", isLoaded());
-        SmartDashboard.putBoolean("Valid???", intakeSensorTop.isRangeValid());
-        
-        if(RobotState.getInstance().getRobotConfiguration() == RobotConfiguration.INTAKING){
-            rumble();
-        } else { stopRumble(); } 
+        SmartDashboard.putNumber("Back Sensor Distance", intakeSensorBack.getRange());
+        SmartDashboard.putNumber("Middle Sensor Range", intakeSensorMiddle.getRange());
+        SmartDashboard.putNumber("Front Sensor Range", intakeSensorFront.getRange());
+
+        SmartDashboard.putBoolean("Note Present", isNotePresent());
     }
 }

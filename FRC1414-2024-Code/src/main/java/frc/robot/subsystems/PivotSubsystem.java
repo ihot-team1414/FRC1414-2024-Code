@@ -20,29 +20,18 @@ public class PivotSubsystem extends SubsystemBase {
     private final TalonFXConfiguration pivotMotorConfig;
 
     public PivotSubsystem() {
-        /*
-         * Initialize CAN IDs.
-         */
         pivotMotor1 = new TalonFX(PivotConstants.kPivotMotor1CanId);
         pivotMotor2 = new TalonFX(PivotConstants.kPivotMotor2CanId);
 
-        /*
-         * Configure motion magic constants.
-         */
         pivotMotorConfig = new TalonFXConfiguration();
         pivotMotorConfig.withSlot0(PivotConstants.kPivotConfiguration);
         pivotMotorConfig.withMotionMagic(PivotConstants.kPivotMotionMagic);
         pivotMotor1.getConfigurator().apply(pivotMotorConfig);
         pivotMotor2.getConfigurator().apply(pivotMotorConfig);
 
-        /*
-         * Configure motor neutral modes.
-         */
-        setDesiredNeutralMode();
+        pivotMotor1.setNeutralMode(NeutralModeValue.Brake);
+        pivotMotor2.setNeutralMode(NeutralModeValue.Brake);
 
-        /*
-         * Set default controls.
-         */
         motionMagicControl = new MotionMagicDutyCycle(0, true, 0, 0, false, false, false);
         followerControl = new Follower(pivotMotor1.getDeviceID(), true);
         pivotMotor2.setControl(followerControl);
@@ -55,28 +44,16 @@ public class PivotSubsystem extends SubsystemBase {
         return instance;
     }
 
-    /*
-     * Control Methods
-     */
-    public void setDesiredNeutralMode() {
-        pivotMotor1.setNeutralMode(NeutralModeValue.Brake);
-        pivotMotor2.setNeutralMode(NeutralModeValue.Brake);
-    }
-
     public void setPosition(double position) {
         pivotMotor1.setControl(motionMagicControl.withPosition(position));
     }
 
-    /*
-     * Sensor Methods
-     */
-    public boolean isAtPositionSetpoint(double position) {
-        return Math.abs(pivotMotor1.getPosition().getValueAsDouble()
-                - position) < PivotConstants.kPivotErrorMargin;
-    }
-
     public double getPosition() {
         return pivotMotor1.getPosition().getValueAsDouble();
+    }
+
+    public boolean isAtPositionSetpoint(double position) {
+        return Math.abs(pivotMotor1.getPosition().getValueAsDouble() - position) < PivotConstants.kPivotErrorMargin;
     }
 
     @Override

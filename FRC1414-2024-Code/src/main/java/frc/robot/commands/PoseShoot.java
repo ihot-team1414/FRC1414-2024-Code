@@ -9,8 +9,11 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants;
@@ -24,6 +27,7 @@ import frc.utils.OdometryData;
 import frc.utils.RobotState;
 import frc.utils.RobotState.RobotConfiguration;
 
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 public class PoseShoot extends Command {
@@ -38,39 +42,43 @@ public class PoseShoot extends Command {
 
     private final PIDController rotController = new PIDController(12, 0.01, 0);
 
-    private Translation2d target;
+    private Translation2d target = Constants.FieldConstants.bluePassPosition;
+
+    private Optional<Alliance> ds = DriverStation.getAlliance();
 
     public PoseShoot(
             DoubleSupplier translationXSupplier,
-            DoubleSupplier translationYSupplier,
-            Translation2d target) {
+            DoubleSupplier translationYSupplier) {
 
         this.translationXSupplier = translationXSupplier;
         this.translationYSupplier = translationYSupplier;
-        this.target = target;
+
         addRequirements(drive);
     }
 
     @Override
-    public void initialize(){
+    public void initialize() {
         rotController.setTolerance(1.2);
         rotController.enableContinuousInput(-180, 180);
+
+        target = ds.isPresent() && ds.get() == Alliance.Red ? Constants.FieldConstants.redPassPosition
+                : Constants.FieldConstants.bluePassPosition;
     }
 
     @Override
     public void execute() {
 
-        //Turn to point calculation
+        // Turn to point calculation
         double xPose = drive.getCurrentPose().getX();
         double yPose = drive.getCurrentPose().getY();
 
         double xAngle = xPose - target.getX();
         double yAngle = yPose - target.getY();
 
-        //Vector distance calculation
+        // Vector distance calculation
         Vector<N2> robot = VecBuilder.fill(xPose, yPose);
         Vector<N2> end = VecBuilder.fill(target.getX(), target.getY());
-        
+
         double distance = (robot.minus(end)).norm();
 
         double angle = drive.getHeading().getDegrees();
@@ -85,25 +93,22 @@ public class PoseShoot extends Command {
         double translationY = translationYSupplier.getAsDouble()
                 * DriveConstants.kMaxSpeedMetersPerSecond;
 
-                
         double position = OdometryData.getInstance().getShooterPosition(distance);
         pivot.setPosition(position);
-        shooter.setVoltage(1);
+        shooter.setPercentVoltage(1);
 
-        if(rotController.atSetpoint() 
-            && shooter.isWithinVelocityTolerance(ShooterConstants.kShotSpeed + 10)
-            && pivot.isAtPositionSetpoint(position))
-            {
-                intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
-                RobotState.getInstance().setRobotConfiguration(RobotConfiguration.SHOOTING);
-            }
+        if (rotController.atSetpoint()
+                && shooter.isWithinVelocityTolerance(ShooterConstants.kShotSpeed + 10)
+                && pivot.isAtPositionSetpoint(position)) {
+            intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
+            RobotState.getInstance().setRobotConfiguration(RobotConfiguration.SHOOTING);
+        }
 
         SmartDashboard.putNumber("Vector S Dist", distance);
 
         drive.drive(new Transform2d(new Translation2d(translationX, translationY),
-                        rotation),
-                        true);
-
+                rotation),
+                true);
 
     }
 

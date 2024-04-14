@@ -21,7 +21,7 @@ public class ShooterPrimitives {
     }
 
     public static Command revVolt(double voltage) {
-        return new InstantCommand(() -> shooter.setVoltage(voltage), shooter);
+        return new InstantCommand(() -> shooter.setPercentVoltage(voltage), shooter);
     }
 
     public static Command shoot() {

@@ -1,13 +1,11 @@
 package frc.robot;
 
 import java.util.Optional;
-import java.util.TreeMap;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,8 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS5Controller.Button;
-import frc.robot.Constants.AmpConstants;
-import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.DeflectorConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Routines;
 import frc.robot.commands.Drive;
@@ -28,7 +25,7 @@ import frc.robot.commands.AutoAim;
 import frc.robot.commands.AutoAimTeleop;
 import frc.robot.commands.AutoRev;
 import frc.robot.commands.AutoShootTeleop;
-import frc.robot.subsystems.AmpSubsystem;
+import frc.robot.subsystems.DeflectorSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
@@ -42,50 +39,25 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 public class RobotContainer {
-
-        /*
-         * Subsystems
-         */
         private final DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
-        private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
-        private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
-        private final PivotSubsystem pivot = PivotSubsystem.getInstance();
-        private final LEDSubsystem led = LEDSubsystem.getInstance();
-        private final AmpSubsystem amp = AmpSubsystem.getInstance();
-        private final VisionSubsystem vision = VisionSubsystem.getInstance();
-        private Optional<Alliance> ds = DriverStation.getAlliance();
+        private final DeflectorSubsystem deflector = DeflectorSubsystem.getInstance();
 
-        /*
-         * Controllers
-         */
         PS5Controller driver = new PS5Controller(OIConstants.kDriverControllerPort);
         XboxController operator = new XboxController(OIConstants.kOperatorControllerPort);
 
-        /*
-         * Shooting, Auto and Passing
-         */
-        private TreeMap<String, Pose2d> autoPoses = new TreeMap<>();
         private SendableChooser<Command> chooser = new SendableChooser<>();
-        private boolean isRed;
-        private Translation2d target = new Translation2d();
-        private Translation2d pass = new Translation2d();
 
         public RobotContainer() {
-
-                isRed = ds.isPresent() && ds.get().equals(DriverStation.Alliance.Red);
-                pass = isRed ? FieldConstants.getTagTranslation(51) : FieldConstants.getTagTranslation(61);
-                target = isRed ? FieldConstants.getTagTranslation(4) : FieldConstants.getTagTranslation(7);
-                
+                ShooterSubsystem.getInstance();
+                IntakeSubsystem.getInstance();
+                PivotSubsystem.getInstance();
+                LEDSubsystem.getInstance();
+                VisionSubsystem.getInstance();
 
                 configureAuto();
                 configureDriver();
                 configureOperator();
 
-                /*
-                 * We invert the controller axes to match the field coordinate system.
-                 * https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-
-                 * system.html
-                 */
                 DrivetrainSubsystem.getInstance().resetHeading();
                 drivetrain.setDefaultCommand(
                                 new Drive(() -> MathUtil.applyDeadband(-driver.getLeftY(),
@@ -96,7 +68,9 @@ public class RobotContainer {
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> 1));
 
-                amp.setDefaultCommand(new RunCommand(() -> amp.setPosition(AmpConstants.kAmpRestPosition), amp));
+                deflector.setDefaultCommand(
+                                new RunCommand(() -> deflector.setPosition(DeflectorConstants.kDeflectorStowPosition),
+                                                deflector));
         }
 
         private void configureDriver() {
@@ -132,20 +106,15 @@ public class RobotContainer {
 
                 new JoystickButton(driver, Button.kR3.value).whileTrue(new Pass(
                                 () -> MathUtil.applyDeadband(-driver.getLeftY(),
-                                        Constants.OIConstants.kJoystickDeadband),
-                                () -> MathUtil.applyDeadband(-driver.getLeftX(), 
-                                        Constants.OIConstants.kJoystickDeadband), 
-                                pass)
-                );
+                                                Constants.OIConstants.kJoystickDeadband),
+                                () -> MathUtil.applyDeadband(-driver.getLeftX(),
+                                                Constants.OIConstants.kJoystickDeadband)));
 
-                new POVButton(driver, 0).whileTrue(new RunCommand(() -> pivot.setPosition(pivot.getPosition() + 0.1), pivot));
-                new POVButton(driver, 180).whileTrue(new RunCommand(() -> pivot.setPosition(pivot.getPosition() - 0.1), pivot));
                 new POVButton(driver, 90).whileTrue(new PoseShoot(
                                 () -> MathUtil.applyDeadband(-driver.getLeftY(),
                                                 Constants.OIConstants.kJoystickDeadband),
                                 () -> MathUtil.applyDeadband(-driver.getLeftX(),
-                                                Constants.OIConstants.kJoystickDeadband),
-                                                target));
+                                                Constants.OIConstants.kJoystickDeadband)));
         }
 
         private void configureOperator() {
@@ -189,10 +158,6 @@ public class RobotContainer {
                 chooser.addOption("Beeline Auto", AutoBuilder.buildAuto("Beeline Auto"));
                 SmartDashboard.putData("Auto Chooser", this.chooser);
 
-        }
-
-        public Pose2d getStart(String auto) {
-                return autoPoses.get(auto);
         }
 
         public Command getAutonomousCommand() {

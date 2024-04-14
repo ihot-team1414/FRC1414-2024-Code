@@ -8,8 +8,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.PivotConstants;
@@ -22,6 +25,7 @@ import frc.utils.PassData;
 import frc.utils.RobotState;
 import frc.utils.RobotState.RobotConfiguration;
 
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 public class Pass extends Command {
@@ -35,34 +39,25 @@ public class Pass extends Command {
     private final DoubleSupplier translationYSupplier;
 
     private final PIDController rotController = new PIDController(4, 0, 0);
+    private Optional<Alliance> ds = DriverStation.getAlliance();
 
     private Translation2d target;
 
     public Pass(
             DoubleSupplier translationXSupplier,
-            DoubleSupplier translationYSupplier, 
-            Translation2d target) {
+            DoubleSupplier translationYSupplier) {
 
         this.translationXSupplier = translationXSupplier;
         this.translationYSupplier = translationYSupplier;
-        this.target = target;
+
+        target = ds.isPresent() && ds.get() == Alliance.Red ? Constants.FieldConstants.redPassPosition
+                : Constants.FieldConstants.bluePassPosition;
 
         addRequirements(drive);
     }
 
-    public Pass(
-        DoubleSupplier translationXSupplier,
-        DoubleSupplier translationYSupplier,
-        Pose2d target) {
-            this.translationXSupplier = translationXSupplier;
-            this.translationYSupplier = translationYSupplier;
-            this.target = target.getTranslation();
-            
-            addRequirements(drive);
-        }
-
     @Override
-    public void initialize(){
+    public void initialize() {
         rotController.setTolerance(3);
         rotController.enableContinuousInput(-180, 180);
     }
@@ -70,17 +65,17 @@ public class Pass extends Command {
     @Override
     public void execute() {
 
-        //Turn to point calculation
+        // Turn to point calculation
         double xPose = drive.getCurrentPose().getX();
         double yPose = drive.getCurrentPose().getY();
 
         double xAngle = xPose - target.getX();
         double yAngle = yPose - target.getY();
 
-        //Vector distance calculation
+        // Vector distance calculation
         Vector<N2> robot = VecBuilder.fill(xPose, yPose);
         Vector<N2> end = VecBuilder.fill(target.getX(), target.getY());
-        
+
         double distance = (robot.minus(end)).norm();
         pivot.setPosition(PassData.getInstance().getShooterPosition(distance));
         shooter.setVelocity(ShooterConstants.kPassVelocity);
@@ -98,17 +93,16 @@ public class Pass extends Command {
                 * DriveConstants.kMaxSpeedMetersPerSecond;
 
         drive.drive(new Transform2d(new Translation2d(translationX, translationY),
-                        rotation),
-                        true);
+                rotation),
+                true);
 
-        if(rotController.atSetpoint() 
-            && shooter.isWithinVelocityTolerance(ShooterConstants.kPassVelocity)
-            && pivot.isAtPositionSetpoint(PassData.getInstance().getShooterPosition(distance)))
-            {
-                intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
-                RobotState.getInstance().setRobotConfiguration(RobotConfiguration.PASS);
-            }
-        
+        if (rotController.atSetpoint()
+                && shooter.isWithinVelocityTolerance(ShooterConstants.kPassVelocity)
+                && pivot.isAtPositionSetpoint(PassData.getInstance().getShooterPosition(distance))) {
+            intake.setDutyCycle(IntakeConstants.kSpeakerFeedDutyCycle);
+            RobotState.getInstance().setRobotConfiguration(RobotConfiguration.PASS);
+        }
+
         SmartDashboard.putNumber("Vector P Distance", distance);
     }
 
