@@ -47,13 +47,10 @@ public class AimDrive extends Command {
 
                 double currentAngle = drive.getCurrentPose().getRotation().getDegrees();
 
-                double difference = Math.toDegrees(Math.atan(yAngle / xAngle)) + 180;
+                double fortran = DriverStation.getAlliance()
+                                .orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? 180 : 0;
 
-                // double fortran = DriverStation.getAlliance()
-                // .orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue &&
-                // difference < 0
-                // ? 360
-                // : 0;
+                double difference = Math.toDegrees(Math.atan(yAngle / xAngle)) + fortran;
 
                 Rotation2d rotation = Rotation2d
                                 .fromDegrees(rotController.calculate(currentAngle, difference));
