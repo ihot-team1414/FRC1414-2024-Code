@@ -281,9 +281,11 @@ public final class Constants {
         public static final Supplier<Translation2d> allianceSpeakerPositionSupplier = () -> DriverStation.getAlliance()
                 .orElse(DriverStation.Alliance.Blue) == Alliance.Blue
                         ? FieldConstants.getTagTranslation(FieldConstants.kBlueSpeakerId)
-                        : FieldConstants.getTagTranslation(FieldConstants.kRedSpeakerId);
+                                .plus(new Translation2d(0, 0.25))
+                        : FieldConstants.getTagTranslation(FieldConstants.kRedSpeakerId)
+                                .plus(new Translation2d(0, 0.25));
 
-        public static final Translation2d ampEntryOffset = new Translation2d(0, -4);
+        public static final Translation2d ampEntryOffset = new Translation2d(0, -2);
 
         public static final Pose2d ampEntryTolerance = new Pose2d(new Translation2d(1, 1),
                 Rotation2d.fromDegrees(2));
