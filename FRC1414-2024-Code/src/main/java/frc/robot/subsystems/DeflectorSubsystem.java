@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DeflectorConstants;
 
@@ -49,6 +50,17 @@ public class DeflectorSubsystem extends SubsystemBase {
 
     public boolean isAtPositionSetpoint(double position) {
         return Math.abs(getPosition() - position) < DeflectorConstants.kDeflectorTolerance;
+    }
+
+    // Commands
+
+    public Command rotateToPosition(double position) {
+        return this.run(() -> setPosition(position)).until(() -> isAtPositionSetpoint(position));
+    }
+
+    public Command stow() {
+        return this.run(() -> setPosition(DeflectorConstants.kDeflectorStowPosition))
+                .until(() -> isAtPositionSetpoint(DeflectorConstants.kDeflectorStowPosition));
     }
 
     @Override

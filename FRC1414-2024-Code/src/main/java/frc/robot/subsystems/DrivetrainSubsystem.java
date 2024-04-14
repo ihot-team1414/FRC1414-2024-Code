@@ -11,6 +11,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -168,6 +169,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return odometry.getEstimatedPosition();
     }
 
+    public double getDistanceToPoint(Translation2d point) {
+        return VecBuilder.fill(getCurrentPose().getX(), getCurrentPose().getY())
+                .minus(VecBuilder.fill(point.getX(), point.getY())).norm();
+    }
+
     public void resetOdometry(Pose2d pose) {
         odometry.resetPosition(
                 getHeading(),
@@ -198,7 +204,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return pigeon.getRotation2d();
     }
 
-    public double getDegrees(){
+    public double getDegrees() {
         return pigeon.getAngle();
     }
 
@@ -221,11 +227,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void addVisionMeasurement(String limelight) {
-        LimelightHelpers.SetRobotOrientation(limelight, odometry.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(limelight, odometry.getEstimatedPosition().getRotation().getDegrees(), 0,
+                0, 0, 0, 0);
         if (LimelightHelpers.getTV(limelight)) {
             LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
 
-            if(!(Math.abs(pigeon.getRate()) > 720) && !(mt2.tagCount == 0)) {
+            if (!(Math.abs(pigeon.getRate()) > 720) && !(mt2.tagCount == 0)) {
                 odometry.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
                 odometry.addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
             }

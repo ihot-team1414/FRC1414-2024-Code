@@ -1,159 +1,90 @@
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
 import frc.robot.Constants.DeflectorConstants;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.ShooterData;
 import frc.robot.subsystems.DeflectorSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.utils.RobotState;
-import frc.utils.RobotState.RobotConfiguration;
 
 public class Routines {
+    private static DrivetrainSubsystem drive = DrivetrainSubsystem.getInstance();
+    private static IntakeSubsystem intake = IntakeSubsystem.getInstance();
+    private static PivotSubsystem pivot = PivotSubsystem.getInstance();
+    private static ShooterSubsystem shooter = ShooterSubsystem.getInstance();
+    private static DeflectorSubsystem deflector = DeflectorSubsystem.getInstance();
 
-        private static IntakeSubsystem intake = IntakeSubsystem.getInstance();
-        private static PivotSubsystem pivot = PivotSubsystem.getInstance();
-        private static ShooterSubsystem shooter = ShooterSubsystem.getInstance();
-        private static DeflectorSubsystem amp = DeflectorSubsystem.getInstance();
+    public static Command intake() {
+        return pivot.rotateToPosition(PivotConstants.kIntakePosition)
+                .andThen(intake.intake());
+    }
 
-        public static Command primeAmp() {
-                return RobotState.transition(RobotConfiguration.AMP,
-                                PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
-                                                .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
-                                                                () -> DeflectorSubsystem.getInstance().setPosition(
-                                                                                DeflectorConstants.kDeflectorScoringPosition),
-                                                                DeflectorSubsystem.getInstance()))))
-                                .repeatedly()
-                                .finallyDo((interrupted) -> {
-                                        // if (!interrupted) {
-                                        // amp.setPosition(AmpConstants.kAmpRestPosition);
-                                        // pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                                        // RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
-                                        // }
-                                });
-        }
+    public static Command ampMode() {
+        return pivot.rotateToPosition(PivotConstants.kAmpScoringPosition).alongWith(new WaitCommand(0.2)
+                .andThen(
+                        shooter.rev(ShooterConstants.kAmpVoltage)
+                                .alongWith(deflector.rotateToPosition(DeflectorConstants.kDeflectorScoringPosition))))
+                .until(() -> !intake.isNotePresent());
+    }
 
-        public static Command scoreAmp() {
-                return RobotState.transition(RobotConfiguration.AMP, ShooterPrimitives
-                                .revVolt(Constants.ShooterConstants.kAmpDutyCycleLeft)
-                                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
-                                                .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
-                                                                () -> DeflectorSubsystem.getInstance().setPosition(
-                                                                                DeflectorConstants.kDeflectorScoringPosition),
-                                                                DeflectorSubsystem.getInstance()))))
-                                .andThen(IntakePrimitives.ampFeed()
-                                                .onlyIf(() -> pivot
-                                                                .getPosition() > Constants.PivotConstants.kAmpFeedPosition)
-                                                .repeatedly().alongWith(new InstantCommand(
-                                                                () -> DeflectorSubsystem.getInstance().setPosition(
-                                                                                DeflectorConstants.kDeflectorScoringPosition),
-                                                                DeflectorSubsystem.getInstance()))))
-                                .onlyIf(() -> IntakeSubsystem.getInstance().isLoadedDebounced())
-                                .finallyDo(() -> {
-                                        intake.stop();
-                                        shooter.stop();
-                                        amp.setPosition(DeflectorConstants.kDeflectorStowPosition);
-                                        pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                                        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
-                                });
-        }
+    public static Command shootMode(DoubleSupplier translationXSupplier, DoubleSupplier translationYSupplier) {
+        Supplier<Translation2d> targetSupplier = () -> DriverStation.getAlliance()
+                .orElse(DriverStation.Alliance.Blue) == Alliance.Blue
+                        ? FieldConstants.getTagTranslation(FieldConstants.kBlueSpeakerID)
+                        : FieldConstants.getTagTranslation(FieldConstants.kRedSpeakerID);
 
-        public static Command speakerShot() {
-                return RobotState.transition(RobotConfiguration.AIMING_SUCCESS, ShooterPrimitives
-                                .shoot()
-                                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kSpeakerShotPosition))
-                                .alongWith(ShooterPrimitives.rev(ShooterConstants.kSpeakerShotDutyCycle)))
-                                .withTimeout(1)
-                                .andThen(
-                                                RobotState.transition(RobotConfiguration.SHOOTING,
-                                                                IntakePrimitives.speakerFeed()
-                                                                                .repeatedly()))
-                                .finallyDo(() -> {
-                                        intake.stop();
-                                        shooter.stop();
-                                        pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                                        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
-                                });
-        }
+        return new AimDrive(translationXSupplier, translationYSupplier, targetSupplier)
+                .alongWith(
+                        new AimShooter(ShooterData.speakerData, () -> drive.getDistanceToPoint(targetSupplier.get())));
+    }
 
-        public static Command intake() {
-                return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kIntakePosition)
-                                .andThen(IntakePrimitives.intake()).andThen(PivotPrimitives.stow())
-                                .finallyDo(() -> {
-                                        intake.stop();
-                                        intake.rumble();
-                                        pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                                });
-        }
+    public static Command passMode(DoubleSupplier translationXSupplier, DoubleSupplier translationYSupplier) {
+        Supplier<Translation2d> targetSupplier = () -> DriverStation.getAlliance()
+                .orElse(DriverStation.Alliance.Blue) == Alliance.Blue
+                        ? FieldConstants.bluePassPosition
+                        : FieldConstants.redPassPosition;
 
-        public static Command outtake() {
-                return PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpFeedPosition)
-                                .andThen(
-                                                IntakePrimitives.outtake().alongWith(ShooterPrimitives.rev(-0.3)))
-                                .finallyDo(() -> {
-                                        intake.stop();
-                                        shooter.stop();
-                                        pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                                        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
-                                });
-        }
+        return new AimDrive(translationXSupplier, translationYSupplier, targetSupplier)
+                .alongWith(
+                        new AimShooter(ShooterData.passingData, () -> drive.getDistanceToPoint(targetSupplier.get())));
+    }
 
-        public static Command eject() {
-                return RobotState
-                                .transition(RobotConfiguration.EJECTING,
-                                                ShooterPrimitives.rev(Constants.ShooterConstants.kEjectDutyCycle)
-                                                                .andThen(PivotPrimitives.pivotToPosition(
-                                                                                Constants.PivotConstants.kEjectPosition))
-                                                                .andThen(IntakePrimitives.speakerFeed().withTimeout(1)))
-                                .finallyDo(() -> {
-                                        intake.stop();
-                                        shooter.stop();
-                                        pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                                        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
-                                });
-        }
+    public static Command outtake() {
+        return pivot.rotateToPosition(PivotConstants.kOuttakePosition)
+                .andThen(intake.outtake().alongWith(shooter.rev(ShooterConstants.kOuttakeVoltage)));
+    }
 
-        public static Command trapShot() {
-                return RobotState
-                                .transition(RobotConfiguration.EJECTING,
-                                                ShooterPrimitives.rev(0.5)
-                                                                .andThen(PivotPrimitives.pivotToPosition(
-                                                                                Constants.PivotConstants.kEjectPosition))
-                                                                .andThen(IntakePrimitives.speakerFeed().withTimeout(1)))
-                                .finallyDo(() -> {
-                                        intake.stop();
-                                        shooter.stop();
-                                        pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                                        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
-                                });
-        }
+    public static Command fixedShot(double pivotPosition, Measure<Voltage> shooterVoltage, double minimumShotVelocity) {
+        return shooter.rev(shooterVoltage).alongWith(pivot.rotateToPosition(pivotPosition).andThen(
+                intake.feed().onlyIf(() -> shooter.isWithinVelocityTolerance(minimumShotVelocity)).repeatedly()));
+    }
 
-        public static Command trapAmp() {
-                return RobotState.transition(RobotConfiguration.AMP, ShooterPrimitives
-                                .revVolt(0.5)
-                                .andThen(PivotPrimitives.pivotToPosition(Constants.PivotConstants.kAmpScoringPosition)
-                                                .alongWith(new WaitCommand(0.2).andThen(new InstantCommand(
-                                                                () -> DeflectorSubsystem.getInstance().setPosition(
-                                                                                DeflectorConstants.kDeflectorScoringPosition),
-                                                                DeflectorSubsystem.getInstance()))))
-                                .andThen(IntakePrimitives.ampFeed()
-                                                .onlyIf(() -> pivot
-                                                                .getPosition() > Constants.PivotConstants.kAmpFeedPosition)
-                                                .repeatedly().alongWith(new InstantCommand(
-                                                                () -> DeflectorSubsystem.getInstance().setPosition(
-                                                                                DeflectorConstants.kDeflectorScoringPosition),
-                                                                DeflectorSubsystem.getInstance()))))
-                                .finallyDo(() -> {
-                                        intake.stop();
-                                        shooter.stop();
-                                        amp.setPosition(DeflectorConstants.kDeflectorStowPosition);
-                                        pivot.setPosition(Constants.PivotConstants.kStowPosition);
-                                        RobotState.getInstance().setRobotConfiguration(RobotConfiguration.STOWED);
-                                });
-        }
+    public static Command subwooferShot() {
+        return fixedShot(PivotConstants.kSubwooferShotPosition, ShooterConstants.kSubwooferShotVoltage,
+                ShooterConstants.kSubwooferShotVelocity);
+    }
 
+    public static Command eject() {
+        return fixedShot(PivotConstants.kEjectPosition, ShooterConstants.kEjectVoltage,
+                ShooterConstants.kEjectVelocity);
+    }
+
+    public static Command reverseShot() {
+        return fixedShot(PivotConstants.kReverseShotPosition, ShooterConstants.kSubwooferShotVoltage,
+                ShooterConstants.kSubwooferShotVelocity);
+    }
 }

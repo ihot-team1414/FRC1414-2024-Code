@@ -3,10 +3,15 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
+
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.ShooterConstants;
@@ -17,9 +22,11 @@ public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX shooterMotor1;
     private final TalonFX shooterMotor2;
     private final Follower followerControl;
-    private final VelocityVoltage velocityControl;
+
     private final TalonFXConfiguration shooterMotorConfig;
 
+    private final VelocityVoltage velocityControl;
+    private final DutyCycleOut dutyCycleOutControl;
     private final VoltageOut voltageOutControl;
 
     public ShooterSubsystem() {
@@ -40,6 +47,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         velocityControl = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
         voltageOutControl = new VoltageOut(0, false, false, false, false);
+        dutyCycleOutControl = new DutyCycleOut(0, false, false, false, false);
         followerControl = new Follower(shooterMotor1.getDeviceID(), true);
     }
 
@@ -51,9 +59,14 @@ public class ShooterSubsystem extends SubsystemBase {
         return instance;
     }
 
-    public void setPercentVoltage(double percent) {
+    public void setVoltage(Measure<Voltage> voltage) {
         shooterMotor2.setControl(followerControl.withMasterID(32));
-        shooterMotor1.setControl(voltageOutControl.withOutput(12 * percent));
+        shooterMotor1.setControl(voltageOutControl.withOutput(voltage.magnitude()));
+    }
+
+    public void setDutyCycle(double dutyCycle) {
+        shooterMotor2.setControl(followerControl.withMasterID(32));
+        shooterMotor1.setControl(dutyCycleOutControl.withOutput(dutyCycle));
     }
 
     public void setVelocity(double velocity) {
@@ -73,6 +86,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public boolean isWithinVelocityTolerance(double target) {
         return shooterMotor1.getVelocity().getValueAsDouble() >= target;
+    }
+
+    // Commands
+
+    public Command rev(Measure<Voltage> voltage) {
+        return this.runEnd(() -> setVoltage(voltage), () -> stop());
+    }
+
+    public Command rev(double dutyCycle) {
+        return this.runEnd(() -> setDutyCycle(dutyCycle), () -> stop());
     }
 
     @Override

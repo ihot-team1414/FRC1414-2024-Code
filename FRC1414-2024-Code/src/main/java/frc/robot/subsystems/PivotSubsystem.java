@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PivotConstants;
 
@@ -54,6 +55,16 @@ public class PivotSubsystem extends SubsystemBase {
 
     public boolean isAtPositionSetpoint(double position) {
         return Math.abs(pivotMotor1.getPosition().getValueAsDouble() - position) < PivotConstants.kPivotErrorMargin;
+    }
+
+    // Commands
+    public Command rotateToPosition(double position) {
+        return this.run(() -> setPosition(position)).until(() -> isAtPositionSetpoint(position));
+    }
+
+    public Command stow() {
+        return this.run(() -> setPosition(PivotConstants.kStowPosition))
+                .until(() -> isAtPositionSetpoint(PivotConstants.kStowPosition));
     }
 
     @Override

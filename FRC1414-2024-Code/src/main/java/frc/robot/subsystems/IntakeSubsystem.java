@@ -10,6 +10,7 @@ import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
@@ -28,6 +29,9 @@ public class IntakeSubsystem extends SubsystemBase {
     private TalonFXConfiguration intakeMotorConfiguration;
 
     private Debouncer presenceDebouncer = new Debouncer(0.1,
+            Debouncer.DebounceType.kFalling);
+
+    private Debouncer loadedDebouncer = new Debouncer(0.1,
             Debouncer.DebounceType.kFalling);
 
     public IntakeSubsystem() {
@@ -72,28 +76,46 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor1.stopMotor();
     }
 
-    public boolean isNotePresent(boolean debounced) {
-        double distanceFront = intakeSensorFront.getRange();
-        double distanceMiddle = intakeSensorMiddle.getRange();
-        double distanceBack = intakeSensorBack.getRange();
+    public boolean isFrontSensorTripped() {
+        return intakeSensorFront.getRange() < IntakeConstants.kFrontSensorThreshold;
+    }
 
-        boolean isNotePresent = distanceFront < IntakeConstants.kFrontSensorThreshold
-                || distanceMiddle < IntakeConstants.kMiddleSensorThreshold
-                || distanceBack < IntakeConstants.kBackSensorThreshold;
+    public boolean isMiddleSensorTripped() {
+        return intakeSensorMiddle.getRange() < IntakeConstants.kMiddleSensorThreshold;
+    }
 
-        if (debounced) {
-            return presenceDebouncer.calculate(isNotePresent);
-        }
-
-        return isNotePresent;
+    public boolean isBackSensorTripped() {
+        return intakeSensorBack.getRange() < IntakeConstants.kBackSensorThreshold;
     }
 
     public boolean isNotePresent() {
-        return isNotePresent(false);
+        boolean isNotePresent = isFrontSensorTripped()
+                || isMiddleSensorTripped()
+                || isBackSensorTripped();
+
+        return presenceDebouncer.calculate(isNotePresent);
     }
 
     public boolean isLoaded() {
-        return intakeSensorBack.getRange() < IntakeConstants.kBackSensorThreshold;
+        return loadedDebouncer.calculate(intakeSensorBack.getRange() < IntakeConstants.kBackSensorThreshold);
+    }
+
+    // Commands
+    public Command intake() {
+        return this.runEnd(() -> setDutyCycle(IntakeConstants.kIntakeDutyCycle), () -> stop()).until(() -> isLoaded())
+                .onlyIf(() -> !isLoaded());
+    }
+
+    public Command feed() {
+        return this.runEnd(() -> setDutyCycle(IntakeConstants.kFeedDutyCycle), () -> stop());
+    }
+
+    public Command outtake() {
+        return this.runEnd(() -> setDutyCycle(IntakeConstants.kOuttakeDutyCycle), () -> stop());
+    }
+
+    public Command autoLoad() {
+        return intake().onlyIf(() -> isMiddleSensorTripped() || isFrontSensorTripped());
     }
 
     @Override
