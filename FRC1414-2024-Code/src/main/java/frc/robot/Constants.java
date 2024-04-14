@@ -3,15 +3,21 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.TreeMap;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.utils.ShooterEntry;
 
 public final class Constants {
@@ -238,6 +244,11 @@ public final class Constants {
         public static final Translation2d bluePassPosition = new Translation2d(0.6, 7.5);
         public static final Translation2d redPassPosition = new Translation2d(16, 7.5);
 
+        public static final Supplier<Translation2d> alliancePassPositionSupplier = () -> DriverStation.getAlliance()
+                .orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue
+                        ? FieldConstants.bluePassPosition
+                        : FieldConstants.redPassPosition;
+
         public static final TreeMap<Integer, Translation2d> kRedAprilTagLayout = new TreeMap<Integer, Translation2d>() {
             {
                 put(1, new Translation2d(Units.inchesToMeters(593.68), Units.inchesToMeters(9.68)));
@@ -267,10 +278,27 @@ public final class Constants {
             }
         };
 
-        public static final int kRedSpeakerID = 3;
-        public static final int kBlueSpeakerID = 7;
-        public static final int kRedAmpID = 5;
-        public static final int kBlueAmpID = 6;
+        public static final Supplier<Translation2d> allianceSpeakerPositionSupplier = () -> DriverStation.getAlliance()
+                .orElse(DriverStation.Alliance.Blue) == Alliance.Blue
+                        ? FieldConstants.getTagTranslation(FieldConstants.kBlueSpeakerId)
+                        : FieldConstants.getTagTranslation(FieldConstants.kRedSpeakerId);
+
+        public static final Translation2d ampEntryOffset = new Translation2d(0, -4);
+
+        public static final Pose2d ampEntryTolerance = new Pose2d(new Translation2d(1, 1),
+                Rotation2d.fromDegrees(2));
+
+        public static final Supplier<Pose2d> allianceAmpEntryPoseSupplier = () -> DriverStation.getAlliance()
+                .orElse(DriverStation.Alliance.Blue) == Alliance.Blue
+                        ? new Pose2d(FieldConstants.getTagTranslation(FieldConstants.kBlueAmpId).plus(ampEntryOffset),
+                                Rotation2d.fromDegrees(90))
+                        : new Pose2d(FieldConstants.getTagTranslation(FieldConstants.kRedAmpId).plus(ampEntryOffset),
+                                Rotation2d.fromDegrees(90));
+
+        public static final int kRedSpeakerId = 4;
+        public static final int kBlueSpeakerId = 7;
+        public static final int kRedAmpId = 5;
+        public static final int kBlueAmpId = 6;
 
         public static Translation2d getTagTranslation(int id) {
             if (kRedAprilTagLayout.containsKey(id)) {
@@ -324,7 +352,10 @@ public final class Constants {
         public static final TreeMap<Double, ShooterEntry> speakerData = new TreeMap<Double, ShooterEntry>() {
             {
                 put(0.0, new ShooterEntry(9.2, 70));
-                put(1.46, new ShooterEntry(9, 70)); // 5 inches from subwoofer
+                put(1.46, new ShooterEntry(9, 70)); // 5
+                                                    // inches
+                                                    // from
+                                                    // subwoofer
                 put(1.68, new ShooterEntry(8.7, 70)); // 15 inches
                 put(1.85, new ShooterEntry(8, 70)); // 20 inches
                 put(1.93, new ShooterEntry(7.7, 70)); // 25 inches

@@ -116,7 +116,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Robot field relative drive for path planner
     public void driveFieldRelative(ChassisSpeeds fieldRelativeSpeeds) {
         ChassisSpeeds robotRelative = ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds,
-                getHeading());
+                getCurrentPose().getRotation());
         driveRobotRelative(robotRelative);
     }
 
@@ -138,7 +138,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 fieldRelative
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(transform.getX(), transform.getY(),
                                 transform.getRotation().getRadians(),
-                                getHeading())
+                                getCurrentPose().getRotation())
                         : new ChassisSpeeds(transform.getX(), transform.getY(), transform.getRotation().getRadians()));
         setModuleStates(swerveModuleStates);
     }
@@ -197,25 +197,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
         rearRightSwerve.resetEncoders();
     }
 
-    /*
-     * Returns current drivetrain heading in the WPILIB coordinate system.
-     */
     public Rotation2d getHeading() {
         return pigeon.getRotation2d();
     }
 
-    public double getDegrees() {
-        return pigeon.getAngle();
-    }
-
-    public void resetHeading() {
-        pigeon.setYaw(0);
-        odometry.resetPosition(getHeading(), getSwerveModulePositions(), getCurrentPose());
-    }
-
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Gyro", getHeading().getDegrees() % 360);
         SmartDashboard.putData("Field", field);
 
         odometry.update(getHeading(), getSwerveModulePositions());
