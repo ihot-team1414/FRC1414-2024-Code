@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.PS5Controller;
@@ -21,6 +22,7 @@ import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -73,6 +75,13 @@ public class RobotContainer {
     }
 
     private void configureDriver() {
+        new JoystickButton(driver, PS5Controller.Button.kOptions.value)
+                .onTrue(new InstantCommand(() -> {
+                    DrivetrainSubsystem.getInstance().resetHeading();
+                    DrivetrainSubsystem.getInstance()
+                            .resetOdometry(new Pose2d(0, 0, DrivetrainSubsystem
+                                    .getInstance().getHeading()));
+                }));
         new JoystickButton(driver, PS5Controller.Button.kL1.value).whileTrue(intake.feed());
         new JoystickButton(driver, PS5Controller.Button.kR1.value).onTrue(Routines.intake());
         new JoystickButton(driver, PS5Controller.Button.kSquare.value).onTrue(Routines.ampMode());

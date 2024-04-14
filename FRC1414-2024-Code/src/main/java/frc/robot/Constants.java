@@ -148,14 +148,14 @@ public final class Constants {
         public static final int kIntakeMotorCurrentLimit = 10;
 
         public static double kIntakeDutyCycle = 0.75;
-        public static double kOuttakeDutyCycle = 0.75;
+        public static double kOuttakeDutyCycle = -0.75;
         public static final double kFeedDutyCycle = 0.75;
 
-        public static final int kIntakeSensorMiddleCanId = 50;
-        public static final int kIntakeSensorBackCanId = 51;
-        public static final int kIntakeSensorFrontCanId = 100; // TODO
+        public static final int kIntakeSensorMiddleCanId = 51;
+        public static final int kIntakeSensorBackCanId = 50;
+        public static final int kIntakeSensorFrontCanId = 0; // TODO
 
-        public static double kFrontSensorThreshold = 238;
+        public static double kFrontSensorThreshold = 400;
         public static double kMiddleSensorThreshold = 238;
         public static double kBackSensorThreshold = 238;
     }
