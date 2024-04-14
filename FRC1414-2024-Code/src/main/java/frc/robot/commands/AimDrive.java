@@ -45,14 +45,18 @@ public class AimDrive extends Command {
                 double xAngle = xPose - target.getX();
                 double yAngle = yPose - target.getY();
 
-                double angle = drive.getHeading().getDegrees();
-                double additive = xAngle < 0 && DriverStation.getAlliance()
-                                .orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue ? 180 : 0;
-                double difference = Math.toDegrees(Math.atan(yAngle / xAngle)) + additive;
-                rotController.setSetpoint(difference);
+                double currentAngle = drive.getCurrentPose().getRotation().getDegrees();
+
+                double difference = Math.toDegrees(Math.atan(yAngle / xAngle)) + 180;
+
+                // double fortran = DriverStation.getAlliance()
+                // .orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue &&
+                // difference < 0
+                // ? 360
+                // : 0;
 
                 Rotation2d rotation = Rotation2d
-                                .fromDegrees(-rotController.calculate(-angle, -rotController.getSetpoint()));
+                                .fromDegrees(rotController.calculate(currentAngle, difference));
 
                 double translationX = translationXSupplier.getAsDouble()
                                 * DriveConstants.kMaxSpeedMetersPerSecond;
