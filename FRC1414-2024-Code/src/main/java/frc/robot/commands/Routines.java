@@ -37,8 +37,8 @@ public class Routines {
         return pivot.rotateToPosition(PivotConstants.kAmpScoringPosition).alongWith(new WaitCommand(0.2)
                 .andThen(
                         shooter.rev(ShooterConstants.kAmpVoltage)
-                                .alongWith(deflector.rotateToPosition(DeflectorConstants.kDeflectorScoringPosition))))
-                .until(() -> !intake.isNotePresent());
+                                .alongWith(deflector.rotateToPosition(
+                                        DeflectorConstants.kDeflectorScoringPosition))));
     }
 
     public static Command shootMode(DoubleSupplier translationXSupplier, DoubleSupplier translationYSupplier) {
@@ -49,7 +49,8 @@ public class Routines {
 
         return new AimDrive(translationXSupplier, translationYSupplier, targetSupplier)
                 .alongWith(
-                        new AimShooter(ShooterData.speakerData, () -> drive.getDistanceToPoint(targetSupplier.get())));
+                        new AimShooter(ShooterData.speakerData,
+                                () -> drive.getDistanceToPoint(targetSupplier.get())));
     }
 
     public static Command passMode(DoubleSupplier translationXSupplier, DoubleSupplier translationYSupplier) {
@@ -60,7 +61,8 @@ public class Routines {
 
         return new AimDrive(translationXSupplier, translationYSupplier, targetSupplier)
                 .alongWith(
-                        new AimShooter(ShooterData.passingData, () -> drive.getDistanceToPoint(targetSupplier.get())));
+                        new AimShooter(ShooterData.passingData,
+                                () -> drive.getDistanceToPoint(targetSupplier.get())));
     }
 
     public static Command outtake() {
@@ -68,9 +70,11 @@ public class Routines {
                 .andThen(intake.outtake().alongWith(shooter.rev(ShooterConstants.kOuttakeVoltage)));
     }
 
-    public static Command fixedShot(double pivotPosition, Measure<Voltage> shooterVoltage, double minimumShotVelocity) {
+    public static Command fixedShot(double pivotPosition, Measure<Voltage> shooterVoltage,
+            double minimumShotVelocity) {
         return shooter.rev(shooterVoltage).alongWith(pivot.rotateToPosition(pivotPosition).andThen(
-                intake.feed().onlyIf(() -> shooter.isWithinVelocityTolerance(minimumShotVelocity)).repeatedly()));
+                intake.feed().onlyIf(() -> shooter.isWithinVelocityTolerance(minimumShotVelocity))
+                        .repeatedly()));
     }
 
     public static Command subwooferShot() {

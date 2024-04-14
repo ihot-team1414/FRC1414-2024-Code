@@ -211,7 +211,7 @@ public final class Constants {
         public static final double kIntakePosition = 2;
         public static final double kAmpScoringPosition = 17.5;
         public static final double kSubwooferShotPosition = 10;
-        public static final double kReverseShotPosition = 10;
+        public static final double kReverseShotPosition = 18.25;
         public static final double kStowPosition = 0.5;
         public static final double kEjectPosition = 10;
         public static final double kOuttakePosition = 5;
