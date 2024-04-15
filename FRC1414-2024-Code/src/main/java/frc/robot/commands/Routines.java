@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
@@ -53,7 +55,8 @@ public class Routines {
                                                 new AimShooter(ShooterData.passingData,
                                                                 () -> drivetrain.getDistanceToPoint(
                                                                                 FieldConstants.alliancePassPositionSupplier
-                                                                                                .get())));
+                                                                                                .get()),
+                                                                Volts.of(7)));
         }
 
         public static Command ampAutoDrive() {

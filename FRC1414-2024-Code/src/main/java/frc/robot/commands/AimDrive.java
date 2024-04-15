@@ -20,7 +20,7 @@ public class AimDrive extends Command {
 
         private Translation2d target = Constants.FieldConstants.bluePassPosition;
 
-        private final PIDController rotController = new PIDController(12, 0.01, 0);
+        private final PIDController rotController = new PIDController(8, 0.01, 0);
 
         public AimDrive(
                         DoubleSupplier translationXSupplier,
