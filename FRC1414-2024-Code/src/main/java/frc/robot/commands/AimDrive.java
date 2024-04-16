@@ -7,12 +7,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class AimDrive extends Command {
     private final DrivetrainSubsystem drive = DrivetrainSubsystem.getInstance();
+    private final LEDSubsystem led = LEDSubsystem.getInstance();
 
     private final DoubleSupplier translationXSupplier;
     private final DoubleSupplier translationYSupplier;
@@ -49,6 +52,11 @@ public class AimDrive extends Command {
         double difference = Math.toDegrees(Math.atan(yAngle / xAngle)) + additive;
         rotController.setSetpoint(difference);
 
+        led.changeColor( 
+            angle == difference && led.isReadyForNote() 
+                ? LEDConstants.kLEDGreen 
+                : LEDConstants.kLEDGreenFlashing);
+
         Rotation2d rotation = Rotation2d.fromDegrees(-rotController.calculate(-angle, -rotController.getSetpoint()));
 
         double translationX = translationXSupplier.getAsDouble()
@@ -60,6 +68,7 @@ public class AimDrive extends Command {
                 rotation),
                 true);
 
+            
     }
 
     @Override

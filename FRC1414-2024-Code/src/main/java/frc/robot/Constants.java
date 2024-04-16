@@ -299,7 +299,7 @@ public final class Constants {
         public static final double kLEDHeartbeatMediumColor2 = 0.25;
 
         public static final double kLEDStrobeRed = -0.11;
-        public static final double kLEDStrobeOrange = 0.27;
+        public static final double kLEDFlashOrange = 0.27;
         public static final double kLEDLightChaseRed = -0.31;
         public static final double kLEDGreenFlashing = 0.15;
         public static final double kDisabledLED = 0.01; // -0.99 is rainbow
