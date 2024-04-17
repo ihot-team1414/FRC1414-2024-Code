@@ -182,7 +182,7 @@ public final class Constants {
             kShooterConfiguration.kV = 0.1685;
         }
 
-        public static final Measure<Voltage> kAmpVoltage = Volts.of(4);
+        public static final Measure<Voltage> kAmpVoltage = Volts.of(3);
         public static final Measure<Voltage> kOuttakeVoltage = Volts.of(-4);
 
         public static final Measure<Voltage> kEjectVoltage = Volts.of(4);
@@ -215,7 +215,7 @@ public final class Constants {
         }
 
         public static final double kIntakePosition = 2;
-        public static final double kAmpScoringPosition = 17.5;
+        public static final double kAmpScoringPosition = 8;
         public static final double kSubwooferShotPosition = 10;
         public static final double kReverseShotPosition = 18.25;
         public static final double kStowPosition = 0.5;
@@ -235,6 +235,7 @@ public final class Constants {
         public static final double kDeflectorD = 0.0;
 
         public static final double kDeflectorScoringPosition = -1.7;
+        public static final double kDeflectorPrimePosition = -0.95;
         public static final double kDeflectorStowPosition = 0;
 
         public static final double kDeflectorTolerance = 0.02;

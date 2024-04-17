@@ -31,11 +31,11 @@ public class Routines {
         }
 
         public static Command ampMode() {
-                return pivot.rotateToPosition(PivotConstants.kAmpScoringPosition).alongWith(new WaitCommand(0.2)
-                                .andThen(
-                                                shooter.rev(ShooterConstants.kAmpVoltage)
-                                                                .alongWith(deflector.rotateToPosition(
-                                                                                DeflectorConstants.kDeflectorScoringPosition))));
+                return pivot.rotateToPosition(PivotConstants.kAmpScoringPosition)
+                                .andThen(new WaitCommand(0.02).andThen(shooter.rev(ShooterConstants.kAmpVoltage)
+                                                .alongWith(deflector.rotateToPosition(
+                                                                DeflectorConstants.kDeflectorPrimePosition))))
+                                .until(() -> !intake.isBackSensorTripped());
         }
 
         public static Command shootMode(DoubleSupplier translationXSupplier, DoubleSupplier translationYSupplier) {
