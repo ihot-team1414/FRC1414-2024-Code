@@ -204,6 +204,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putData("Field", field);
+        SmartDashboard.putNumberArray("Pose XY",
+                new Double[] { odometry.getEstimatedPosition().getX(), odometry.getEstimatedPosition().getY() });
 
         odometry.update(getHeading(), getSwerveModulePositions());
         addVisionMeasurement("limelight-front");
