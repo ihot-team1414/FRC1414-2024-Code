@@ -46,6 +46,7 @@ public class AimShooter extends Command {
     @Override
     public void execute() {
         ShooterEntry shooterEntry = ShooterDataUtils.getInterpolatedEntry(shooterData, distanceSupplier.getAsDouble());
+
         pivot.setPosition(shooterEntry.getPosition());
         shooter.setVoltage(voltage);
 

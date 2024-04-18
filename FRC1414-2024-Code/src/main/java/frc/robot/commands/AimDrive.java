@@ -4,9 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import java.util.function.DoubleSupplier;
@@ -18,18 +16,18 @@ public class AimDrive extends Command {
         private final DoubleSupplier translationXSupplier;
         private final DoubleSupplier translationYSupplier;
 
-        private Translation2d target = Constants.FieldConstants.bluePassPosition;
+        private Supplier<Translation2d> targetSupplier;
 
         private final PIDController rotController = new PIDController(8, 0.01, 0);
 
         public AimDrive(
                         DoubleSupplier translationXSupplier,
                         DoubleSupplier translationYSupplier,
-                        Supplier<Translation2d> target) {
+                        Supplier<Translation2d> targetSupplier) {
 
                 this.translationXSupplier = translationXSupplier;
                 this.translationYSupplier = translationYSupplier;
-                this.target = target.get();
+                this.targetSupplier = targetSupplier;
 
                 rotController.setTolerance(1.2);
                 rotController.enableContinuousInput(-180, 180);
@@ -39,10 +37,10 @@ public class AimDrive extends Command {
 
         @Override
         public void execute() {
-
                 double currentAngle = drive.getCurrentPose().getRotation().getDegrees();
 
-                Rotation2d angularTarget = drive.getCurrentPose().getTranslation().minus(target).getAngle();
+                Rotation2d angularTarget = drive.getCurrentPose().getTranslation().minus(targetSupplier.get())
+                                .getAngle();
 
                 Rotation2d rotation = Rotation2d
                                 .fromDegrees(rotController.calculate(currentAngle, angularTarget.getDegrees()));

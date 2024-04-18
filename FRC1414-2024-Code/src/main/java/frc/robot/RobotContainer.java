@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.ShooterData;
 import frc.robot.commands.Routines;
 import frc.robot.commands.Drive;
