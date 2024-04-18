@@ -3,8 +3,6 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import com.revrobotics.ColorSensorV3.LEDCurrent;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
