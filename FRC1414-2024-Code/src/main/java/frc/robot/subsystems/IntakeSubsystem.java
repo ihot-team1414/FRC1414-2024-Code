@@ -77,11 +77,14 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public boolean isFrontSensorTripped() {
-        return intakeSensorFront.getRange() < IntakeConstants.kFrontSensorThreshold;
+        return false;
+        // return intakeSensorFront.getRange() < IntakeConstants.kFrontSensorThreshold;
     }
 
     public boolean isMiddleSensorTripped() {
-        return intakeSensorMiddle.getRange() < IntakeConstants.kMiddleSensorThreshold;
+        // return intakeSensorMiddle.getRange() <
+        // IntakeConstants.kMiddleSensorThreshold;
+        return false;
     }
 
     public boolean isBackSensorTripped() {
@@ -123,7 +126,6 @@ public class IntakeSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Back Sensor Distance", intakeSensorBack.getRange());
         SmartDashboard.putNumber("Middle Sensor Range", intakeSensorMiddle.getRange());
         SmartDashboard.putNumber("Front Sensor Range", intakeSensorFront.getRange());
-
         SmartDashboard.putBoolean("Note Present", isNotePresent());
     }
 }

@@ -90,9 +90,22 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "2 Note Source.2"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "2 Note Source.2"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -107,13 +120,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Rev"
+                  "name": "Auto Aim"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Aim"
+                  "name": "Auto Rev"
                 }
               }
             ]
@@ -160,9 +173,22 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "2 Note Source.4"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "2 Note Source.4"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -177,13 +203,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Rev"
+                  "name": "Auto Aim"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Aim"
+                  "name": "Auto Rev"
                 }
               }
             ]

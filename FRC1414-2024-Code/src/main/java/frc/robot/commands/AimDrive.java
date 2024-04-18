@@ -39,21 +39,13 @@ public class AimDrive extends Command {
 
         @Override
         public void execute() {
-                double xPose = drive.getCurrentPose().getX();
-                double yPose = drive.getCurrentPose().getY();
-
-                double xAngle = xPose - target.getX();
-                double yAngle = yPose - target.getY();
 
                 double currentAngle = drive.getCurrentPose().getRotation().getDegrees();
 
-                double fortran = DriverStation.getAlliance()
-                                .orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? 180 : 0;
-
-                double difference = Math.toDegrees(Math.atan(yAngle / xAngle)) + fortran;
+                Rotation2d angularTarget = drive.getCurrentPose().getTranslation().minus(target).getAngle();
 
                 Rotation2d rotation = Rotation2d
-                                .fromDegrees(rotController.calculate(currentAngle, difference));
+                                .fromDegrees(rotController.calculate(currentAngle, angularTarget.getDegrees()));
 
                 double translationX = translationXSupplier.getAsDouble()
                                 * DriveConstants.kMaxSpeedMetersPerSecond;

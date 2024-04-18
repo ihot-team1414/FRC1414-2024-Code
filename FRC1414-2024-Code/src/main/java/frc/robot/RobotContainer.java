@@ -9,9 +9,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS5Controller;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.ShooterData;
 import frc.robot.commands.Routines;
 import frc.robot.commands.Drive;
+import frc.robot.commands.AimShooter;
 import frc.robot.commands.DeprecatedAutoAim;
 import frc.robot.commands.DeprecatedAutoRev;
 import frc.robot.subsystems.DeflectorSubsystem;
@@ -30,6 +35,7 @@ public class RobotContainer {
         private final PivotSubsystem pivot = PivotSubsystem.getInstance();
         private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
         private final DeflectorSubsystem deflector = DeflectorSubsystem.getInstance();
+        private final LEDSubsystem leds = LEDSubsystem.getInstance();
 
         PS5Controller driver = new PS5Controller(OIConstants.kDriverControllerPort);
         XboxController operator = new XboxController(OIConstants.kOperatorControllerPort);
@@ -75,6 +81,10 @@ public class RobotContainer {
                 deflector.setDefaultCommand(deflector.stow().repeatedly());
                 intake.setDefaultCommand(intake.autoLoad().repeatedly());
                 pivot.setDefaultCommand(pivot.stow().repeatedly());
+                leds.setDefaultCommand(
+                                leds.set(() -> intake.isNotePresent() ? LEDConstants.kLEDOrange
+                                                : LEDConstants.kLEDBlue).repeatedly());
+
         }
 
         private void configureDriver() {
@@ -116,6 +126,12 @@ public class RobotContainer {
         public void configureAuto() {
                 NamedCommands.registerCommand("Intake", intake.intake());
                 NamedCommands.registerCommand("Auto Aim", new DeprecatedAutoAim().repeatedly());
+                NamedCommands.registerCommand("Odometry Aim",
+                                new AimShooter(ShooterData.speakerData, () -> drivetrain.getDistanceToPoint(
+                                                FieldConstants.allianceSpeakerPositionSupplier
+                                                                .get()))
+                                                .repeatedly());
+
                 NamedCommands.registerCommand("Auto Aim 1", new DeprecatedAutoAim(1.75).repeatedly());
                 NamedCommands.registerCommand("Auto Aim 2", new DeprecatedAutoAim(2.9).repeatedly());
                 NamedCommands.registerCommand("Auto Aim 3", new DeprecatedAutoAim(3.5).repeatedly());
