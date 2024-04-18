@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.Constants.LEDConstants;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,6 +16,7 @@ public class LEDSubsystem extends SubsystemBase {
     public double color = LEDConstants.kLEDBlue;
 
     private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
+    private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
 
     public LEDSubsystem() {
         blinkin = new Spark(LEDConstants.kPWMPort);
@@ -40,5 +42,10 @@ public class LEDSubsystem extends SubsystemBase {
 
     public Command changeColor(double color) {
         return this.run(() -> setColor(color));
+    }
+
+    @Override
+    public void periodic() {
+        if (!intake.isLoaded()){blinkin.set(LEDConstants.kLEDBlue);}
     }
 }
