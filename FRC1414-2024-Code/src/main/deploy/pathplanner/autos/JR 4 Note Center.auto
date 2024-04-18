@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.766904354095459,
-      "y": 4.378146171569824
+      "x": 1.380510926246643,
+      "y": 5.559878826141357
     },
-    "rotation": -59.53445372926423
+    "rotation": -8.384584485396603e-39
   },
   "command": {
     "type": "sequential",
@@ -22,7 +22,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.0
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -54,7 +54,45 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "2 Note Source.1"
+                        "pathName": "Center JR.1"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Odometry Aim"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Center JR.2"
                       }
                     },
                     {
@@ -90,7 +128,7 @@
                           {
                             "type": "path",
                             "data": {
-                              "pathName": "2 Note Source.2"
+                              "pathName": "Center JR.3"
                             }
                           },
                           {
@@ -131,52 +169,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "2 Note Source.3"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.25
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "deadline",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "2 Note Source.4"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Intake"
-                            }
-                          }
-                        ]
+                        "pathName": "Center JR.4"
                       }
                     },
                     {

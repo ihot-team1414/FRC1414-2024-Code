@@ -15,9 +15,11 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterData;
 import frc.robot.commands.Routines;
 import frc.robot.commands.Drive;
+import frc.robot.commands.LedDefault;
 import frc.robot.commands.AimShooter;
 import frc.robot.commands.DeprecatedAutoAim;
 import frc.robot.commands.DeprecatedAutoRev;
+import frc.robot.commands.DeprecatedAutoShootTeleop;
 import frc.robot.subsystems.DeflectorSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -35,6 +37,7 @@ public class RobotContainer {
         private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
         private final DeflectorSubsystem deflector = DeflectorSubsystem.getInstance();
         private final LEDSubsystem leds = LEDSubsystem.getInstance();
+        private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
 
         PS5Controller driver = new PS5Controller(OIConstants.kDriverControllerPort);
         XboxController operator = new XboxController(OIConstants.kOperatorControllerPort);
@@ -80,17 +83,17 @@ public class RobotContainer {
                 deflector.setDefaultCommand(deflector.stow().repeatedly());
                 intake.setDefaultCommand(intake.autoLoad().repeatedly());
                 pivot.setDefaultCommand(pivot.stow().repeatedly());
-                leds.setDefaultCommand(
-                                leds.set(() -> intake.isNotePresent() ? LEDConstants.kLEDOrange
-                                                : LEDConstants.kLEDBlue).repeatedly());
+                leds.setDefaultCommand(new LedDefault());
 
         }
 
         private void configureDriver() {
                 new JoystickButton(driver, PS5Controller.Button.kL1.value).whileTrue(intake.feed());
                 new JoystickButton(driver, PS5Controller.Button.kR1.value).onTrue(Routines.intake());
-                new JoystickButton(driver, PS5Controller.Button.kSquare.value).onTrue(Routines.ampMode());
+                // new JoystickButton(driver, PS5Controller.Button.kCross.value).onTrue(new
+                // DeprecatedAutoShootTeleop(null, null, null));
                 new JoystickButton(driver, PS5Controller.Button.kTriangle.value).whileTrue(Routines.ampAutoDrive());
+                new JoystickButton(driver, PS5Controller.Button.kSquare.value).onTrue(Routines.ampMode());
         }
 
         private void configureOperator() {
@@ -120,6 +123,7 @@ public class RobotContainer {
                                                 Constants.OIConstants.kJoystickDeadband)));
                 new Trigger(() -> operator.getLeftTriggerAxis() > 0.5).whileTrue(Routines.subwooferShot());
                 new Trigger(() -> operator.getRightTriggerAxis() > 0.5).whileTrue(Routines.reverseShot());
+
         }
 
         public void configureAuto() {
@@ -140,6 +144,8 @@ public class RobotContainer {
                 NamedCommands.registerCommand("Feed", intake.feed().withTimeout(0.75));
                 chooser.addOption("Justin 5 Note Auto", AutoBuilder.buildAuto("Justin 5 Note Auto"));
                 chooser.addOption("Justin 3 Note Auto", AutoBuilder.buildAuto("Justin 3 Note Auto"));
+                chooser.addOption("Center JR 4 Note Auto", AutoBuilder.buildAuto("JR 4 Note Center"));
+
                 chooser.addOption("2 Note Source", AutoBuilder.buildAuto("2 Note Source"));
                 chooser.addOption("Beeline Auto", AutoBuilder.buildAuto("Beeline Auto"));
                 SmartDashboard.putData("Auto Chooser", this.chooser);

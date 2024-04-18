@@ -216,7 +216,7 @@ public final class Constants {
 
         public static final double kIntakePosition = 2;
         public static final double kAmpScoringPosition = 17.5;
-        public static final double kSubwooferShotPosition = 10;
+        public static final double kSubwooferShotPosition = 9;
         public static final double kReverseShotPosition = 18.25;
         public static final double kStowPosition = 0.5;
         public static final double kEjectPosition = 10;
@@ -285,8 +285,8 @@ public final class Constants {
 
         public static final Translation2d ampEntryOffset = new Translation2d(0, -2);
 
-        public static final Pose2d ampEntryTolerance = new Pose2d(new Translation2d(1, 1),
-                Rotation2d.fromDegrees(2));
+        public static final Pose2d ampEntryTolerance = new Pose2d(new Translation2d(0.2, 0.2),
+                Rotation2d.fromDegrees(1));
 
         public static final Supplier<Pose2d> allianceAmpEntryPoseSupplier = () -> DriverStation.getAlliance()
                 .orElse(DriverStation.Alliance.Blue) == Alliance.Blue
