@@ -13,7 +13,7 @@ public class LEDSubsystem extends SubsystemBase {
     private static LEDSubsystem instance;
 
     private Spark blinkin;
-    public double color = LEDConstants.kLEDBlue;
+    private double color = LEDConstants.kLEDBlue;
 
     private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
     private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
