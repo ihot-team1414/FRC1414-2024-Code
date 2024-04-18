@@ -122,7 +122,7 @@ public class RobotContainer {
                 NamedCommands.registerCommand("Auto Aim 4", new DeprecatedAutoAim(4.6).repeatedly());
                 NamedCommands.registerCommand("Auto Aim 5", new DeprecatedAutoAim(4.6).repeatedly());
                 NamedCommands.registerCommand("Auto Rev", new DeprecatedAutoRev().repeatedly());
-                NamedCommands.registerCommand("Feed", intake.feed().until(() -> !intake.isNotePresent()));
+                NamedCommands.registerCommand("Feed", intake.feed().withTimeout(0.75));
                 chooser.addOption("Justin 5 Note Auto", AutoBuilder.buildAuto("Justin 5 Note Auto"));
                 chooser.addOption("Justin 3 Note Auto", AutoBuilder.buildAuto("Justin 3 Note Auto"));
                 chooser.addOption("2 Note Source", AutoBuilder.buildAuto("2 Note Source"));

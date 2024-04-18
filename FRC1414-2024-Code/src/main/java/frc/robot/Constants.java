@@ -182,7 +182,7 @@ public final class Constants {
             kShooterConfiguration.kV = 0.1685;
         }
 
-        public static final Measure<Voltage> kAmpVoltage = Volts.of(4);
+        public static final Measure<Voltage> kAmpVoltage = Volts.of(3);
         public static final Measure<Voltage> kOuttakeVoltage = Volts.of(-4);
 
         public static final Measure<Voltage> kEjectVoltage = Volts.of(4);
