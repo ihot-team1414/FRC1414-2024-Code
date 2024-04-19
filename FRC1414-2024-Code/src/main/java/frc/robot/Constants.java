@@ -296,6 +296,11 @@ public final class Constants {
                                 Rotation2d.fromDegrees(90))
                         : new Pose2d(FieldConstants.getTagTranslation(FieldConstants.kRedAmpId).plus(ampEntryOffset),
                                 Rotation2d.fromDegrees(90));
+                                
+        public static final Supplier<Pose2d> allianceTrapEntryPoseSupplier = () -> DriverStation.getAlliance()
+                .orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue
+                        ? new Pose2d(4.275, 5.06, Rotation2d.fromRadians(-1.006))
+                        : new Pose2d(12.274, 5.06, Rotation2d.fromRadians(-2.111));
 
         public static final int kRedSpeakerId = 4;
         public static final int kBlueSpeakerId = 7;

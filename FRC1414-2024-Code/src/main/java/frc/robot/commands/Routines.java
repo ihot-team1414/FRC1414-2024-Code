@@ -3,10 +3,14 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.Constants.DeflectorConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.PivotConstants;
@@ -62,6 +66,21 @@ public class Routines {
     public static Command ampAutoDrive() {
         return new DriveToPose(FieldConstants.allianceAmpEntryPoseSupplier, FieldConstants.ampEntryTolerance)
                 .andThen(ampMode().repeatedly());
+    }
+
+    public static Command trapShotDrive(){
+        return new DriveToPose(FieldConstants.allianceTrapEntryPoseSupplier, FieldConstants.ampEntryTolerance)
+                .andThen(trapShot());
+    }
+
+    public static Command trapShot() {
+        return shooter.rev(0.5)
+                        .andThen(pivot.rotateToPosition(Constants.PivotConstants.kEjectPosition))
+                        .andThen(intake.feed().withTimeout(1))
+                .finallyDo(() -> {
+                    intake.stop();
+                    shooter.stop();
+                });
     }
 
     public static Command outtake() {
