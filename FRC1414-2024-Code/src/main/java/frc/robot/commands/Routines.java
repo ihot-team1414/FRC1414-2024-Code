@@ -6,8 +6,6 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.DeflectorConstants;
 import frc.robot.Constants.FieldConstants;
@@ -39,7 +37,7 @@ public class Routines {
         public static Command ampMode() {
                 return pivot.rotateToPosition(PivotConstants.kAmpScoringPosition).alongWith(new WaitCommand(0.2)
                                 .andThen(
-                                                shooter.rev(ShooterConstants.kAmpVoltage)
+                                                shooter.rev(ShooterConstants.kAmpVoltage, true)
                                                                 .alongWith(deflector.rotateToPosition(
                                                                                 DeflectorConstants.kDeflectorScoringPosition))));
         }

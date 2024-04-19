@@ -90,9 +90,22 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "Beeline Auto.2"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Beeline Auto.2"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -107,13 +120,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Aim 4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Auto Rev"
+                  "name": "Odometry Aim"
                 }
               }
             ]
@@ -160,9 +167,22 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "path",
+                      "type": "deadline",
                       "data": {
-                        "pathName": "Beeline Auto.4"
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "Beeline Auto.4"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Intake"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
@@ -177,13 +197,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Aim 5"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Auto Rev"
+                  "name": "Odometry Aim"
                 }
               }
             ]

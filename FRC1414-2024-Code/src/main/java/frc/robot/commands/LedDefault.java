@@ -1,19 +1,10 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.LEDConstants;
-import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 public class LedDefault extends Command {
         private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();

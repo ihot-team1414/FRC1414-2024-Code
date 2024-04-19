@@ -28,6 +28,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final VelocityVoltage velocityControl;
     private final DutyCycleOut dutyCycleOutControl;
     private final VoltageOut voltageOutControl;
+    private final VoltageOut voltageOutFOCControl;
 
     public ShooterSubsystem() {
         shooterMotor1 = new TalonFX(ShooterConstants.kShooterMotor1CanId);
@@ -47,6 +48,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         velocityControl = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
         voltageOutControl = new VoltageOut(0, false, false, false, false);
+        voltageOutFOCControl = new VoltageOut(0, true, false, false, false);
         dutyCycleOutControl = new DutyCycleOut(0, false, false, false, false);
         followerControl = new Follower(shooterMotor1.getDeviceID(), true);
     }
@@ -62,6 +64,11 @@ public class ShooterSubsystem extends SubsystemBase {
     public void setVoltage(Measure<Voltage> voltage) {
         shooterMotor2.setControl(followerControl.withMasterID(32));
         shooterMotor1.setControl(voltageOutControl.withOutput(voltage.magnitude()));
+    }
+
+    public void setVoltageFOC(Measure<Voltage> voltage) {
+        shooterMotor2.setControl(followerControl.withMasterID(32));
+        shooterMotor1.setControl(voltageOutFOCControl.withOutput(voltage.magnitude()));
     }
 
     public void setDutyCycle(double dutyCycle) {
@@ -91,6 +98,13 @@ public class ShooterSubsystem extends SubsystemBase {
     // Commands
 
     public Command rev(Measure<Voltage> voltage) {
+        return rev(voltage, false);
+    }
+
+    public Command rev(Measure<Voltage> voltage, boolean useFOC) {
+        if (useFOC) {
+            return this.runEnd(() -> setVoltageFOC(voltage), () -> stop());
+        }
         return this.runEnd(() -> setVoltage(voltage), () -> stop());
     }
 

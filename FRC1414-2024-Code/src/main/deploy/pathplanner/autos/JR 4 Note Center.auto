@@ -60,7 +60,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.25
+                        "waitTime": 0.5
                       }
                     }
                   ]
@@ -69,7 +69,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Feed"
+                  "name": "Infinite Feed"
                 }
               },
               {
@@ -175,7 +175,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Feed"
+                        "name": "Infinite Feed"
                       }
                     }
                   ]
