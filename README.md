@@ -3,18 +3,18 @@
 ## Controls
 
 ### Driver:
-**L1**: Feed
-**R1**: Intake
-**Triangle**: Amp auto drive
-**Square**: Prime amp
+- **L1**: Feed
+- **R1**: Intake
+- **Triangle**: Amp auto drive
+- **Square**: Prime amp
 
 ### Operator:
-**Y**: Eject
-**A**: Outtake
-**Left Bumper**: Shoot mode
-**Right Bumper**: Pass mode
-**Left Trigger**: Subwoofer shot
-**Right Trigger**: Reverse subwoofer shot
+- **Y**: Eject
+- **A**: Outtake
+- **Left Bumper**: Shoot mode
+- **Right Bumper**: Pass mode
+- **Left Trigger**: Subwoofer shot
+- **Right Trigger**: Reverse subwoofer shot
 
 ## Autos
 - 5 Note Center (preload, 2 wing notes, 2 amp side centerline notes)
