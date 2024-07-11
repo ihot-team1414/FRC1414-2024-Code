@@ -18,7 +18,7 @@ public class VisionSubsystem extends SubsystemBase {
     private boolean isStale;
 
     public VisionSubsystem() {
-        this.lastTX = 0;
+        this.lastTX = 0;  //TX represents the horixontal angle between the robot's current heading and the target detected by the Limelight camera.
         this.lastDistance = 0;
         this.lastMeasurementTime = 0;
         this.isStale = true;
@@ -45,7 +45,9 @@ public class VisionSubsystem extends SubsystemBase {
             }
         }
 
-        return isStale ? Optional.empty() : Optional.of(lastDistance);
+        return isStale ? Optional.empty() : Optional.of(lastDistance); //Optional is built into java and is used to draw attention null pointers so devs prevent them
+        //using the Optional.empty() value will result in nullpointerexception
+        //Optional.of(lastDistance) is essentially the same as just using lastDistance
     }
 
     @Override
