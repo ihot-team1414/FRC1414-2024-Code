@@ -45,7 +45,7 @@ public class VisionSubsystem extends SubsystemBase {
             }
         }
 
-        return isStale ? Optional.empty() : Optional.of(lastDistance); //Optional is built into java and is used to draw attention null pointers so devs prevent them
+        return isStale ? Optional.empty() : Optional.of(lastDistance); //Optional is built into Java and is used to draw attention to null pointers so devs prevent them
         //using the Optional.empty() value will result in nullpointerexception
         //Optional.of(lastDistance) is essentially the same as just using lastDistance
     }
