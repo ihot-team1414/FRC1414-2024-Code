@@ -51,7 +51,7 @@ public class DeprecatedAutoShootTeleop extends Command {
 
         @Override
         public void initialize() {
-                double yawError = VisionSubsystem.getInstance().getTX().orElse(0.0);
+                double yawError = VisionSubsystem.getInstance().getTX().orElse(0.0); //  orElse returns the specified default value, which is 0.0 in this case, if Optional returns empty (equivalent to nulll)
 
                 target = -yawError;
 
