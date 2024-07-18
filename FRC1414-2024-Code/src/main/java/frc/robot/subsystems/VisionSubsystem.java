@@ -38,7 +38,7 @@ public class VisionSubsystem extends SubsystemBase {
     public Optional<Double> getDistance() {
         if (VisionConstants.kShootOnTheMove) {
             ChassisSpeeds speeds = DrivetrainSubsystem.getInstance().getRobotRelativeSpeeds();
-            if (speeds.omegaRadiansPerSecond < 1) {
+            if (speeds.omegaRadiansPerSecond < 1) { //ensures calculation only proceeds if the robot is not rotating quickly, as high rotational speeds could affect accuracy.
                 return isStale ? Optional.empty()
                         : Optional.of(lastDistance
                                 + ((lastDistance / VisionConstants.kEstimatedShotSpeed) * speeds.vxMetersPerSecond));
@@ -52,15 +52,16 @@ public class VisionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Limelight Distance", lastDistance);
+        SmartDashboard.putNumber("Limelight Distance", lastDistance); //sends the lastDistance value to the SmartDashboard
         SmartDashboard.putNumber("Limelight Angular Error", lastTX % 360);
 
-        if (LimelightHelpers.getTV("limelight-front")) {
-            lastTX = DrivetrainSubsystem.getInstance().getHeading().getDegrees()
-                    - (LimelightHelpers.getTX("limelight-front"));
+        if (LimelightHelpers.getTV("limelight-front")) { //getTV stands for "get Target Validity" or similar, indicating whether the Limelight has detected a valid target.
+            lastTX = DrivetrainSubsystem.getInstance().getHeading().getDegrees() - (LimelightHelpers.getTX("limelight-front"));
+                    /* transforms the TX value from a relative angle (relative to the robot's heading) into a global angle (relative to the field).
+                    B/c DrivetrainSubsystem.getInstance().getHeading().getDegrees() gives current global heading. (ask AI for ex if confused) */
             Pose3d tagPose = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-front");
-            lastDistance = tagPose.getTranslation().getNorm();
-            isStale = false;
+            lastDistance = tagPose.getTranslation().getNorm(); //vector math to get last distance
+            isStale = false; //resets stale
 
             lastMeasurementTime = Timer.getFPGATimestamp();
         }
