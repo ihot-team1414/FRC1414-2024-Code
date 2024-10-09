@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PS5Controller;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterData;
@@ -40,7 +41,7 @@ public class RobotContainer {
         private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
 
         PS5Controller driver = new PS5Controller(OIConstants.kDriverControllerPort);
-        PS5Controller operator = new PS5Controller(OIConstants.kOperatorControllerPort);
+        XboxController operator = new XboxController(OIConstants.kOperatorControllerPort);
 
         private SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -65,34 +66,18 @@ public class RobotContainer {
         }
 
         private void setDefaultCommands() {
-                /*
-                 * drivetrain.setDefaultCommand(
-                 * new Drive(() -> MathUtil.applyDeadband(DriverStation.getAlliance().orElse(
-                 * DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue
-                 * ? -driver.getRightY()
-                 * : driver.getRightY(),
-                 * Constants.OIConstants.kJoystickDeadband),
-                 * () -> MathUtil.applyDeadband(DriverStation.getAlliance().orElse(
-                 * DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue
-                 * ? -driver.getRightX()
-                 * : driver.getRightX(),
-                 * Constants.OIConstants.kJoystickDeadband),
-                 * () -> MathUtil.applyDeadband(-driver.getLeftX(),
-                 * Constants.OIConstants.kJoystickDeadband),
-                 * () -> 1));
-                 */
                 drivetrain.setDefaultCommand(
                                 new Drive(() -> MathUtil.applyDeadband(DriverStation.getAlliance().orElse(
                                                 DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue
-                                                                ? driver.getRightY()
-                                                                : -driver.getRightY(),
+                                                                ? -driver.getLeftY()
+                                                                : driver.getLeftY(),
                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> MathUtil.applyDeadband(DriverStation.getAlliance().orElse(
                                                                 DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue
-                                                                                ? driver.getRightX()
-                                                                                : -driver.getRightX(),
+                                                                                ? -driver.getLeftX()
+                                                                                : driver.getLeftX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
-                                                () -> MathUtil.applyDeadband(driver.getLeftX(),
+                                                () -> MathUtil.applyDeadband(-driver.getRightX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> 1));
 
@@ -120,9 +105,9 @@ public class RobotContainer {
         }
 
         private void configureOperator() {
-                new JoystickButton(operator, PS5Controller.Button.kTriangle.value).whileTrue(Routines.eject());
-                new JoystickButton(operator, PS5Controller.Button.kCross.value).whileTrue(Routines.outtake());
-                new JoystickButton(operator, PS5Controller.Button.kL1.value).whileTrue(Routines.shootMode(
+                new JoystickButton(operator, XboxController.Button.kY.value).whileTrue(Routines.eject());
+                new JoystickButton(operator, XboxController.Button.kA.value).whileTrue(Routines.outtake());
+                new JoystickButton(operator, XboxController.Button.kLeftBumper.value).whileTrue(Routines.shootMode(
                                 () -> MathUtil.applyDeadband(DriverStation.getAlliance().orElse(
                                                 DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue
                                                                 ? -driver.getLeftY()
@@ -133,7 +118,7 @@ public class RobotContainer {
                                                                 ? -driver.getLeftX()
                                                                 : driver.getLeftX(),
                                                 Constants.OIConstants.kJoystickDeadband)));
-                new JoystickButton(operator, PS5Controller.Button.kR1.value).whileTrue(Routines.passMode(
+                new JoystickButton(operator, XboxController.Button.kRightBumper.value).whileTrue(Routines.passMode(
                                 () -> MathUtil.applyDeadband(DriverStation.getAlliance().orElse(
                                                 DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue
                                                                 ? -driver.getLeftY()
@@ -144,12 +129,8 @@ public class RobotContainer {
                                                                 ? -driver.getLeftX()
                                                                 : driver.getLeftX(),
                                                 Constants.OIConstants.kJoystickDeadband)));
-                new JoystickButton(operator, PS5Controller.Button.kL2.value).whileTrue(Routines.subwooferShot());
-                new JoystickButton(operator, PS5Controller.Button.kR2.value).whileTrue(Routines.reverseShot());
-                // new Trigger(() -> operator.getLeftTriggerAxis() >
-                // 0.5).whileTrue(Routines.subwooferShot());
-                // new Trigger(() -> operator.getRightTriggerAxis() >
-                // 0.5).whileTrue(Routines.reverseShot());
+                new Trigger(() -> operator.getLeftTriggerAxis() > 0.5).whileTrue(Routines.subwooferShot());
+                new Trigger(() -> operator.getRightTriggerAxis() > 0.5).whileTrue(Routines.reverseShot());
 
         }
 
