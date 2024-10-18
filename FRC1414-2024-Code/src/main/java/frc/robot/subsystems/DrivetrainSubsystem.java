@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.utils.LimelightHelpers;
 
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -203,6 +204,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        
+        SmartDashboard.putNumber("Shooter Distance", getDistanceToPoint(
+            FieldConstants.allianceSpeakerPositionSupplier.get()));
         SmartDashboard.putData("Field", field);
         SmartDashboard.putNumberArray("Pose XY",
                 new Double[] { odometry.getEstimatedPosition().getX(), odometry.getEstimatedPosition().getY() });

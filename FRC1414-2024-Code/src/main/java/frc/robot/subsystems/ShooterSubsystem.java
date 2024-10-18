@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -115,6 +116,8 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter Velocity", shooterMotor1.getVelocity().getValueAsDouble());
+        SmartDashboard.putBoolean("Is shooting", isWithinVelocityTolerance(70));
+        SmartDashboard.putNumber("Time elapsed", DriverStation.getMatchTime());
     }
 
 }
