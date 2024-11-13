@@ -1,5 +1,5 @@
 package frc.robot.subsystems;
-
+// Imports 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
-
+//Classes 
 public class IntakeSubsystem extends SubsystemBase {
     private static IntakeSubsystem instance;
 
@@ -60,7 +60,7 @@ public class IntakeSubsystem extends SubsystemBase {
         followerControl = new Follower(intakeMotor1.getDeviceID(), true);
         intakeMotor2.setControl(followerControl);
     }
-
+// Singleton 
     public static synchronized IntakeSubsystem getInstance() {
         if (instance == null) {
             instance = new IntakeSubsystem();

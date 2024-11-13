@@ -1,5 +1,5 @@
 package frc.robot.subsystems;
-
+// Imports 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.LimelightHelpers;
-
+ // Classes 
 public class DrivetrainSubsystem extends SubsystemBase {
     private static DrivetrainSubsystem instance;
 
@@ -98,7 +98,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 this);
 
     };
-
+// Singleton
     public static synchronized DrivetrainSubsystem getInstance() {
         if (instance == null) {
             instance = new DrivetrainSubsystem();

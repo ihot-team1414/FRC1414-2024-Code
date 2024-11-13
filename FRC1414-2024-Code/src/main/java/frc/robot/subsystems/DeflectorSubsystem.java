@@ -1,5 +1,5 @@
 package frc.robot.subsystems;
-
+// imports
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DeflectorConstants;
-
+// Classes
 public class DeflectorSubsystem extends SubsystemBase {
     private static DeflectorSubsystem instance;
 
