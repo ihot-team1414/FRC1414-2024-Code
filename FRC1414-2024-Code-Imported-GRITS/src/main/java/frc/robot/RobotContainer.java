@@ -85,13 +85,13 @@ public class RobotContainer {
                 drivetrain.setDefaultCommand(
                                 new Drive(() -> MathUtil.applyDeadband(DriverStation.getAlliance().orElse(
                                                 DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue
-                                                                ? driver.getRightY()
-                                                                : -driver.getRightY(),
+                                                                ? -driver.getRightY()
+                                                                : driver.getRightY(),
                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> MathUtil.applyDeadband(DriverStation.getAlliance().orElse(
                                                                 DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue
-                                                                                ? driver.getRightX()
-                                                                                : -driver.getRightX(),
+                                                                                ? -driver.getRightX()
+                                                                                : driver.getRightX(),
                                                                 Constants.OIConstants.kJoystickDeadband),
                                                 () -> MathUtil.applyDeadband(driver.getLeftX(),
                                                                 Constants.OIConstants.kJoystickDeadband),

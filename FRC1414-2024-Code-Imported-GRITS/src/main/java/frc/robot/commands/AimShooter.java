@@ -47,7 +47,7 @@ public class AimShooter extends Command {
     public void execute() {
         ShooterEntry shooterEntry = ShooterDataUtils.getInterpolatedEntry(shooterData, distanceSupplier.getAsDouble());
 
-        pivot.setPosition(shooterEntry.getPosition());
+        pivot.setPosition(shooterEntry.getPosition() - 0.254);
         shooter.setVoltage(voltage);
 
         SmartDashboard.putNumber("Aim Shooter Distance", distanceSupplier.getAsDouble());

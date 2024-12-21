@@ -33,7 +33,7 @@ public class DeprecatedAutoAim extends Command {
         double distance = VisionSubsystem.getInstance().getDistance().orElse(fallbackDistance);
         SmartDashboard.putNumber("Retrieved Distance", distance);
         pivot.setPosition(
-                ShooterDataUtils.getInterpolatedEntry(ShooterData.fallbackSpeakerData, distance).getPosition());
+                ShooterDataUtils.getInterpolatedEntry(ShooterData.fallbackSpeakerData, distance).getPosition() - 0.055);
     }
 
     @Override

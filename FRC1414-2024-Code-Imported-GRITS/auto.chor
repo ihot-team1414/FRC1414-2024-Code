@@ -6531,8 +6531,8 @@
                     "controlIntervalCount": 19
                 },
                 {
-                    "x": 8.46578311920166,
-                    "y": 2.4875359535217285,
+                    "x": 8.426801681518555,
+                    "y": 2.526517629623413,
                     "heading": 0.3764903246134875,
                     "isInitialGuess": false,
                     "translationConstrained": true,
@@ -8408,7 +8408,7 @@
             "usesDefaultFieldObstacles": true,
             "circleObstacles": [],
             "eventMarkers": [],
-            "isTrajectoryStale": true
+            "isTrajectoryStale": false
         },
         "Amp Adaptive": {
             "waypoints": [
